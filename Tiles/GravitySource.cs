@@ -13,7 +13,9 @@ namespace teo.Tiles
 {
     public class GravitySource : ModTile
     {
-        public List<Vector2> boundingPositions = new List<Vector2>();
+        public Dictionary<Vector2, List<Vector2>> boundingTiles = new Dictionary<Vector2, List<Vector2>>();
+        //public List<Vector2> boundingPositions = new List<Vector2>();
+        bool clearBoundPos = true;
         public override void SetDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -23,57 +25,32 @@ namespace teo.Tiles
             drop = mod.ItemType("GravitySource");
             AddMapEntry(new Color(20, 20, 20));
         }
-        public override void PlaceInWorld(int i, int j, Item item)
+        public void CreateSurfaceMap(int i, int j, List<Vector2> appList)
         {
-            CreateSurfaceMap(i, j);
-            base.PlaceInWorld(i, j, item);
+            
+            CheckBound(i, j, new Vector2(i, j), appList);
         }
-        public override void RandomUpdate(int i, int j)
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CreateSurfaceMap(i, j);
-            base.RandomUpdate(i, j);
-        }
-        /*
-         string error = "";
-            int width = 11;
-            for (int k = -16; k <= 0; k++)
+            //.Clear();
+            List<Vector2> appList;
+            if (boundingTiles.TryGetValue(new Vector2(i, j), out appList))
             {
-                for (int l = -width; l <= width; l++)
-                {
-                    Tile tile = Framing.GetTileSafely((int)position.X + l, (int)position.Y + k);
-                    if (k == 0)
-                    {
-
-                        if (tile.type != ModContent.GetInstance<LaunchPad>().Type)
-                        {
-                            error = "Launch pad is not wide enough";
-                        }
-                    }
-                    else if ((k == -1 || k == -2) && l == 0)
-                    {
-                        if (tile.type != ModContent.GetInstance<LaunchConsole>().Type)
-                        {
-                            error = "Something is very wrong here...and yet, a little bit right";
-                        }
-                    }
-                    else
-                    {
-                        if (tile.type != 0)
-                        {
-                            error = "Launch pad is not uncovered";
-                        }
-                    }
-
-                }
-            } 
-         */
-
-        public void CreateSurfaceMap(int i, int j)
-        {
-            boundingPositions.Clear();
-            CheckBound(i, j, new Vector2(i, j));
+                appList.Clear();
+                CreateSurfaceMap(i, j, appList);
+            }
+            else
+            {
+                boundingTiles.Add(new Vector2(i, j), new List<Vector2>());
+            }
+            return base.PreDraw(i, j, spriteBatch);
         }
-        public void CheckBound(int i, int j, Vector2 home)
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            boundingTiles.Remove(new Vector2(i, j));
+            base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
+        }
+        public void CheckBound(int i, int j, Vector2 home, List<Vector2> appList)
         {
             Vector2 thisPos = new Vector2(i, j);
             List<Tile> checkTiles = new List<Tile>();
@@ -90,10 +67,10 @@ namespace teo.Tiles
             {
                 if (checkTiles[q].type == 0)
                     nextToAir = true;
-                else if (Vector2.Distance(positions[q], home) > Vector2.Distance(thisPos, home) && checkTiles[q].type != ModContent.GetInstance<AsteroidRock>().Type)
-                    CheckBound((int)positions[q].X, (int)positions[q].Y, home);
+                else if (Vector2.Distance(positions[q], home) > Vector2.Distance(thisPos, home) && checkTiles[q].type == ModContent.GetInstance<AsteroidRock>().Type)
+                    CheckBound((int)positions[q].X, (int)positions[q].Y, home, appList);
             }
-            if (nextToAir && !boundingPositions.Contains(thisPos)) boundingPositions.Add(thisPos);
+            if (nextToAir && !appList.Contains(thisPos)) appList.Add(thisPos);
         }
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
@@ -110,10 +87,17 @@ namespace teo.Tiles
             Main.player[Main.myPlayer].GetModPlayer<PlayerFixer>().custGravity = closer;
             base.NearbyEffects(i, j, closer);
         }
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public void DrawGUIComps(SpriteBatch sb)
         {
-            Vector2 blocTLCorner = (16f * new Vector2(i, j)) - Main.screenPosition;
-            base.PostDraw(i, j, spriteBatch);
+            foreach (List<Vector2> l in boundingTiles.Values)
+            {
+                foreach (Vector2 v in l)
+                {
+                    Vector2 tileTLC = (16f * v) - Main.screenPosition;
+                    //Main.NewText(v.X + " " + v.Y);
+                    sb.Draw(ModContent.GetInstance<TEO>().pixel, new Rectangle((int)tileTLC.X, (int)tileTLC.Y, 16, 16), Color.Red * 0.5f);
+                }
+            }
         }
 
     }

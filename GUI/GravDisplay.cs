@@ -7,13 +7,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria.ModLoader;
+using teo.Tiles;
 
 namespace teo.GUI
 {
-    static class GravDisplay
+    public class GravDisplay
     {
         public static bool dispGui = false;
-
+        public static void Draw(SpriteBatch sb)
+        {
+            GravitySource src = ModContent.GetInstance<GravitySource>();
+            if (Main.player[Main.myPlayer].GetModPlayer<PlayerFixer>().custGravity)
+                src.DrawGUIComps(sb);
+        }
         public static void DrawLine(SpriteBatch sb, Vector2 p1, Vector2 p2, int thickness, Color color)
         {
             Line line = new Line(p1, p2, thickness, color);

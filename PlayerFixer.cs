@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using teo.Mounts;
+using teo.Tiles;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -22,6 +23,7 @@ namespace teo
         public List<Vector2> gravSources = new List<Vector2>();
         public Vector2 dirToGrav = Vector2.Zero;
         public bool custGravity = true;
+        public bool canJump = true;
         public override void Initialize()
         { 
             //player.rotati
@@ -126,10 +128,11 @@ namespace teo
                 {
                     player.velocity = (Math.Sign(tangVel) * MAX_RUNSPEED * perpDir) + (radVel * direction);
                 }
-                if (player.controlJump && player.jump == 0)
+                if (player.controlJump && radVel == 0)
                 {
-                    player.jump = 600;
-                    player.velocity += -direction * 7f;
+                    Main.NewText("Weh");
+                    //canJump = false;
+                    player.velocity += -direction * 70f;
                 }
             }
             base.PostUpdateRunSpeeds();

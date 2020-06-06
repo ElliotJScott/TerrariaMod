@@ -48,6 +48,7 @@ namespace teo
             {1,0,0,0,0,0,1,0,1,0,1,1,1,0,1,0,1,0,0,1,0 },
             {1,1,1,1,1,1,1,0,1,1,0,1,0,1,0,1,1,0,0,0,0 },
         };
+        public Texture2D pixel;
         public List<SpeechBubble> speechBubbles = new List<SpeechBubble>();
         public int rocketGuiPageNum = 0;
         public LaunchGuiButton exitButton;
@@ -61,13 +62,15 @@ namespace teo
         public bool inLaunchGui;
         public TEO()
         {
+            
             currentState = Mouse.GetState();
         }
         public override void Load()
         {
+            
             if (!Main.dedServ)
             {
-                
+                pixel = ModContent.GetInstance<TEO>().GetTexture("GUI/pixel");
                 Filters.Scene["TEO:SkySpace"] = new Filter(new ScreenShaderData("FilterMoonLord"), EffectPriority.Medium);
                 SkyManager.Instance["TEO:SkySpace"] = new SpaceSky();
             }
@@ -207,6 +210,7 @@ namespace teo
         {
             foreach (SpeechBubble sp in speechBubbles)
                 sp.Draw(spriteBatch);
+            GravDisplay.Draw(spriteBatch);
             if (inLaunchGui)
             {
                 Main.blockInput = true;
