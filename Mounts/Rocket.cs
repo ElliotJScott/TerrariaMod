@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
+using Terraria.ID;
 
 namespace teo.Mounts
 {
@@ -32,7 +33,7 @@ namespace teo.Mounts
         public Color drColor = new Color(55, 55, 55, 55);
         public override void SetDefaults()
         {
-            mountData.spawnDust = mod.DustType("Smoke");
+            //mountData.spawnDust = mod.DustType("Smoke");
             for (int i = 0; i < 3; i++)
             {
                 burnTexs[i] = mod.GetTexture("Mounts/BurnOverlay" + i);
@@ -58,7 +59,7 @@ namespace teo.Mounts
             mountData.xOffset = 0;
             //.bodyFrame = 3;
             mountData.yOffset = initOffset;
-            if (Main.netMode != 2)
+            if (Main.netMode != NetmodeID.Server)
             {
                 mountData.textureWidth = mountData.backTexture.Width;
                 mountData.textureHeight = mountData.backTexture.Height;
