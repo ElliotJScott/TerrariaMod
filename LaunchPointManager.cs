@@ -348,7 +348,7 @@ namespace teo
         public string CheckValidity()
         {
             string error = "";
-            int width = 11;
+            int width = 3;
             for (int k = -16; k <= 0; k++)
             {
                 for (int l = -width; l <= width; l++)

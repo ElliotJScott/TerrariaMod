@@ -28,6 +28,11 @@ namespace teo.Tiles
 			g = 0f;
 			b = 0f;
 		}
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            ModContent.GetInstance<GravitySource>().boundingTiles.Clear();
+            base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
+        }
 
-	}
+    }
 }

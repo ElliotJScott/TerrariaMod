@@ -16,9 +16,15 @@ namespace teo.GUI
         public static bool dispGui = false;
         public static void Draw(SpriteBatch sb)
         {
-            GravitySource src = ModContent.GetInstance<GravitySource>();
-            if (Main.player[Main.myPlayer].GetModPlayer<PlayerFixer>().custGravity)
-                src.DrawGUIComps(sb);
+            if (dispGui)
+            {
+                GravitySource src = ModContent.GetInstance<GravitySource>();
+                if (Main.player[Main.myPlayer].GetModPlayer<PlayerFixer>().custGravity)
+                {
+                    src.DrawGUIComps(sb);
+                    Main.player[Main.myPlayer].GetModPlayer<PlayerFixer>().DrawGravGui(sb);
+                }
+            }
         }
         public static void DrawLine(SpriteBatch sb, Vector2 p1, Vector2 p2, int thickness, Color color)
         {
@@ -39,7 +45,7 @@ namespace teo.GUI
         //p1 and p2 are the two end points of the line
         public Line(Vector2 p1, Vector2 p2, int thickness, Color color)
         {
-            pixel = ModContent.GetTexture("GUI/Pixel.png");
+            pixel = ModContent.GetInstance<TEO>().pixel;
             this.p1 = p1;
             this.p2 = p2;
             this.thickness = thickness;

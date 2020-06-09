@@ -21,7 +21,7 @@ namespace teo
 
         public override string Command
         {
-            get { return "togglegravdisplay"; }
+            get { return "gravDisp"; }
         }
 
         public override string Description
@@ -32,6 +32,29 @@ namespace teo
         public override void Action(CommandCaller caller, string input, string[] args)
         {
             GravDisplay.dispGui = !GravDisplay.dispGui;
+        }
+    }
+    class CommandToggleGrav : ModCommand
+    {
+        public override CommandType Type
+        {
+            get { return CommandType.Chat; }
+        }
+
+        public override string Command
+        {
+            get { return "grav"; }
+        }
+
+        public override string Description
+        {
+            get { return "Toggles the custom gravity"; }
+        }
+
+        public override void Action(CommandCaller caller, string input, string[] args)
+        {
+            Main.player[Main.myPlayer].GetModPlayer<PlayerFixer>().custGravity = !Main.player[Main.myPlayer].GetModPlayer<PlayerFixer>().custGravity;
+            Main.player[Main.myPlayer].QuickMount();
         }
     }
 }

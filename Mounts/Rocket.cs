@@ -356,6 +356,7 @@ namespace teo.Mounts
                 PlayerFixer modp = p.GetModPlayer<PlayerFixer>();
                 Main.blockInput = false;
                 p.QuickMount();
+                modp.custGravity = true;
                 mode = 0;
                 offsetCounter = 0;
                 animCounter = 0;
