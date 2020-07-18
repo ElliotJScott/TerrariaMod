@@ -5,19 +5,20 @@ using ReLogic.Graphics;
 using ReLogic.OS;
 using System;
 using System.Collections.Generic;
-using teo.Buffs;
-using teo.GUI;
-using teo.Mounts;
-using teo.Skies;
+using StarSailor.Buffs;
+using StarSailor.GUI;
+using StarSailor.Mounts;
+using StarSailor.Skies;
+using StarSailor.Tiles;
 using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
 
-namespace teo
+namespace StarSailor
 {
-    class TEO : Mod
+    class StarSailorMod : Mod
     {
 
         private string[] words = {"area","book","business","case","child","company","country","day","eye","fact","family","government","group","hand","home","job","life","lot","man","money",
@@ -49,28 +50,45 @@ namespace teo
             {1,1,1,1,1,1,1,0,1,1,0,1,0,1,0,1,1,0,0,0,0 },
         };
         public Texture2D pixel;
+        public Texture2D boatTex;
+        public Texture2D ropeTex;
+        #region bgTexs
+        public Texture2D desTreeCaveMid;
+        public Texture2D desTreeCaveFront;
+        #endregion
         public List<SpeechBubble> speechBubbles = new List<SpeechBubble>();
         public int rocketGuiPageNum = 0;
         public LaunchGuiButton exitButton;
         public LaunchGuiButton launchButton;
         public LaunchGuiButton nameButton;
+        public List<Vector2> rapidWaterRedraws = new List<Vector2>();
         public LaunchGuiButton[] locationButtons = new LaunchGuiButton[11];
         string oldText = "wew";
         MouseState currentState;
         MouseState oldState;
         public bool updateButtonsFlag = false;
         public bool inLaunchGui;
-        public TEO()
+        public StarSailorMod()
         {
             
             currentState = Mouse.GetState();
         }
-        public override void Load()
+        public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
         {
-            
+            tileColor = new Color(127, 127, 127);
+            base.ModifySunLightColor(ref tileColor, ref backgroundColor);
+        }
+        public override void Load()
+        {   
             if (!Main.dedServ)
             {
-                pixel = ModContent.GetInstance<TEO>().GetTexture("GUI/pixel");
+                pixel = GetTexture("GUI/pixel");
+                boatTex = GetTexture("Tiles/DisplayBoat");
+                ropeTex = GetTexture("Tiles/BoatRope");
+                #region bgTexs
+                desTreeCaveMid = GetTexture("Backgrounds/DesertTreeCaveMid");
+                desTreeCaveFront = GetTexture("Backgrounds/DesertTreeCaveFront"); ;
+                #endregion
                 Filters.Scene["TEO:SkySpace"] = new Filter(new ScreenShaderData("FilterMoonLord"), EffectPriority.Medium);
                 SkyManager.Instance["TEO:SkySpace"] = new SpaceSky();
             }
@@ -206,11 +224,15 @@ namespace teo
             }
             base.UpdateUI(gameTime);
         }
+
         public override void PostDrawInterface(SpriteBatch spriteBatch)
         {
+
             foreach (SpeechBubble sp in speechBubbles)
                 sp.Draw(spriteBatch);
+            DrawRapidWater(spriteBatch);
             GravDisplay.Draw(spriteBatch);
+            
             if (inLaunchGui)
             {
                 Main.blockInput = true;
@@ -262,6 +284,14 @@ namespace teo
                 //Main.NewText(oldText);
             }
             base.PostDrawInterface(spriteBatch);
+        }
+        public void DrawRapidWater(SpriteBatch sb)
+        {
+            foreach (Vector2 v in rapidWaterRedraws)
+            {
+                ModContent.GetInstance<Tiles.RapidWater>().CorrectDraw((int)v.X, (int)v.Y, sb);
+            }
+            rapidWaterRedraws.Clear();
         }
         public string GenerateName()
         {

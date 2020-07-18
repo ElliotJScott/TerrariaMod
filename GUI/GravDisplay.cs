@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria.ModLoader;
-using teo.Tiles;
+using StarSailor.Tiles;
 
-namespace teo.GUI
+namespace StarSailor.GUI
 {
     public class GravDisplay
     {
@@ -31,10 +31,16 @@ namespace teo.GUI
             Line line = new Line(p1, p2, thickness, color);
             line.Draw(sb);
         }
+        public static void DrawLine(SpriteBatch sb, Vector2 p1, Vector2 p2, int thickness, Color color, Texture2D tex)
+        {
+            Line line = new Line(p1, p2, thickness, color);
+            line.pixel = tex;
+            line.Draw(sb);
+        }
     }
     class Line
     {
-        Texture2D pixel;
+        public Texture2D pixel;
         Vector2 p1, p2; //this will be the position in the center of the line
         int length, thickness; //length and thickness of the line, or width and height of rectangle
         Rectangle rect; //where the line will be drawn
@@ -45,7 +51,7 @@ namespace teo.GUI
         //p1 and p2 are the two end points of the line
         public Line(Vector2 p1, Vector2 p2, int thickness, Color color)
         {
-            pixel = ModContent.GetInstance<TEO>().pixel;
+            pixel = ModContent.GetInstance<StarSailorMod>().pixel;
             this.p1 = p1;
             this.p2 = p2;
             this.thickness = thickness;

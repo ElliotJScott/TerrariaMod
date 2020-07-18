@@ -3,14 +3,14 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
-using teo.Mounts;
+using StarSailor.Mounts;
 using Terraria;
 using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace teo.Tiles
+namespace StarSailor.Tiles
 {
     public class GravitySource : ModTile
     {
@@ -219,7 +219,7 @@ namespace teo.Tiles
                             {
                                 c = Color.Green * 0.5f;
                             }
-                            sb.Draw(ModContent.GetInstance<TEO>().pixel, rect, c);
+                            sb.Draw(ModContent.GetInstance<StarSailorMod>().pixel, rect, c);
                             
                         }
                         

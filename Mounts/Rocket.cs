@@ -10,7 +10,7 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.ID;
 
-namespace teo.Mounts
+namespace StarSailor.Mounts
 {
     class Rocket : ModMountData
     {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Terraria.ModLoader;
 
-namespace teo.Walls
+namespace StarSailor.Walls
 {
 
 	public class SpaceWall : ModWall

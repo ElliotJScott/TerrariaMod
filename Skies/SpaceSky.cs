@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using teo.Mounts;
+using StarSailor.Mounts;
 using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.ModLoader;
 
-namespace teo.Skies
+namespace StarSailor.Skies
 {
     class SpaceSky : CustomSky
     {
@@ -34,15 +34,15 @@ namespace teo.Skies
         float[] sideMaskAlphas = { 0.8f, 0.7f, 0.4f, 0.2f, 0.05f, 0.01f }; 
         public override void OnLoad()
         {
-            tex = ModContent.GetInstance<TEO>().GetTexture("Skies/InSpace");
-            level0Above = ModContent.GetInstance<TEO>().GetTexture("Skies/Level0AboveEnlarged");
+            tex = ModContent.GetInstance<StarSailorMod>().GetTexture("Skies/InSpace");
+            level0Above = ModContent.GetInstance<StarSailorMod>().GetTexture("Skies/Level0AboveEnlarged");
             for (int i = 0; i < numPlanets; i++)
             {
-                planetSides[i] = ModContent.GetInstance<TEO>().GetTexture("Skies/planet" + i  + "Side");
+                planetSides[i] = ModContent.GetInstance<StarSailorMod>().GetTexture("Skies/planet" + i  + "Side");
             }
             for (int i = 0; i < sideMaskNum; i++)
             {
-                planetSideMasks[i] = ModContent.GetInstance<TEO>().GetTexture("Skies/planetAtmMask" + i);
+                planetSideMasks[i] = ModContent.GetInstance<StarSailorMod>().GetTexture("Skies/planetAtmMask" + i);
                 //sideMaskAlphas[i] = (float)Math.Pow(i+1, -2);
             }
 

@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace teo.Tiles
+namespace StarSailor.Tiles
 {
 	public class LaunchPad : ModTile
 	{

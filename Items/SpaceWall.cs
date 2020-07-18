@@ -1,7 +1,7 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace teo.Items
+namespace StarSailor.Items
 {
 	public class SpaceWall : ModItem
 	{

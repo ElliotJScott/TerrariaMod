@@ -8,7 +8,7 @@ using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace teo
+namespace StarSailor
 {
     class Command22 : ModCommand
     {

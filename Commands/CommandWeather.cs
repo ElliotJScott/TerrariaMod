@@ -9,7 +9,7 @@ using Terraria.GameContent.Events;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace teo
+namespace StarSailor
 {
     class CommandDay : ModCommand
     {

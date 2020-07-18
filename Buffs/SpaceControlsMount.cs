@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using teo.Mounts;
+using StarSailor.Mounts;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace teo.Buffs
+namespace StarSailor.Buffs
 {
     class SpaceControlsMount : ModBuff
     {

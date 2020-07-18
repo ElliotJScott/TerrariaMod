@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using teo.GUI;
-using teo.Mounts;
-using teo.Tiles;
+using StarSailor.GUI;
+using StarSailor.Mounts;
+using StarSailor.Tiles;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace teo
+namespace StarSailor
 {
     class PlayerFixer : ModPlayer
     {
@@ -23,7 +23,7 @@ namespace teo
         public bool InSpace;
         public List<Vector2> gravSources = new List<Vector2>();
         public Vector2 dirToGrav = Vector2.Zero;
-        public bool custGravity = true;
+        public bool custGravity = false;
         public bool canJump = true;
         public int jumpTicker = 0;
         public Vector2 gravVelocity = Vector2.Zero;
@@ -37,6 +37,21 @@ namespace teo
             InSpace = false;
             amRocket = false;
             base.Initialize();
+        }
+        public override void PreUpdateMovement()
+        {
+            #region boat stuff
+            if (player.mount.Type == ModContent.GetInstance<Boat>().Type)
+            {
+                if (ModContent.GetInstance<RapidWater>().accelMyPlayer)
+                {
+                    player.velocity.X -= 2f;
+                    player.velocity.X = Math.Max(player.velocity.X, -10f);
+                }
+                ModContent.GetInstance<RapidWater>().accelMyPlayer = false;
+            }
+            #endregion
+            base.PreUpdateMovement();
         }
         public override void ModifyDrawInfo(ref PlayerDrawInfo drawInfo)
         {
@@ -179,7 +194,13 @@ namespace teo
         }
         public override void PostUpdateRunSpeeds()
         {
+            //player.mapFullScreen = false;
+            //Main.mapFullscreen = false;
+            Main.mapEnabled = true;
+            player.gravity = 0.4f;
             base.PostUpdateRunSpeeds();
+
+            #region gravity stuff
             if (custGravity && dirToGrav != Vector2.Zero)
             {
                 Vector2 direction = dirToGrav / dirToGrav.Length();
@@ -245,7 +266,8 @@ namespace teo
                 if (jumpTicker > 0) jumpTicker--;
                 player.velocity = gravVelocity;
             }
-            
+            #endregion
+
         }
         public void DrawGravGui(SpriteBatch sb)
         {
@@ -264,7 +286,7 @@ namespace teo
             playerRect.X -= (int)(0.5f * (playerRect.Width - minSize));
             playerRect.Y -= (int)(0.5f * (playerRect.Height - maxSize));
             Vector2 centre = new Vector2((playerRect.X - Main.screenPosition.X) + (playerRect.Width / 2), (playerRect.Y - Main.screenPosition.Y) + (playerRect.Height / 2));
-            sb.Draw(ModContent.GetInstance<TEO>().pixel, new Rectangle((int)(playerRect.X - Main.screenPosition.X), (int)(playerRect.Y - Main.screenPosition.Y), playerRect.Width, playerRect.Height), Color.Pink * 0.3f);
+            sb.Draw(ModContent.GetInstance<StarSailorMod>().pixel, new Rectangle((int)(playerRect.X - Main.screenPosition.X), (int)(playerRect.Y - Main.screenPosition.Y), playerRect.Width, playerRect.Height), Color.Pink * 0.3f);
             GravDisplay.DrawLine(sb, centre, centre + (tangVel * perpDir * 30f), 5, Color.Red);
             GravDisplay.DrawLine(sb, centre, centre + (radVel * direction * 30f), 5, Color.Blue);
             GravDisplay.DrawLine(sb, centre, centre + (16f * dirToGrav), 2, Color.Green);

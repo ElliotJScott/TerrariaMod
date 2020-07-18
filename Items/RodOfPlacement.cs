@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using teo.Walls;
+using StarSailor.Walls;
 using System.Threading;
 
-namespace teo.Items
+namespace StarSailor.Items
 {
     class RodOfPlacement : ModItem
     {

@@ -8,14 +8,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using teo.Mounts;
-using teo.Tiles;
+using StarSailor.Mounts;
+using StarSailor.Tiles;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.UI.Chat;
 
-namespace teo
+namespace StarSailor
 {
     class LaunchPointManager : ModWorld
     {
@@ -97,16 +97,16 @@ namespace teo
         public void SetDestination()
         {
             int index = 0;
-            for (int i = 0; i < ((TEO)mod).locationButtons.Length; i++)
+            for (int i = 0; i < ((StarSailorMod)mod).locationButtons.Length; i++)
             {
-                if (((TEO)mod).locationButtons[i].active)
+                if (((StarSailorMod)mod).locationButtons[i].active)
                 {
                     index = i;
                     break;
                 }
             }
             List<LaunchPoint> launches = GetLaunchPoints(currentLaunchPoint);
-            LaunchPoint destination = launches[(((TEO)mod).rocketGuiPageNum * 10) + index];
+            LaunchPoint destination = launches[(((StarSailorMod)mod).rocketGuiPageNum * 10) + index];
             ModContent.GetInstance<Rocket>().destination = destination.position + new Vector2(0, -3);
         }
         public void AddLaunchPoint(LaunchPoint l)
@@ -166,7 +166,7 @@ namespace teo
         }
         public override void PostDrawTiles()
         {
-            if (((TEO)mod).inLaunchGui)
+            if (((StarSailorMod)mod).inLaunchGui)
             {
                 Main.spriteBatch.Begin();
                 DrawRocketShipGui(Main.spriteBatch);
@@ -179,7 +179,7 @@ namespace teo
         }
         public void DeactivateLocations()
         {
-            foreach (LaunchGuiButton g in ((TEO)mod).locationButtons)
+            foreach (LaunchGuiButton g in ((StarSailorMod)mod).locationButtons)
             {
                 g.active = false;
             }
@@ -220,7 +220,7 @@ namespace teo
         }
         public void Update()
         {
-            if (((TEO)mod).inLaunchGui)
+            if (((StarSailorMod)mod).inLaunchGui)
             {
                 Rectangle mouseRect = new Rectangle(Mouse.GetState().X, Mouse.GetState().Y, 1, 1);
                 Vector2 dims = Main.fontDeathText.MeasureString(text);
@@ -234,15 +234,15 @@ namespace teo
                         switch (r)
                         {
                             case -1:
-                                ((TEO)mod).ExitRocketGui();
+                                ((StarSailorMod)mod).ExitRocketGui();
                                 break;
                             case -2:
-                                ((TEO)mod).inLaunchGui = false;
+                                ((StarSailorMod)mod).inLaunchGui = false;
                                 ModContent.GetInstance<Rocket>().takeOffAnimate = true;
                                 ModContent.GetInstance<LaunchPointManager>().SetDestination();
                                 break;
                             case -3:
-                                ((TEO)mod).nameButton.active = !((TEO)mod).nameButton.active;
+                                ((StarSailorMod)mod).nameButton.active = !((StarSailorMod)mod).nameButton.active;
                                 break;
                             default:
                                 bool temp = active;
@@ -347,6 +347,8 @@ namespace teo
         }
         public string CheckValidity()
         {
+            return "";
+            /*
             string error = "";
             int width = 3;
             for (int k = -16; k <= 0; k++)
@@ -380,6 +382,7 @@ namespace teo
                 }
             }
             return error;
+            */
         }
         public static bool operator ==(LaunchPoint a, LaunchPoint b)
         {

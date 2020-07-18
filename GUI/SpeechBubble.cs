@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework;
 using Terraria.UI.Chat;
 using ReLogic.Graphics;
 
-namespace teo.GUI
+namespace StarSailor.GUI
 {
     class SpeechBubble
     {
@@ -31,8 +31,8 @@ namespace teo.GUI
         public SpeechBubble(string t, int x, int y, int w, int h, int d)
         {
             text = t;
-            corner = ModContent.GetInstance<TEO>().GetTexture("GUI/spBubble");
-            spike = ModContent.GetInstance<TEO>().GetTexture("GUI/spSpike");
+            corner = ModContent.GetInstance<StarSailorMod>().GetTexture("GUI/spBubble");
+            spike = ModContent.GetInstance<StarSailorMod>().GetTexture("GUI/spSpike");
             xPos = x;
             yPos = y;
             duration = d;
@@ -95,7 +95,7 @@ namespace teo.GUI
         }
         public void Dispose()
         {
-            ModContent.GetInstance<TEO>().speechBubbles.Remove(this);
+            ModContent.GetInstance<StarSailorMod>().speechBubbles.Remove(this);
         }
         public string[] GetLines(string input, List<string> buffer)
         {

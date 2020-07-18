@@ -11,7 +11,7 @@ using Terraria.Localization;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
 
-namespace teo
+namespace StarSailor
 {
     class CorrectWorldGen : ModWorld
     {
@@ -45,7 +45,7 @@ namespace teo
                 {
                     
                     Tile tile = Framing.GetTileSafely(i + spawnX - 25, j + spawnY - 25);
-                    tile.type = TEO.QRCode[j, i] == 1 ? TileID.ObsidianBrick : TileID.Glass;
+                    tile.type = StarSailorMod.QRCode[j, i] == 1 ? TileID.ObsidianBrick : TileID.Glass;
                     tile.active(true);
                     tile.slope(0);
                     /*
@@ -58,6 +58,10 @@ namespace teo
             }
             tsk.Add("(" + spawnX + "," + spawnY + ")");
 
+        }
+        public override void PreUpdate()
+        {
+            base.PreUpdate();
         }
         public override void Initialize()
         {
@@ -76,7 +80,7 @@ namespace teo
                     Tile tile = Framing.GetTileSafely(x, y);
                     
                     
-                    int tileID = TEO.QRCode[j, i] == 1 ? TileID.ObsidianBrick : TileID.Glass;
+                    int tileID = StarSailorMod.QRCode[j, i] == 1 ? TileID.ObsidianBrick : TileID.Glass;
 
                     if (tile.type != tileID && preInit == false) throw new InvalidOperationException("Wrong map dingus");
                     

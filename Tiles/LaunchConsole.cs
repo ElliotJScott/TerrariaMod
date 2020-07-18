@@ -1,14 +1,14 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
-using teo.Mounts;
+using StarSailor.Mounts;
 using Terraria;
 using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace teo.Tiles
+namespace StarSailor.Tiles
 {
     public class LaunchConsole : ModTile
     {
@@ -38,7 +38,7 @@ namespace teo.Tiles
             int aboveCheck = above.type == Type ? 2 : 0;
             int belowCheck = below.type == Type ? 1 : 0;
             int newJ = j + aboveCheck + belowCheck;
-            LaunchPoint l = new LaunchPoint(new Vector2(i, newJ), ((TEO)mod).GenerateName(), mod);
+            LaunchPoint l = new LaunchPoint(new Vector2(i, newJ), ((StarSailorMod)mod).GenerateName(), mod);
             string error = l.CheckValidity();
             if (error == "")
             {
@@ -55,8 +55,8 @@ namespace teo.Tiles
                     ModContent.GetInstance<LaunchPointManager>().currentLaunchPoint = l;
 
                     p.mount.SetMount(ModContent.GetInstance<Rocket>().Type, p);
-                    ((TEO)mod).inLaunchGui = true;
-                    ((TEO)mod).updateButtonsFlag = true;
+                    ((StarSailorMod)mod).inLaunchGui = true;
+                    ((StarSailorMod)mod).updateButtonsFlag = true;
                 }
             }
             else

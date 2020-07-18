@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using teo.GUI;
+using StarSailor.GUI;
 using Terraria;
 using Terraria.GameContent.Events;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace teo
+namespace StarSailor
 {
     class CommandToggleGravLines : ModCommand
     {

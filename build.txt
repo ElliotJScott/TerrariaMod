@@ -1,3 +1,9 @@
 author = Pope
-version = 0.1
-displayName = TEO
+version = 0.3.0.0
+displayName = Star Sailor
+homepage = Put terraria url here
+hideCode = false
+hideResources = false
+includeSource = false
+buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*
+includePDB = true

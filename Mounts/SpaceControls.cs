@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Terraria.ModLoader;
 using Terraria.ID;
 
-namespace teo.Mounts
+namespace StarSailor.Mounts
 {
     class SpaceControls : ModMountData
     {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace teo
+namespace StarSailor
 {
     class SpawnRateModifier : GlobalNPC
     {

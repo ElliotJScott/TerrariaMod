@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using teo.Walls;
+using StarSailor.Walls;
 using System.Threading;
 
-namespace teo.Items
+namespace StarSailor.Items
 {
-    class RodOfPlacement : ModItem
+    class EnvironmentDevTool : ModItem
     {
-        const int maxRadius = 30;
+        public static Vector2[] corners = new Vector2[2];
         public override void SetStaticDefaults()
         {
             Tooltip.SetDefault("This is a modded item.");
@@ -46,131 +46,21 @@ namespace teo.Items
         }
         public override bool UseItem(Player player)
         {
-            if (player.altFunctionUse == 2)
-            {
-                Item i = player.inventory[9];
-                if (i.createWall != -1)
-                {
-                    SpreadClear((int)(Main.MouseWorld.X / 16), (int)(Main.MouseWorld.Y / 16), (int)(Main.MouseWorld.X / 16), (int)(Main.MouseWorld.Y / 16), true, Math.Min(i.stack, maxRadius) - 2, new List<Point>());
-                }
-                if (i.createTile != -1)
-                {
-                    SpreadClear((int)(Main.MouseWorld.X / 16), (int)(Main.MouseWorld.Y / 16), (int)(Main.MouseWorld.X / 16), (int)(Main.MouseWorld.Y / 16), false, Math.Min(i.stack, maxRadius) - 2, new List<Point>());
-                }
+            Vector2 clickedTile = new Vector2((int)(Main.MouseWorld.X / 16), (int)(Main.MouseWorld.Y / 16));
+            string printText = "";
+            if (player.altFunctionUse == 2) {
+                corners[1] = clickedTile;
+                printText = "Bottom right";
             }
-            else
-            {
-                Item i = player.inventory[9];
-                if (i.createWall != -1)
-                {
-                    SpreadPlacer((int)(Main.MouseWorld.X / 16), (int)(Main.MouseWorld.Y / 16), (int)(Main.MouseWorld.X / 16), (int)(Main.MouseWorld.Y / 16), true, (ushort)i.createWall, Math.Min(i.stack, maxRadius) - 2);
-                }
-                if (i.createTile != -1)
-                {
-                    SpreadPlacer((int)(Main.MouseWorld.X / 16), (int)(Main.MouseWorld.Y / 16), (int)(Main.MouseWorld.X / 16), (int)(Main.MouseWorld.Y / 16), false, (ushort)i.createTile, Math.Min(i.stack, maxRadius) - 2);
-                }
+            else {
+                corners[0] = clickedTile;
+                printText = "Top left";
             }
+            Main.NewText(printText + " corner set to (" + clickedTile.X + ", " + clickedTile.Y +")");
             return true;
         }
-        public void SpreadPlacer(int i, int j, int initI, int initJ, bool wall, ushort id, int max)
-        {
-            Tile t = Framing.GetTileSafely(i, j);
-            if (wall)
-            {
 
-                if (t.wall == WallID.None)
-                {
-                    t.wall = id;
-                    WorldGen.SquareWallFrame(i, j, true);
-                    if (Vector2.Distance(new Vector2(i, j), new Vector2(initI, initJ)) <= max)
-                    {
-                        SpreadPlacer(i - 1, j, initI, initJ, wall, id, max);
-                        SpreadPlacer(i + 1, j, initI, initJ, wall, id, max);
-                        SpreadPlacer(i, j - 1, initI, initJ, wall, id, max);
-                        SpreadPlacer(i, j + 1, initI, initJ, wall, id, max);
-
-                    }
-
-                }
-            }
-            else
-            {
-                //Tile t = Main.tile[i, j];
-                Tile r = GetTileInstance(id);
-                ushort w = t.wall;
-
-                if (!t.active())
-                {
-                    t.CopyFrom(r);
-                    t.frameX = 0;
-                    t.frameY = 0;
-                    t.wall = w;
-                    WorldGen.SquareTileFrame(i, j, true);
-                    if (Vector2.Distance(new Vector2(i, j), new Vector2(initI, initJ)) <= max)
-                    {
-                        SpreadPlacer(i - 1, j, initI, initJ, wall, id, max);
-                        SpreadPlacer(i + 1, j, initI, initJ, wall, id, max);
-                        SpreadPlacer(i, j - 1, initI, initJ, wall, id, max);
-                        SpreadPlacer(i, j + 1, initI, initJ, wall, id, max);
-
-                    }
-
-                }
-
-
-
-            }
-        }
-        public void SpreadClear(int i, int j, int initI, int initJ, bool wall, int max, List<Point> points)
-        {
-            Tile t = Framing.GetTileSafely(i, j);
-            points.Add(new Point(i, j));
-            if (wall)
-            {
-
-                t.wall = WallID.None;
-                if (Vector2.Distance(new Vector2(i, j), new Vector2(initI, initJ)) <= max)
-                {
-                    if (!points.Contains(new Point(i - 1, j))) SpreadClear(i - 1, j, initI, initJ, wall, max, points);
-                    if (!points.Contains(new Point(i + 1, j))) SpreadClear(i + 1, j, initI, initJ, wall, max, points);
-                    if (!points.Contains(new Point(i, j - 1))) SpreadClear(i, j - 1, initI, initJ, wall, max, points);
-                    if (!points.Contains(new Point(i, j + 1))) SpreadClear(i, j + 1, initI, initJ, wall, max, points);
-
-                }
-
-
-            }
-            else
-            {
-                t.ClearTile();
-
-
-
-                if (Vector2.Distance(new Vector2(i, j), new Vector2(initI, initJ)) <= max)
-                {
-                    if (!points.Contains(new Point(i - 1, j))) SpreadClear(i - 1, j, initI, initJ, wall, max, points);
-                    if (!points.Contains(new Point(i + 1, j))) SpreadClear(i + 1, j, initI, initJ, wall, max, points);
-                    if (!points.Contains(new Point(i, j - 1))) SpreadClear(i, j - 1, initI, initJ, wall, max, points);
-                    if (!points.Contains(new Point(i, j + 1))) SpreadClear(i, j + 1, initI, initJ, wall, max, points);
-
-                }
-
-            }
-        }
-        private Tile GetTileInstance(ushort id, int i = 0, int j = 0)
-        {
-            Tile r = Framing.GetTileSafely(i, j);
-            if (r.type == 0) return GetTileInstance(id, i, j + 1);
-            else
-            {
-                Tile k = new Tile();
-                k.CopyFrom(r);
-                k.type = id;
-                k.frameX = 0;
-                k.frameY = 0;
-                return k;
-            }
-        }
+        
     }
 }
 
