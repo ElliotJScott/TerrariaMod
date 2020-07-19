@@ -10,16 +10,19 @@ using StarSailor.Mounts;
 using StarSailor.Tiles;
 using Terraria;
 using Terraria.ModLoader;
+using starsailor;
 
 namespace StarSailor
 {
     class PlayerFixer : ModPlayer
     {
         public bool amRocket;
+
         public const float ROT_VELOCITY = 1f / 15f;
         public const float GRAV_ACCEL = 1f / 7f;
         public const float MAX_RUNSPEED = 3f;
         public const float RUN_ACCEL = 1f / 5f;
+
         public bool InSpace;
         public List<Vector2> gravSources = new List<Vector2>();
         public Vector2 dirToGrav = Vector2.Zero;
@@ -27,16 +30,49 @@ namespace StarSailor
         public bool canJump = true;
         public int jumpTicker = 0;
         public Vector2 gravVelocity = Vector2.Zero;
+
+        public Planets planet;
+        public Biomes biome;
+        public List<BiomeLocationMapping> mappings = new List<BiomeLocationMapping>();
+
         public float legFrameCounter = 0;
         public float bodyFrameCounter = 0;
         public int legFrameY = 0;
         public int bodyFrameY = 0;
+
         public override void Initialize()
         {
             //player.rotati
             InSpace = false;
             amRocket = false;
+            biome = Biomes.DesertOverworld;
+            planet = Planets.Desert;
+            SetUpBiomeMappings();
             base.Initialize();
+        }
+
+        public void SetUpBiomeMappings()
+        {
+            mappings.Add(new BiomeLocationMapping(new Vector2(201, 1572), new Vector2(1741, 1812), Biomes.DesertOverworld, Planets.Desert, 1));
+            mappings.Add(new BiomeLocationMapping(new Vector2(313, 1843), new Vector2(1294, 2047), Biomes.DesertTown, Planets.Desert, 1));
+            mappings.Add(new BiomeLocationMapping(new Vector2(1899, 1640), new Vector2(2157, 1784), Biomes.DesertTreeCave, Planets.Desert, 2));
+            mappings.Add(new BiomeLocationMapping(new Vector2(1317, 1881), new Vector2(1668, 2038), Biomes.DesertMoleCave, Planets.Desert, 2));
+            mappings.Add(new BiomeLocationMapping(new Vector2(192, 1554), new Vector2(2187, 2069), Biomes.DesertCaves, Planets.Desert, 0));
+        }
+        public (Biomes, Planets) GetCurrentBiomePlanet()
+        {
+            Vector2 playerPos = player.position / 16;
+            List<BiomeLocationMapping> valids = new List<BiomeLocationMapping>();
+            foreach (BiomeLocationMapping b in mappings)
+                if (b.CheckPlayerSatisfies(playerPos))
+                    valids.Add(b);
+            valids.Sort();
+            //foreach (BiomeLocationMapping b in valids) Main.NewText(Enum.GetName(b.biome.GetType(), b.biome));
+            if (valids.Count > 0)
+            {
+                return (valids[0].biome, valids[0].planet);
+            }
+            else return (Biomes.InFlight, Planets.InFlight);
         }
         public override void PreUpdateMovement()
         {
@@ -51,6 +87,10 @@ namespace StarSailor
                 ModContent.GetInstance<RapidWater>().accelMyPlayer = false;
             }
             #endregion
+            (Biomes, Planets) loc = GetCurrentBiomePlanet();
+            biome = loc.Item1;
+            planet = loc.Item2;
+            Main.NewText(Enum.GetName(biome.GetType(), biome) + " " + Enum.GetName(planet.GetType(), planet));
             base.PreUpdateMovement();
         }
         public override void ModifyDrawInfo(ref PlayerDrawInfo drawInfo)
@@ -290,6 +330,38 @@ namespace StarSailor
             GravDisplay.DrawLine(sb, centre, centre + (tangVel * perpDir * 30f), 5, Color.Red);
             GravDisplay.DrawLine(sb, centre, centre + (radVel * direction * 30f), 5, Color.Blue);
             GravDisplay.DrawLine(sb, centre, centre + (16f * dirToGrav), 2, Color.Green);
+        }
+    }
+    public struct BiomeLocationMapping : IComparable<BiomeLocationMapping>
+    {
+        public int priority;
+        public Rectangle location;
+        public Biomes biome;
+        public Planets planet;
+
+        public BiomeLocationMapping(Rectangle loc, Biomes b, Planets pl, int pr)
+        {
+            location = loc;
+            biome = b;
+            planet = pl;
+            priority = pr;
+        }
+        public BiomeLocationMapping(Vector2 tl, Vector2 br, Biomes b, Planets pl, int pr)
+        {
+            location = new Rectangle((int)tl.X, (int)tl.Y, (int)(br.X - tl.X), (int)(br.Y - tl.Y));
+            biome = b;
+            planet = pl;
+            priority = pr;
+        }
+        public bool CheckPlayerSatisfies(Vector2 pos)
+        {
+            Rectangle testRect = new Rectangle((int)pos.X, (int)pos.Y, 1, 1);
+            return testRect.Intersects(location);
+        }
+
+        public int CompareTo(BiomeLocationMapping other)
+        {
+            return other.priority - priority;
         }
     }
 }

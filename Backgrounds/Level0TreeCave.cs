@@ -36,7 +36,13 @@ namespace starsailor.Backgrounds
         }
         public override bool ChooseBgStyle()
         {
-            return true;
+            try
+            {
+                //PlayerFixer pl = ModContent.GetInstance<PlayerFixer>();
+                //Main.NewText("In tree cave = " + (pl.biome == Biomes.DesertTreeCave));
+                return Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.DesertTreeCave;
+            }
+            catch { return false; }
         }
         public override int ChooseFarTexture()
         {
@@ -44,16 +50,20 @@ namespace starsailor.Backgrounds
         }
         public override int ChooseMiddleTexture()
         {
-            return mod.GetBackgroundSlot("Backgrounds/DesertTreeCaveMid");
+            return -1;
         }
         public override int ChooseCloseTexture(ref float scale, ref double parallax, ref float a, ref float b)
         {
-            return mod.GetBackgroundSlot("Backgrounds/DesertTreeCaveFront");
+            return -1;
         }
         public override bool PreDrawCloseBackground(SpriteBatch spriteBatch)
         {
-            BgHooks.DrawBGs(spriteBatch, ((StarSailorMod)mod).desTreeCaveMid, ((StarSailorMod)mod).desTreeCaveFront);
-            return base.PreDrawCloseBackground(spriteBatch);
+            StarSailorMod sm = (StarSailorMod)mod;
+            Texture2D[] texs = { sm.desTreeCaveMid3, sm.desTreeCaveMid2, sm.desTreeCaveFront, sm.desTreeCaveMid, sm.desTreeCaveBack };
+            float[] darkens = { 1, 1, 0.8f, 0.5f, 0.3f };
+            int[] offs = { -300, -250, -150, -250, 0 };
+            BgHooks.DrawBGs(spriteBatch, texs, offs, darkens);
+            return false;
         }
     }
 }

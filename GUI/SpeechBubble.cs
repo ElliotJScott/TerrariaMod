@@ -28,7 +28,11 @@ namespace StarSailor.GUI
         string[] lines;
         Vector2 dims;
         DynamicSpriteFont font = Main.fontDeathText;
-        public SpeechBubble(string t, int x, int y, int w, int h, int d)
+        public static void HelpText(string text)
+        {
+            ModContent.GetInstance<StarSailorMod>().speechBubbles.Add(new SpeechBubble(text, Main.screenWidth / 4, Main.screenWidth / 10, Main.screenWidth / 2, 600));
+        }
+        public SpeechBubble(string t, int x, int y, int w, int d)
         {
             text = t;
             corner = ModContent.GetInstance<StarSailorMod>().GetTexture("GUI/spBubble");

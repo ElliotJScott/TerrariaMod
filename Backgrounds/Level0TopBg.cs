@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
+using StarSailor;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace starsailor.Backgrounds
@@ -34,7 +36,13 @@ namespace starsailor.Backgrounds
         }
         public override bool ChooseBgStyle()
         {
-            return false;
+            try
+            {
+                //PlayerFixer pl = ModContent.GetInstance<PlayerFixer>();
+                //Main.NewText("In overworld = " + (pl.biome == Biomes.DesertOverworld));
+                return Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.DesertOverworld;
+            }
+            catch { return false; }
         }
         public override int ChooseFarTexture()
         {

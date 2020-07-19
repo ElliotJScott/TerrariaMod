@@ -15,6 +15,7 @@ using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
+using starsailor;
 
 namespace StarSailor
 {
@@ -55,12 +56,16 @@ namespace StarSailor
         #region bgTexs
         public Texture2D desTreeCaveMid;
         public Texture2D desTreeCaveFront;
+        public Texture2D desTreeCaveMid2;
+        public Texture2D desTreeCaveMid3;
+        public Texture2D desTreeCaveBack;
         #endregion
         public List<SpeechBubble> speechBubbles = new List<SpeechBubble>();
         public int rocketGuiPageNum = 0;
         public LaunchGuiButton exitButton;
         public LaunchGuiButton launchButton;
         public LaunchGuiButton nameButton;
+        public Dictionary<Biomes, int> biomeSunlightStrength = new Dictionary<Biomes, int>(); 
         public List<Vector2> rapidWaterRedraws = new List<Vector2>();
         public LaunchGuiButton[] locationButtons = new LaunchGuiButton[11];
         string oldText = "wew";
@@ -70,12 +75,31 @@ namespace StarSailor
         public bool inLaunchGui;
         public StarSailorMod()
         {
-            
+            PopulateSunlightStrength();
             currentState = Mouse.GetState();
+        }
+        public void PopulateSunlightStrength()
+        {
+            biomeSunlightStrength.Add(Biomes.DesertCaves, 210);
+            biomeSunlightStrength.Add(Biomes.DesertOverworld, 210);
+            biomeSunlightStrength.Add(Biomes.DesertTown, 210);
+            biomeSunlightStrength.Add(Biomes.DesertTreeCave, 63);
+            biomeSunlightStrength.Add(Biomes.DesertMoleCave, 63);
         }
         public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
         {
-            tileColor = new Color(127, 127, 127);
+            int str = 255;
+            try
+            {
+                Biomes b = Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome;
+
+                if (biomeSunlightStrength.TryGetValue(b, out str)) ;
+                else str = 255;
+            }
+            catch { }
+
+            tileColor = new Color(str, str, str);
+            backgroundColor = new Color(str, str, str);
             base.ModifySunLightColor(ref tileColor, ref backgroundColor);
         }
         public override void Load()
@@ -87,7 +111,10 @@ namespace StarSailor
                 ropeTex = GetTexture("Tiles/BoatRope");
                 #region bgTexs
                 desTreeCaveMid = GetTexture("Backgrounds/DesertTreeCaveMid");
-                desTreeCaveFront = GetTexture("Backgrounds/DesertTreeCaveFront"); ;
+                desTreeCaveFront = GetTexture("Backgrounds/DesertTreeCaveFront");
+                desTreeCaveMid2 = GetTexture("Backgrounds/DesertTreeCaveMid2");
+                desTreeCaveMid3 = GetTexture("Backgrounds/DesertTreeCaveMid3");
+                desTreeCaveBack = GetTexture("Backgrounds/DesertCaveBack");
                 #endregion
                 Filters.Scene["TEO:SkySpace"] = new Filter(new ScreenShaderData("FilterMoonLord"), EffectPriority.Medium);
                 SkyManager.Instance["TEO:SkySpace"] = new SpaceSky();
