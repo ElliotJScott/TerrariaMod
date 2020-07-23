@@ -9,6 +9,7 @@ using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
+using starsailor.Mounts;
 
 namespace StarSailor.Tiles
 {
@@ -42,9 +43,9 @@ namespace StarSailor.Tiles
             {
                 Main.NewText("Throwing your items at the pole does nothing, you dingus!");
             }
-            else if (p.mount.Type != ModContent.GetInstance<Boat>().Type)
+            else if (p.mount.Type != ModContent.GetInstance<Mech>().Type)
             {
-                p.mount.SetMount(ModContent.GetInstance<Boat>().Type, p);
+                p.mount.SetMount(ModContent.GetInstance<Mech>().Type, p);
             }
             return base.NewRightClick(i, j);
         }

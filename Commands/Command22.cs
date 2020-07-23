@@ -41,4 +41,28 @@ namespace StarSailor
             Main.NewText("Done!");
         }
     }
+    class CommandStars : ModCommand
+    {
+        public override CommandType Type
+        {
+            get { return CommandType.Chat; }
+        }
+
+        public override string Command
+        {
+            get { return "regenStars"; }
+        }
+
+        public override string Description
+        {
+            get { return "Re-generate stars"; }
+        }
+
+        public override void Action(CommandCaller caller, string input, string[] args)
+        {
+
+            StarSailorMod sm = ModContent.GetInstance<StarSailorMod>();
+            sm.GenerateStars(250);
+        }
+    }
 }

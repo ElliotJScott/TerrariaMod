@@ -16,6 +16,8 @@ using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
 using starsailor;
+using starsailor.Skies;
+using starsailor.Backgrounds;
 
 namespace StarSailor
 {
@@ -53,12 +55,19 @@ namespace StarSailor
         public Texture2D pixel;
         public Texture2D boatTex;
         public Texture2D ropeTex;
+        public Texture2D overworldSky;
+        public Texture2D smallStar;
+        public Texture2D sun0;
+        public Texture2D sun0Glow;
+        public List<CustomStar> stars = new List<CustomStar>();
         #region bgTexs
         public Texture2D desTreeCaveMid;
         public Texture2D desTreeCaveFront;
         public Texture2D desTreeCaveMid2;
         public Texture2D desTreeCaveMid3;
         public Texture2D desTreeCaveBack;
+        public Texture2D desOverMid;
+        public Texture2D desOverFront;
         #endregion
         public List<SpeechBubble> speechBubbles = new List<SpeechBubble>();
         public int rocketGuiPageNum = 0;
@@ -75,16 +84,30 @@ namespace StarSailor
         public bool inLaunchGui;
         public StarSailorMod()
         {
+
             PopulateSunlightStrength();
             currentState = Mouse.GetState();
         }
         public void PopulateSunlightStrength()
         {
             biomeSunlightStrength.Add(Biomes.DesertCaves, 210);
-            biomeSunlightStrength.Add(Biomes.DesertOverworld, 210);
+            biomeSunlightStrength.Add(Biomes.DesertOverworld, 150);
             biomeSunlightStrength.Add(Biomes.DesertTown, 210);
             biomeSunlightStrength.Add(Biomes.DesertTreeCave, 63);
             biomeSunlightStrength.Add(Biomes.DesertMoleCave, 63);
+        }
+        public void GenerateStars(int numStars)
+        {
+            stars.Clear();
+            for (int i = 0; i < numStars; i++)
+            {
+                stars.Add(CustomStar.CreateNewStar(Main.screenHeight));
+            }
+        }
+        public void DrawStars(SpriteBatch sb)
+        {
+            foreach (CustomStar s in stars) s.Update();
+            foreach (CustomStar s in stars) s.Draw(sb);
         }
         public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
         {
@@ -107,17 +130,29 @@ namespace StarSailor
             if (!Main.dedServ)
             {
                 pixel = GetTexture("GUI/pixel");
+                //Main.backgroundTexture[0] = GetTexture("Skies/OverworldSky");
+                overworldSky = GetTexture("Skies/OverworldSky");
                 boatTex = GetTexture("Tiles/DisplayBoat");
                 ropeTex = GetTexture("Tiles/BoatRope");
+                sun0 = GetTexture("Skies/Star_0");
+                sun0Glow = GetTexture("Skies/Star_0Glow");
+                smallStar = GetTexture("Skies/Star");
                 #region bgTexs
                 desTreeCaveMid = GetTexture("Backgrounds/DesertTreeCaveMid");
                 desTreeCaveFront = GetTexture("Backgrounds/DesertTreeCaveFront");
                 desTreeCaveMid2 = GetTexture("Backgrounds/DesertTreeCaveMid2");
                 desTreeCaveMid3 = GetTexture("Backgrounds/DesertTreeCaveMid3");
                 desTreeCaveBack = GetTexture("Backgrounds/DesertCaveBack");
+                desOverFront = GetTexture("Backgrounds/DesertAboveFront");
+                desOverMid = GetTexture("Backgrounds/DesertAboveMid");
                 #endregion
-                Filters.Scene["TEO:SkySpace"] = new Filter(new ScreenShaderData("FilterMoonLord"), EffectPriority.Medium);
-                SkyManager.Instance["TEO:SkySpace"] = new SpaceSky();
+                Filters.Scene["StarSailorMod:SkySpace"] = new Filter(new ScreenShaderData("FilterMoonLord"), EffectPriority.Medium);
+                SkyManager.Instance["StarSailorMod:SkySpace"] = new SpaceSky();
+                Filters.Scene["StarSailorMod:SkyOverworld"] = Filters.Scene["WaterDistortion"];
+                SkyManager.Instance["StarSailorMod:SkyOverworld"] = new OverworldSky();
+
+                Ref<Effect> starglowRef = new Ref<Effect>(GetEffect("Effects/StarGlow"));
+                GameShaders.Misc["StarShader"] = new MiscShaderData(starglowRef, "StarShader");
             }
             base.Load();
         }
@@ -141,7 +176,7 @@ namespace StarSailor
             bool flag = false;
             if (Main.inputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl) || Main.inputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightControl))
             {
-                Main.NewText("Test");
+               
                 if (Main.inputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Z) && !Main.oldInputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Z))
                 {
                     text = "";
@@ -188,7 +223,6 @@ namespace StarSailor
 
                     int num2 = Main.keyInt[j];
                     string str = Main.keyString[j];
-                    Main.NewText(str);
                     if (num2 == 13)
                     {
                         Main.inputTextEnter = true;
@@ -209,7 +243,6 @@ namespace StarSailor
             Main.inputText = Keyboard.GetState();
             Keys[] pressedKeys = Main.inputText.GetPressedKeys();
             Keys[] pressedKeys2 = Main.oldInputText.GetPressedKeys();
-            //Main.NewText(pressedKeys.Length + " " + pressedKeys2.Length);
             if (Main.inputText.IsKeyDown(Keys.Back) && Main.oldInputText.IsKeyDown(Keys.Back))
             {
                 //
@@ -254,7 +287,8 @@ namespace StarSailor
 
         public override void PostDrawInterface(SpriteBatch spriteBatch)
         {
-
+            //
+            //spriteBatch.Draw(ModContent.GetInstance<StarSailorMod>().sun0Glow, new Rectangle(Main.screenWidth / 2, 25, 100, 100), Color.White * 0.5f);
             foreach (SpeechBubble sp in speechBubbles)
                 sp.Draw(spriteBatch);
             DrawRapidWater(spriteBatch);
@@ -308,7 +342,6 @@ namespace StarSailor
                 //spriteBatch.DrawString(Main.fontMouseText, "Exit", exitTextLocation, textCol);
                 oldText = inputText(oldText);
                 //spriteBatch.End();
-                //Main.NewText(oldText);
             }
             base.PostDrawInterface(spriteBatch);
         }
@@ -330,5 +363,6 @@ namespace StarSailor
             }
             return s;
         }
+        
     }
 }

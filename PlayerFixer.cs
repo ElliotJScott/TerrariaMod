@@ -34,11 +34,15 @@ namespace StarSailor
         public Planets planet;
         public Biomes biome;
         public List<BiomeLocationMapping> mappings = new List<BiomeLocationMapping>();
+        public Dictionary<Planets, float> gravityValues = new Dictionary<Planets, float>();
+        public Dictionary<Biomes, int> starCounts = new Dictionary<Biomes, int>();
 
         public float legFrameCounter = 0;
         public float bodyFrameCounter = 0;
         public int legFrameY = 0;
         public int bodyFrameY = 0;
+
+        public Biomes[] overworldBiomes = { Biomes.DesertOverworld, Biomes.DesertTown };
 
         public override void Initialize()
         {
@@ -48,16 +52,29 @@ namespace StarSailor
             biome = Biomes.DesertOverworld;
             planet = Planets.Desert;
             SetUpBiomeMappings();
+            SetUpGravityValues();
+            SetUpStarCounts();
             base.Initialize();
         }
 
         public void SetUpBiomeMappings()
         {
+            mappings.Clear();
             mappings.Add(new BiomeLocationMapping(new Vector2(201, 1572), new Vector2(1741, 1812), Biomes.DesertOverworld, Planets.Desert, 1));
             mappings.Add(new BiomeLocationMapping(new Vector2(313, 1843), new Vector2(1294, 2047), Biomes.DesertTown, Planets.Desert, 1));
             mappings.Add(new BiomeLocationMapping(new Vector2(1899, 1640), new Vector2(2157, 1784), Biomes.DesertTreeCave, Planets.Desert, 2));
             mappings.Add(new BiomeLocationMapping(new Vector2(1317, 1881), new Vector2(1668, 2038), Biomes.DesertMoleCave, Planets.Desert, 2));
             mappings.Add(new BiomeLocationMapping(new Vector2(192, 1554), new Vector2(2187, 2069), Biomes.DesertCaves, Planets.Desert, 0));
+        }
+        public void SetUpGravityValues()
+        {
+            gravityValues.Clear();
+            gravityValues.Add(Planets.Desert, 0.25f);
+        }
+        public void SetUpStarCounts()
+        {
+            starCounts.Clear();
+            starCounts.Add(Biomes.DesertOverworld, 250);
         }
         public (Biomes, Planets) GetCurrentBiomePlanet()
         {
@@ -74,6 +91,7 @@ namespace StarSailor
             }
             else return (Biomes.InFlight, Planets.InFlight);
         }
+        
         public override void PreUpdateMovement()
         {
             #region boat stuff
@@ -90,7 +108,6 @@ namespace StarSailor
             (Biomes, Planets) loc = GetCurrentBiomePlanet();
             biome = loc.Item1;
             planet = loc.Item2;
-            Main.NewText(Enum.GetName(biome.GetType(), biome) + " " + Enum.GetName(planet.GetType(), planet));
             base.PreUpdateMovement();
         }
         public override void ModifyDrawInfo(ref PlayerDrawInfo drawInfo)
@@ -228,8 +245,11 @@ namespace StarSailor
         }
         public override void UpdateBiomeVisuals()
         {
-            bool condition = InSpace;
-            player.ManageSpecialBiomeVisuals("TEO:SkySpace", condition);
+            //Main.numStars = Main.maxStars;
+            bool conditionInSpace = InSpace;
+            bool conditionOverworld = overworldBiomes.Contains(biome);
+            player.ManageSpecialBiomeVisuals("StarSailorMod:SkySpace", conditionInSpace);
+            player.ManageSpecialBiomeVisuals("StarSailorMod:SkyOverworld", conditionOverworld);
 
         }
         public override void PostUpdateRunSpeeds()
@@ -237,7 +257,10 @@ namespace StarSailor
             //player.mapFullScreen = false;
             //Main.mapFullscreen = false;
             Main.mapEnabled = true;
-            player.gravity = 0.4f;
+            float grav = 0.4f;
+            if (gravityValues.TryGetValue(planet, out grav)) ;
+            else grav = 0.4f;
+            player.gravity = grav;
             base.PostUpdateRunSpeeds();
 
             #region gravity stuff

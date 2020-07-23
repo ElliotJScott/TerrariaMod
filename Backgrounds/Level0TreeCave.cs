@@ -34,13 +34,14 @@ namespace starsailor.Backgrounds
                 }
             }
         }
+     
         public override bool ChooseBgStyle()
         {
             try
             {
                 //PlayerFixer pl = ModContent.GetInstance<PlayerFixer>();
                 //Main.NewText("In tree cave = " + (pl.biome == Biomes.DesertTreeCave));
-                return Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.DesertTreeCave;
+                return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.DesertTreeCave;
             }
             catch { return false; }
         }
@@ -62,7 +63,8 @@ namespace starsailor.Backgrounds
             Texture2D[] texs = { sm.desTreeCaveMid3, sm.desTreeCaveMid2, sm.desTreeCaveFront, sm.desTreeCaveMid, sm.desTreeCaveBack };
             float[] darkens = { 1, 1, 0.8f, 0.5f, 0.3f };
             int[] offs = { -300, -250, -150, -250, 0 };
-            BgHooks.DrawBGs(spriteBatch, texs, offs, darkens);
+            float[] scales = { 1.5f, 1.5f, 1.3f, 1.5f, 1.3f };
+            BgHooks.DrawBGs(spriteBatch, texs, offs, darkens, scales);
             return false;
         }
     }
