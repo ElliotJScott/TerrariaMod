@@ -19,6 +19,7 @@ namespace StarSailor.GUI
         int xPos;
         int yPos;
         int width;
+        int initDuration;
         int height;
         string text;
         const float scale = 0.37f;
@@ -40,6 +41,7 @@ namespace StarSailor.GUI
             xPos = x;
             yPos = y;
             duration = d;
+            initDuration = d;
             width = w;
             dims = Main.fontDeathText.MeasureString(t);
             lines = GetLines(t, new List<string>());
@@ -49,6 +51,9 @@ namespace StarSailor.GUI
                 height += (int)(scale * font.MeasureString(l).Y);
             }
         }
+
+        public int GetInitDuration() => initDuration;
+
         public void Update()
         {
             totChars += numCharsPerFrame;
@@ -57,6 +62,11 @@ namespace StarSailor.GUI
             {
                 Dispose();
             }
+        }
+        public void UpdatePosition(Vector2 newPos)
+        {
+            xPos = (int)newPos.X;
+            yPos = (int)newPos.Y;
         }
         public void Draw(SpriteBatch sb)
         {

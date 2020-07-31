@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using starsailor.Buffs;
+using StarSailor.Buffs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace starsailor.Mounts
+namespace StarSailor.Mounts
 {
     class Sub : ModMountData
     {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace starsailor.Backgrounds
+namespace StarSailor.Backgrounds
 {
     class CustomStar
     {

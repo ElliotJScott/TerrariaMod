@@ -1,23 +1,18 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using ReLogic.Graphics;
 using ReLogic.OS;
 using System;
 using System.Collections.Generic;
-using StarSailor.Buffs;
 using StarSailor.GUI;
 using StarSailor.Mounts;
 using StarSailor.Skies;
-using StarSailor.Tiles;
 using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
-using starsailor;
-using starsailor.Skies;
-using starsailor.Backgrounds;
+using StarSailor.Backgrounds;
 
 namespace StarSailor
 {
@@ -59,6 +54,7 @@ namespace StarSailor
         public Texture2D smallStar;
         public Texture2D sun0;
         public Texture2D sun0Glow;
+        public Texture2D mechGatlingGun;
         public List<CustomStar> stars = new List<CustomStar>();
         #region bgTexs
         public Texture2D desTreeCaveMid;
@@ -137,6 +133,7 @@ namespace StarSailor
                 sun0 = GetTexture("Skies/Star_0");
                 sun0Glow = GetTexture("Skies/Star_0Glow");
                 smallStar = GetTexture("Skies/Star");
+                mechGatlingGun = GetTexture("Mounts/MechGatlingGun");
                 #region bgTexs
                 desTreeCaveMid = GetTexture("Backgrounds/DesertTreeCaveMid");
                 desTreeCaveFront = GetTexture("Backgrounds/DesertTreeCaveFront");

@@ -45,11 +45,7 @@ namespace StarSailor.Tiles
             {
                 accelMyPlayer = true;
             }
-            bool b = base.PreDraw(i, j, spriteBatch);
-            if (b)
-            {
-                ModContent.GetInstance<StarSailorMod>().rapidWaterRedraws.Add(new Vector2(i, j));
-            }
+            ModContent.GetInstance<StarSailorMod>().rapidWaterRedraws.Add(new Vector2(i, j));
             //spriteBatch.Draw(ModContent.GetInstance<TEO>().pixel, playerRect, Color.Red * 0.5f);
             return false;
         }
@@ -79,7 +75,7 @@ namespace StarSailor.Tiles
             Tile tile = Framing.GetTileSafely(i, j);
             Main.spriteBatch.Draw(
                         texture,
-                        new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero,
+                        new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + Vector2.Zero,
                         new Rectangle(tile.frameX + frameXOffset, tile.frameY + frameYOffset, 16, 16),
                         Lighting.GetColor(i, j), 0f, default(Vector2), 1f, ef, 0f);
 

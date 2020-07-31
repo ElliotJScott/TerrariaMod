@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Terraria;
 
-namespace starsailor.Backgrounds
+namespace StarSailor.Backgrounds
 {
     static class BgHooks
     {

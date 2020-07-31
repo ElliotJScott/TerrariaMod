@@ -10,7 +10,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
-namespace starsailor.Backgrounds
+namespace StarSailor.Backgrounds
 {
     class Level0TopBg : ModSurfaceBgStyle
     {

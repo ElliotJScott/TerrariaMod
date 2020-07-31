@@ -8,7 +8,7 @@ using StarSailor;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace starsailor.Backgrounds
+namespace StarSailor.Backgrounds
 {
     class Level0TreeCave : ModSurfaceBgStyle
     {

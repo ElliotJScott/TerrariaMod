@@ -1,9 +1,9 @@
 ﻿using Terraria;
 using Terraria.ModLoader;
-using starsailor.Mounts;
+using StarSailor.Mounts;
 using Terraria.ID;
 
-namespace starsailor.Buffs
+namespace StarSailor.Buffs
 {
     class MechMount : ModBuff
     {

@@ -1,10 +1,10 @@
 ﻿using Terraria;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
-using starsailor.Mounts;
+using StarSailor.Mounts;
 using Terraria.ID;
 
-namespace starsailor.Buffs
+namespace StarSailor.Buffs
 {
     class SubMount : ModBuff
     {

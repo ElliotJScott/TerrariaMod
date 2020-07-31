@@ -27,6 +27,5 @@ namespace StarSailor.Tiles
 			g = 0f;
 			b = 0f;
 		}
-
 	}
 }

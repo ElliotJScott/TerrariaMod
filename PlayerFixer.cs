@@ -10,11 +10,13 @@ using StarSailor.Mounts;
 using StarSailor.Tiles;
 using Terraria;
 using Terraria.ModLoader;
-using starsailor;
+using StarSailor;
+using StarSailor.Mounts;
+using StarSailor.NPCs;
 
 namespace StarSailor
 {
-    class PlayerFixer : ModPlayer
+    class PlayerFixer : ModPlayer, ITalkable
     {
         public bool amRocket;
 
@@ -241,6 +243,10 @@ namespace StarSailor
             {
                 drawInfo.drawPlayer.fullRotation = 0;
             }
+            if (drawInfo.drawPlayer.mount.Type == ModContent.GetInstance<Mech>().Type)
+            {
+                drawInfo.spriteEffects = SpriteEffects.None;
+            }
             base.ModifyDrawInfo(ref drawInfo);
         }
         public override void UpdateBiomeVisuals()
@@ -353,6 +359,16 @@ namespace StarSailor
             GravDisplay.DrawLine(sb, centre, centre + (tangVel * perpDir * 30f), 5, Color.Red);
             GravDisplay.DrawLine(sb, centre, centre + (radVel * direction * 30f), 5, Color.Blue);
             GravDisplay.DrawLine(sb, centre, centre + (16f * dirToGrav), 2, Color.Green);
+        }
+
+        public Vector2 GetPosition()
+        {
+            return player.position;
+        }
+
+        public Vector2 GetScreenPosition()
+        {
+            return GetPosition() - Main.screenPosition;
         }
     }
     public struct BiomeLocationMapping : IComparable<BiomeLocationMapping>

@@ -12,7 +12,7 @@ using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
-namespace starsailor.Skies
+namespace StarSailor.Skies
 {
     class OverworldSky : CustomSky
     {
