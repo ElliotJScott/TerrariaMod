@@ -26,10 +26,10 @@ namespace StarSailor.Items
             item.height = 20;
             item.maxStack = 1;
             item.value = 10000;
-            item.rare = 1;
+            item.rare = ItemRarityID.Blue;
             item.useAnimation = 15;
             item.useTime = 10;
-            item.useStyle = 1;
+            item.useStyle = ItemUseStyleID.SwingThrow;
             item.autoReuse = true;
         }
         public override bool AltFunctionUse(Player player)

@@ -39,7 +39,7 @@ namespace StarSailor
         InFlight,
         EndOverworld
     }
-    public enum Planets
+    public enum Planet
     {
         Desert,
         Jungle,

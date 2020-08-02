@@ -13,6 +13,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
 using StarSailor.Backgrounds;
+using StarSailor.Sequencing;
 
 namespace StarSailor
 {
@@ -55,6 +56,7 @@ namespace StarSailor
         public Texture2D sun0;
         public Texture2D sun0Glow;
         public Texture2D mechGatlingGun;
+        public SequenceQueue sequence = new SequenceQueue();
         public List<CustomStar> stars = new List<CustomStar>();
         #region bgTexs
         public Texture2D desTreeCaveMid;
@@ -112,7 +114,10 @@ namespace StarSailor
             {
                 Biomes b = Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome;
 
-                if (biomeSunlightStrength.TryGetValue(b, out str)) ;
+                if (biomeSunlightStrength.TryGetValue(b, out str))
+                {
+                    ;
+                }
                 else str = 255;
             }
             catch { }
@@ -160,7 +165,7 @@ namespace StarSailor
             Main.blockInput = false;
             rocketGuiPageNum = 0;
         }
-        public string inputText(string oldString)
+        public string InputText(string oldString)
         {
             Main.inputTextEnter = false;
             Main.inputTextEscape = false;
@@ -171,24 +176,24 @@ namespace StarSailor
                 text = "";
             }
             bool flag = false;
-            if (Main.inputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl) || Main.inputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightControl))
+            if (Main.inputText.IsKeyDown(Keys.LeftControl) || Main.inputText.IsKeyDown(Keys.RightControl))
             {
                
-                if (Main.inputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Z) && !Main.oldInputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Z))
+                if (Main.inputText.IsKeyDown(Keys.Z) && !Main.oldInputText.IsKeyDown(Keys.Z))
                 {
                     text = "";
                 }
-                else if (Main.inputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.X) && !Main.oldInputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.X))
+                else if (Main.inputText.IsKeyDown(Keys.X) && !Main.oldInputText.IsKeyDown(Keys.X))
                 {
                     Platform.Current.Clipboard = oldString;
 
                     text = "";
                 }
-                else if ((Main.inputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.C) && !Main.oldInputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.C)) || (Main.inputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Insert) && !Main.oldInputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Insert)))
+                else if ((Main.inputText.IsKeyDown(Keys.C) && !Main.oldInputText.IsKeyDown(Keys.C)) || (Main.inputText.IsKeyDown(Keys.Insert) && !Main.oldInputText.IsKeyDown(Keys.Insert)))
                 {
                     Platform.Current.Clipboard = oldString;
                 }
-                else if (Main.inputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.V) && !Main.oldInputText.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.V))
+                else if (Main.inputText.IsKeyDown(Keys.V) && !Main.oldInputText.IsKeyDown(Keys.V))
                 {
                     text2 += Platform.Current.Clipboard;
                 }
@@ -269,6 +274,8 @@ namespace StarSailor
         }
         public override void UpdateUI(GameTime gameTime)
         {
+            sequence.Update();
+            /*
             int prevNumSpeechBubbles = speechBubbles.Count;
             for (int i = 0; i < speechBubbles.Count; i++)
             {
@@ -279,6 +286,7 @@ namespace StarSailor
                     i--;
                 }
             }
+            */
             base.UpdateUI(gameTime);
         }
 
@@ -337,7 +345,7 @@ namespace StarSailor
                     launchButton.Draw(spriteBatch);
                 }
                 //spriteBatch.DrawString(Main.fontMouseText, "Exit", exitTextLocation, textCol);
-                oldText = inputText(oldText);
+                oldText = InputText(oldText);
                 //spriteBatch.End();
             }
             base.PostDrawInterface(spriteBatch);

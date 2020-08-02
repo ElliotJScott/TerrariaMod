@@ -79,8 +79,8 @@ namespace StarSailor.Mounts
                 glowColor = drColor;
                 for (int d = 0; d < 2; d++)
                 {
-                    Dust.NewDust(drawPlayer.position + new Vector2(mountData.xOffset - (glowTexture.Width / 2), mountData.yOffset - (glowTexture.Height / 2)), glowTexture.Width, glowTexture.Height, 6, 0f, 0f, 150, default(Color), 1.5f);
-                    Dust.NewDust(drawPlayer.position + new Vector2(mountData.xOffset - (glowTexture.Width / 2), mountData.yOffset - (glowTexture.Height / 2)), glowTexture.Width, glowTexture.Height, 174, 0f, 0f, 150, default(Color), 1.5f);
+                    Dust.NewDust(drawPlayer.position + new Vector2(mountData.xOffset - (glowTexture.Width / 2), mountData.yOffset - (glowTexture.Height / 2)), glowTexture.Width, glowTexture.Height, 6, 0f, 0f, 150, default, 1.5f);
+                    Dust.NewDust(drawPlayer.position + new Vector2(mountData.xOffset - (glowTexture.Width / 2), mountData.yOffset - (glowTexture.Height / 2)), glowTexture.Width, glowTexture.Height, 174, 0f, 0f, 150, default, 1.5f);
                 }
             }
             return base.Draw(playerDrawData, drawType, drawPlayer, ref texture, ref glowTexture, ref drawPosition, ref frame, ref drawColor, ref glowColor, ref rotation, ref spriteEffects, ref drawOrigin, ref drawScale, shadow);
@@ -91,7 +91,7 @@ namespace StarSailor.Mounts
             if (bgland)
             {
                 bgland = false;
-                BeginLandingAnim(mountedPlayer);
+                ExecuteLandingAnim(mountedPlayer);
             }
             if (modPlayer.amRocket)
             {
@@ -114,6 +114,7 @@ namespace StarSailor.Mounts
 /// <param name="newLocation">The new place to send the player to</param>
         public void DoTakeOffAnimation(Player p)
         {
+            if (!takeOffAnimate) return;
             offsetCounter++;
             if (offsetCounter == 30 && mode == 0)
             {
@@ -229,7 +230,15 @@ namespace StarSailor.Mounts
             }
            
         }
-        public void BeginLandingAnim(Player p)
+        public void ExecuteTakeOffAnim(Player p)
+        {
+
+        }
+        public void ExecuteSpaceAnim(Player p)
+        {
+
+        }
+        public void ExecuteLandingAnim(Player p)
         {
             PlayerFixer modp = p.GetModPlayer<PlayerFixer>();
             mountData.xOffset = xOffsetBuffer;
@@ -243,6 +252,10 @@ namespace StarSailor.Mounts
             offsetCounter = 0;
             landingAnimate = true;
             takeOffAnimate = false;
+        }
+        public void ExecuteLand(Player p, Planet l)
+        {
+
         }
         public void DoSpaceAnim(Player p)
         {
@@ -367,5 +380,10 @@ namespace StarSailor.Mounts
                 modp.InSpace = false;
             }
         }
+    }
+    class RocketData
+    {
+        int mode;
+
     }
 }

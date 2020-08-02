@@ -12,7 +12,7 @@ using ReLogic.Graphics;
 
 namespace StarSailor.GUI
 {
-    class SpeechBubble
+    public class SpeechBubble : IDisposable
     {
         Texture2D corner;
         Texture2D spike;
@@ -29,8 +29,10 @@ namespace StarSailor.GUI
         string[] lines;
         Vector2 dims;
         DynamicSpriteFont font = Main.fontDeathText;
+
         public static void HelpText(string text)
         {
+
             ModContent.GetInstance<StarSailorMod>().speechBubbles.Add(new SpeechBubble(text, Main.screenWidth / 4, Main.screenWidth / 10, Main.screenWidth / 2, 600));
         }
         public SpeechBubble(string t, int x, int y, int w, int d)
@@ -51,8 +53,10 @@ namespace StarSailor.GUI
                 height += (int)(scale * font.MeasureString(l).Y);
             }
         }
-
+        public string GetText() => text;
+        public Vector2 GetPos() => new Vector2(xPos, yPos);
         public int GetInitDuration() => initDuration;
+        public int GetWidth() => width;
 
         public void Update()
         {
@@ -63,10 +67,11 @@ namespace StarSailor.GUI
                 Dispose();
             }
         }
-        public void UpdatePosition(Vector2 newPos)
+        public void Update(Vector2 newPos)
         {
             xPos = (int)newPos.X;
             yPos = (int)newPos.Y;
+            Update();
         }
         public void Draw(SpriteBatch sb)
         {
@@ -107,9 +112,11 @@ namespace StarSailor.GUI
                 }
             }
         }
+
         public void Dispose()
         {
             ModContent.GetInstance<StarSailorMod>().speechBubbles.Remove(this);
+            GC.SuppressFinalize(this);
         }
         public string[] GetLines(string input, List<string> buffer)
         {

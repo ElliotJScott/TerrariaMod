@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace starsailor.Sequencing
+namespace StarSailor.Sequencing
 {
-    static class SequenceBuilder
+    enum Sequence
     {
+        IntroCutscene,
+
     }
 }

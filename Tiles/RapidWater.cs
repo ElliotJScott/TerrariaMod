@@ -77,7 +77,7 @@ namespace StarSailor.Tiles
                         texture,
                         new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + Vector2.Zero,
                         new Rectangle(tile.frameX + frameXOffset, tile.frameY + frameYOffset, 16, 16),
-                        Lighting.GetColor(i, j), 0f, default(Vector2), 1f, ef, 0f);
+                        Lighting.GetColor(i, j), 0f, default, 1f, ef, 0f);
 
         }
         public int CalcCorrectTile(int i, int j, int flowDir)

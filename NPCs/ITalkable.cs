@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace StarSailor.NPCs
 {
-    interface ITalkable
+    public interface ITalkable
     {
         Vector2 GetPosition();
         Vector2 GetScreenPosition();

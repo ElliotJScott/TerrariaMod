@@ -17,5 +17,6 @@ namespace StarSailor
                 maxSpawns = 0;
             }
         }
+        //public override 
     }
 }

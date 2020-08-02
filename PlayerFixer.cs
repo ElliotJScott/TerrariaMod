@@ -11,7 +11,6 @@ using StarSailor.Tiles;
 using Terraria;
 using Terraria.ModLoader;
 using StarSailor;
-using StarSailor.Mounts;
 using StarSailor.NPCs;
 
 namespace StarSailor
@@ -33,10 +32,10 @@ namespace StarSailor
         public int jumpTicker = 0;
         public Vector2 gravVelocity = Vector2.Zero;
 
-        public Planets planet;
+        public Planet planet;
         public Biomes biome;
         public List<BiomeLocationMapping> mappings = new List<BiomeLocationMapping>();
-        public Dictionary<Planets, float> gravityValues = new Dictionary<Planets, float>();
+        public Dictionary<Planet, float> gravityValues = new Dictionary<Planet, float>();
         public Dictionary<Biomes, int> starCounts = new Dictionary<Biomes, int>();
 
         public float legFrameCounter = 0;
@@ -52,7 +51,7 @@ namespace StarSailor
             InSpace = false;
             amRocket = false;
             biome = Biomes.DesertOverworld;
-            planet = Planets.Desert;
+            planet = Planet.Desert;
             SetUpBiomeMappings();
             SetUpGravityValues();
             SetUpStarCounts();
@@ -62,23 +61,23 @@ namespace StarSailor
         public void SetUpBiomeMappings()
         {
             mappings.Clear();
-            mappings.Add(new BiomeLocationMapping(new Vector2(201, 1572), new Vector2(1741, 1812), Biomes.DesertOverworld, Planets.Desert, 1));
-            mappings.Add(new BiomeLocationMapping(new Vector2(313, 1843), new Vector2(1294, 2047), Biomes.DesertTown, Planets.Desert, 1));
-            mappings.Add(new BiomeLocationMapping(new Vector2(1899, 1640), new Vector2(2157, 1784), Biomes.DesertTreeCave, Planets.Desert, 2));
-            mappings.Add(new BiomeLocationMapping(new Vector2(1317, 1881), new Vector2(1668, 2038), Biomes.DesertMoleCave, Planets.Desert, 2));
-            mappings.Add(new BiomeLocationMapping(new Vector2(192, 1554), new Vector2(2187, 2069), Biomes.DesertCaves, Planets.Desert, 0));
+            mappings.Add(new BiomeLocationMapping(new Vector2(201, 1572), new Vector2(1741, 1812), Biomes.DesertOverworld, Planet.Desert, 1));
+            mappings.Add(new BiomeLocationMapping(new Vector2(313, 1843), new Vector2(1294, 2047), Biomes.DesertTown, Planet.Desert, 1));
+            mappings.Add(new BiomeLocationMapping(new Vector2(1899, 1640), new Vector2(2157, 1784), Biomes.DesertTreeCave, Planet.Desert, 2));
+            mappings.Add(new BiomeLocationMapping(new Vector2(1317, 1881), new Vector2(1668, 2038), Biomes.DesertMoleCave, Planet.Desert, 2));
+            mappings.Add(new BiomeLocationMapping(new Vector2(192, 1554), new Vector2(2187, 2069), Biomes.DesertCaves, Planet.Desert, 0));
         }
         public void SetUpGravityValues()
         {
             gravityValues.Clear();
-            gravityValues.Add(Planets.Desert, 0.25f);
+            gravityValues.Add(Planet.Desert, 0.25f);
         }
         public void SetUpStarCounts()
         {
             starCounts.Clear();
             starCounts.Add(Biomes.DesertOverworld, 250);
         }
-        public (Biomes, Planets) GetCurrentBiomePlanet()
+        public (Biomes, Planet) GetCurrentBiomePlanet()
         {
             Vector2 playerPos = player.position / 16;
             List<BiomeLocationMapping> valids = new List<BiomeLocationMapping>();
@@ -91,7 +90,7 @@ namespace StarSailor
             {
                 return (valids[0].biome, valids[0].planet);
             }
-            else return (Biomes.InFlight, Planets.InFlight);
+            else return (Biomes.InFlight, Planet.InFlight);
         }
         
         public override void PreUpdateMovement()
@@ -107,7 +106,7 @@ namespace StarSailor
                 ModContent.GetInstance<RapidWater>().accelMyPlayer = false;
             }
             #endregion
-            (Biomes, Planets) loc = GetCurrentBiomePlanet();
+            (Biomes, Planet) loc = GetCurrentBiomePlanet();
             biome = loc.Item1;
             planet = loc.Item2;
             base.PreUpdateMovement();
@@ -263,8 +262,9 @@ namespace StarSailor
             //player.mapFullScreen = false;
             //Main.mapFullscreen = false;
             Main.mapEnabled = true;
-            float grav = 0.4f;
-            if (gravityValues.TryGetValue(planet, out grav)) ;
+            if (gravityValues.TryGetValue(planet, out float grav))
+            {
+            }
             else grav = 0.4f;
             player.gravity = grav;
             base.PostUpdateRunSpeeds();
@@ -376,16 +376,16 @@ namespace StarSailor
         public int priority;
         public Rectangle location;
         public Biomes biome;
-        public Planets planet;
+        public Planet planet;
 
-        public BiomeLocationMapping(Rectangle loc, Biomes b, Planets pl, int pr)
+        public BiomeLocationMapping(Rectangle loc, Biomes b, Planet pl, int pr)
         {
             location = loc;
             biome = b;
             planet = pl;
             priority = pr;
         }
-        public BiomeLocationMapping(Vector2 tl, Vector2 br, Biomes b, Planets pl, int pr)
+        public BiomeLocationMapping(Vector2 tl, Vector2 br, Biomes b, Planet pl, int pr)
         {
             location = new Rectangle((int)tl.X, (int)tl.Y, (int)(br.X - tl.X), (int)(br.Y - tl.Y));
             biome = b;

@@ -16,9 +16,9 @@ namespace StarSailor.Items
 			item.height = 30;
 			item.useTime = 20;
 			item.useAnimation = 20;
-			item.useStyle = 1;
+			item.useStyle = ItemUseStyleID.SwingThrow;
 			item.value = 30000;
-			item.rare = 2;
+			item.rare = ItemRarityID.Green;
 			item.UseSound = SoundID.Item79;
 			item.noMelee = true;
 			item.mountType = mod.MountType("Rocket");

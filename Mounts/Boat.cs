@@ -100,7 +100,7 @@ namespace StarSailor.Mounts
         }
         public override bool UpdateFrame(Player mountedPlayer, int state, Vector2 velocity)
         {
-            bool b = true;
+            //bool b = true;
             if (mountedPlayer.wet || velocity == Vector2.Zero)
             {
                 mountedPlayer.QuickMount();

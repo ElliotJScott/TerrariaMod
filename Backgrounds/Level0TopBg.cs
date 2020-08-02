@@ -55,12 +55,12 @@ namespace StarSailor.Backgrounds
         public override int ChooseMiddleTexture()
         {
             return -1;
-            return mod.GetBackgroundSlot("Backgrounds/DesertAboveMid");
+            //return mod.GetBackgroundSlot("Backgrounds/DesertAboveMid");
         }
         public override int ChooseCloseTexture(ref float scale, ref double parallax, ref float a, ref float b)
         {
             return -1;
-            return mod.GetBackgroundSlot("Backgrounds/DesertAboveFront");
+            //return mod.GetBackgroundSlot("Backgrounds/DesertAboveFront");
         }
         public override bool PreDrawCloseBackground(SpriteBatch spriteBatch)
         {

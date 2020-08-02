@@ -9,7 +9,6 @@ using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using StarSailor.Mounts;
 
 namespace StarSailor.Tiles
 {
