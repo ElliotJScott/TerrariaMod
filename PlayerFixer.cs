@@ -12,25 +12,25 @@ using Terraria;
 using Terraria.ModLoader;
 using StarSailor;
 using StarSailor.NPCs;
+using StarSailor.Sequencing;
 
 namespace StarSailor
 {
     class PlayerFixer : ModPlayer, ITalkable
     {
-        public bool amRocket;
 
         public const float ROT_VELOCITY = 1f / 15f;
         public const float GRAV_ACCEL = 1f / 7f;
         public const float MAX_RUNSPEED = 3f;
         public const float RUN_ACCEL = 1f / 5f;
 
-        public bool InSpace;
         public List<Vector2> gravSources = new List<Vector2>();
         public Vector2 dirToGrav = Vector2.Zero;
         public bool custGravity = false;
         public bool canJump = true;
         public int jumpTicker = 0;
         public Vector2 gravVelocity = Vector2.Zero;
+        public PlayerHolder playerHolder;
 
         public Planet planet;
         public Biomes biome;
@@ -47,14 +47,14 @@ namespace StarSailor
 
         public override void Initialize()
         {
+            playerHolder = new PlayerHolder();
             //player.rotati
-            InSpace = false;
-            amRocket = false;
             biome = Biomes.DesertOverworld;
             planet = Planet.Desert;
             SetUpBiomeMappings();
             SetUpGravityValues();
             SetUpStarCounts();
+            
             base.Initialize();
         }
 
@@ -66,6 +66,7 @@ namespace StarSailor
             mappings.Add(new BiomeLocationMapping(new Vector2(1899, 1640), new Vector2(2157, 1784), Biomes.DesertTreeCave, Planet.Desert, 2));
             mappings.Add(new BiomeLocationMapping(new Vector2(1317, 1881), new Vector2(1668, 2038), Biomes.DesertMoleCave, Planet.Desert, 2));
             mappings.Add(new BiomeLocationMapping(new Vector2(192, 1554), new Vector2(2187, 2069), Biomes.DesertCaves, Planet.Desert, 0));
+            mappings.Add(new BiomeLocationMapping(new Rectangle(4656, 200, 200, 100), Biomes.Intro, Planet.Intro, 0));
         }
         public void SetUpGravityValues()
         {
@@ -85,7 +86,7 @@ namespace StarSailor
                 if (b.CheckPlayerSatisfies(playerPos))
                     valids.Add(b);
             valids.Sort();
-            //foreach (BiomeLocationMapping b in valids) Main.NewText(Enum.GetName(b.biome.GetType(), b.biome));
+            
             if (valids.Count > 0)
             {
                 return (valids[0].biome, valids[0].planet);
@@ -109,12 +110,13 @@ namespace StarSailor
             (Biomes, Planet) loc = GetCurrentBiomePlanet();
             biome = loc.Item1;
             planet = loc.Item2;
+            playerHolder.Update();
             base.PreUpdateMovement();
         }
         public override void ModifyDrawInfo(ref PlayerDrawInfo drawInfo)
         {
             drawInfo.drawPlayer.fullRotationOrigin = 0.5f * new Vector2(drawInfo.drawPlayer.width, drawInfo.drawPlayer.height); ;
-            if (player.mount.Type == ModContent.GetInstance<Rocket>().Type)
+            if (player.mount.Type == ModContent.GetInstance<Rocket>().Type || player.mount.Type == ModContent.GetInstance<StartingShip>().Type)
             {
                 Color invis = new Color(0, 0, 0, 0);
                 drawInfo.bodyColor = invis;
@@ -135,10 +137,7 @@ namespace StarSailor
                 drawInfo.underShirtColor = invis;
                 drawInfo.upperArmorColor = invis;
             }
-            else
-            {
-                amRocket = false;
-            }
+
             if (custGravity)
             {
                 drawInfo.drawPlayer.mount.SetMount(ModContent.GetInstance<SpaceControls>().Type, drawInfo.drawPlayer);
@@ -251,7 +250,7 @@ namespace StarSailor
         public override void UpdateBiomeVisuals()
         {
             //Main.numStars = Main.maxStars;
-            bool conditionInSpace = InSpace;
+            bool conditionInSpace = false;
             bool conditionOverworld = overworldBiomes.Contains(biome);
             player.ManageSpecialBiomeVisuals("StarSailorMod:SkySpace", conditionInSpace);
             player.ManageSpecialBiomeVisuals("StarSailorMod:SkyOverworld", conditionOverworld);
@@ -401,6 +400,30 @@ namespace StarSailor
         public int CompareTo(BiomeLocationMapping other)
         {
             return other.priority - priority;
+        }
+    }
+    public class PlayerHolder
+    {
+        bool engaged = false;
+        Vector2 location;
+        Player player;
+        public void Engage(Vector2 loc, Player pl)
+        {
+            player = pl;
+            engaged = true;
+            location = loc;
+        }
+        public void Disengage()
+        {
+            engaged = false;
+        }
+        public void Update()
+        {
+            if (location == Vector2.Zero) engaged = false;
+            if (engaged)
+            {
+                player.position = location;
+            }
         }
     }
 }

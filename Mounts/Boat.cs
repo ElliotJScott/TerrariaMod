@@ -128,9 +128,9 @@ namespace StarSailor.Mounts
                 idealRotation = (float)Math.Atan(p.velocity.Y / p.velocity.X);
             }
             if (Math.Sign(p.velocity.X) == 1) idealRotation += (float)Math.PI;
-            //Main.NewText(idealRotation + " " + p.fullRotation);
+            
             float diff = idealRotation - p.fullRotation;
-            //Main.NewText(diff);
+            
             diff %= (float)(Math.PI * 2);
             if (Math.Abs(diff) > Math.PI) diff = -diff;
             if (Math.Abs(diff) < Math.PI * ROT_VELOCITY) p.fullRotation = idealRotation;

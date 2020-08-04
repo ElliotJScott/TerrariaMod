@@ -37,6 +37,7 @@ namespace StarSailor
         SpaceStationMain,
         SpaceStationTower,
         InFlight,
+        Intro,
         EndOverworld
     }
     public enum Planet
@@ -55,6 +56,7 @@ namespace StarSailor
         SpaceMarket,
         SpaceStation,
         InFlight,
+        Intro,
         End
     }
 }

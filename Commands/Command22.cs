@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using StarSailor.Sequencing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,6 +64,53 @@ namespace StarSailor
 
             StarSailorMod sm = ModContent.GetInstance<StarSailorMod>();
             sm.GenerateStars(250);
+        }
+    }
+    class CommandRun : ModCommand
+    {
+        public override CommandType Type
+        {
+            get { return CommandType.Chat; }
+        }
+
+        public override string Command
+        {
+            get { return "run"; }
+        }
+
+        public override string Description
+        {
+            get { return "Runs the programmed sequence"; }
+        }
+
+        public override void Action(CommandCaller caller, string input, string[] args)
+        {
+
+            StarSailorMod sm = ModContent.GetInstance<StarSailorMod>();
+            sm.sequence = SequenceBuilder.CloneSequence(Sequence.IntroCutscene);
+        }
+    }
+    class CommandConstruct : ModCommand
+    {
+        public override CommandType Type
+        {
+            get { return CommandType.Chat; }
+        }
+
+        public override string Command
+        {
+            get { return "construct"; }
+        }
+
+        public override string Description
+        {
+            get { return "Runs the programmed sequence"; }
+        }
+
+        public override void Action(CommandCaller caller, string input, string[] args)
+        {
+
+            SequenceBuilder.InitialiseSequences(Main.LocalPlayer);
         }
     }
 }

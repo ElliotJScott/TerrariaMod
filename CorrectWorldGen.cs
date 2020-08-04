@@ -10,6 +10,7 @@ using Terraria;
 using Terraria.Localization;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
+using StarSailor.Sequencing;
 
 namespace StarSailor
 {
@@ -63,8 +64,10 @@ namespace StarSailor
         {
             base.PreUpdate();
         }
+
         public override void Initialize()
         {
+            SequenceBuilder.InitialiseSequences(Main.LocalPlayer);
             return;
             tsk.Clear();
             if (Main.worldName != "TEO") throw new InvalidOperationException("Wrong map dingus");

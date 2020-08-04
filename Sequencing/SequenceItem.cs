@@ -4,6 +4,10 @@ using StarSailor.GUI;
 using System;
 using Terraria;
 using Terraria.ModLoader;
+using StarSailor.Mounts;
+using Microsoft.Xna.Framework.Audio;
+using Terraria.ID;
+using StarSailor.Backgrounds;
 
 namespace StarSailor.Sequencing
 {
@@ -13,7 +17,34 @@ namespace StarSailor.Sequencing
         bool Execute();
         void Update();
     }
+    public class PauseItem : ISequenceItem
+    {
+        public int Duration { get; } = 0;
 
+        public PauseItem(int d)
+        {
+            Duration = d;
+        }
+        public object Clone()
+        {
+            return new PauseItem(Duration);
+        }
+
+        public void Dispose()
+        {
+
+        }
+
+        public bool Execute()
+        {
+            return true;
+        }
+
+        public void Update()
+        {
+
+        }
+    }
     public class ChangeMountItem : ISequenceItem
     {
         public int Duration => 0;
@@ -26,7 +57,13 @@ namespace StarSailor.Sequencing
         }
         public bool Execute()
         {
-            if (mountID == -1) return false;
+            if (mountID == -1 && player.mount.Type != mountID)
+            {
+                player.mount.SetMount(mountID, player);
+                player.mount.Dismount(player);
+                Main.NewText(player.mount.Type);
+                return true;
+            }
             if (player.mount.Type != mountID)
             {
                 player.mount.SetMount(mountID, player);
@@ -35,13 +72,16 @@ namespace StarSailor.Sequencing
             return false;
         }
         public void Update() { }
-
+        public override string ToString()
+        {
+            return "ChangeMountItem : target " + mountID + ", current " + player.mount.Type;
+        }
         public object Clone()
         {
             return new ChangeMountItem(player, mountID);
         }
 
-        public void Dispose(){ }
+        public void Dispose() { }
     }
     public class HelpTextItem : ISequenceItem
     {
@@ -55,6 +95,7 @@ namespace StarSailor.Sequencing
         public bool Execute()
         {
             ModContent.GetInstance<StarSailorMod>().speechBubbles.Add(bubble);
+
             return true;
         }
 
@@ -89,6 +130,7 @@ namespace StarSailor.Sequencing
         public bool Execute()
         {
             ModContent.GetInstance<StarSailorMod>().speechBubbles.Add(bubble);
+            Update();
             return true;
         }
 
@@ -111,7 +153,7 @@ namespace StarSailor.Sequencing
 
     public class ImmobiliseItem : ISequenceItem
     {
-        public int Duration => 0; 
+        public int Duration => 0;
 
         public object Clone()
         {
@@ -120,17 +162,17 @@ namespace StarSailor.Sequencing
 
         public bool Execute()
         {
-            //Put the code in here
+            Main.blockInput = true;
             return true;
         }
 
-        public void Update() {  }
+        public void Update() { }
         public void Dispose() { }
     }
 
     public class MobiliseItem : ISequenceItem
     {
-        public int Duration => 0; 
+        public int Duration => 0;
 
         public object Clone()
         {
@@ -139,7 +181,7 @@ namespace StarSailor.Sequencing
 
         public bool Execute()
         {
-            //Put the inverse code in here
+            Main.blockInput = false;
             return true;
         }
 
@@ -164,12 +206,58 @@ namespace StarSailor.Sequencing
 
         public bool Execute()
         {
-            player.Teleport(destination);
+            player.position = destination;
+            //player.Teleport(destination);
             return true;
         }
 
         public void Update() { }
         public void Dispose() { }
+    }
+    public class PlayerHolderItem : ISequenceItem
+    {
+        bool engage;
+        Player player;
+        Vector2 loc;
+
+        public int Duration => 0;
+
+        public PlayerHolderItem(Player pl, Vector2 l)
+        {
+            engage = true;
+            player = pl;
+            loc = l;
+        }
+        public PlayerHolderItem(Player pl)
+        {
+            engage = false;
+            player = pl;
+            loc = Vector2.Zero;
+        }
+
+
+        public bool Execute()
+        {
+            PlayerFixer pf = player.GetModPlayer<PlayerFixer>();
+            if (engage) pf.playerHolder.Engage(loc, player);
+            else pf.playerHolder.Disengage();
+            return true;
+        }
+
+        public void Update()
+        {
+
+        }
+
+        public object Clone()
+        {
+            return new PlayerHolderItem(player, loc);
+        }
+
+        public void Dispose()
+        {
+
+        }
     }
     public class SpawnChangeItem : ISequenceItem
     {
@@ -188,12 +276,49 @@ namespace StarSailor.Sequencing
 
         public bool Execute()
         {
+
             player.ChangeSpawn((int)loc.X, (int)loc.Y);
             return true;
         }
 
-        public void Update() {}
+        public void Update() { }
         public void Dispose() { }
+    }
+    public class SoundEffectItem : ISequenceItem
+    {
+        public int Duration { get; } = 0;
+        string soundSrc;
+        public SoundEffectItem(int duration, string src)
+        {
+            Duration = duration;
+            soundSrc = src;
+        }
+        public object Clone()
+        {
+            return new SoundEffectItem(Duration, soundSrc);
+        }
+
+        public void Dispose()
+        {
+        }
+
+        public bool Execute()
+        {
+            try
+            {
+                Main.PlaySound(SoundLoader.customSoundType, -1, -1, ModContent.GetInstance<StarSailorMod>().GetSoundSlot(SoundType.Custom, soundSrc));
+                return true;
+            }
+            catch (Exception e)
+            {
+                Main.NewText(e);
+                return false;
+            }
+        }
+
+        public void Update()
+        {
+        }
     }
     public class MusicChangeItem : ISequenceItem
     {
@@ -225,20 +350,32 @@ namespace StarSailor.Sequencing
     public class ShipTakeOffItem : ISequenceItem
     {
         public int Duration => throw new NotImplementedException();
-
+        Player player;
+        public ShipTakeOffItem(Player pl)
+        {
+            player = pl;
+        }
         public object Clone()
         {
-            throw new NotImplementedException();
+            return new ShipTakeOffItem(player);
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
         public bool Execute()
         {
-            throw new NotImplementedException();
+            if (player.mount.Type != ModContent.GetInstance<Rocket>().Type)
+            {
+                Main.NewText("The player is not in the correct mount for the current sequence! This is very concerning");
+                return false;
+            }
+            else
+            {
+                ModContent.GetInstance<Rocket>().ExecuteTakeOffAnim(player);
+                return true;
+            }
         }
 
         public void Update()
@@ -250,22 +387,34 @@ namespace StarSailor.Sequencing
     {
         public int Duration => throw new NotImplementedException();
         public (Planet, Planet) originDest;
-        public ShipTravelItem(Planet or, Planet dest)
+        Player player;
+        public ShipTravelItem(Planet or, Planet dest, Player pl)
         {
             originDest = (or, dest);
+            player = pl;
         }
-        public ShipTravelItem((Planet, Planet) p)
+        public ShipTravelItem((Planet, Planet) p, Player pl)
         {
             originDest = p;
+            player = pl;
         }
         public object Clone()
         {
-            return new ShipTravelItem(originDest);
+            return new ShipTravelItem(originDest, player);
         }
 
         public bool Execute()
         {
-            throw new NotImplementedException();
+            if (player.mount.Type != ModContent.GetInstance<Rocket>().Type)
+            {
+                Main.NewText("The player is not in the correct mount for the current sequence! This is very concerning");
+                return false;
+            }
+            else
+            {
+                ModContent.GetInstance<Rocket>().ExecuteLandingAnim(player);
+                return true;
+            }
         }
 
         public void Update()
@@ -275,71 +424,73 @@ namespace StarSailor.Sequencing
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
     }
     public class ShipLandItem : ISequenceItem
     {
         public int Duration => throw new NotImplementedException();
+        Player player;
+        public ShipLandItem(Player pl)
+        {
+            player = pl;
+        }
 
         public object Clone()
         {
-            throw new NotImplementedException();
+            return new ShipLandItem(player);
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            if (player.mount.Type != ModContent.GetInstance<Rocket>().Type)
+            {
+                Main.NewText("The player is not in the correct mount for the current sequence! This is very concerning");
+                return;
+            }
+            else
+            {
+                ModContent.GetInstance<Rocket>().ExecuteLand(player);
+            }
         }
 
         public bool Execute()
         {
-            throw new NotImplementedException();
+            if (player.mount.Type != ModContent.GetInstance<Rocket>().Type)
+            {
+                Main.NewText("The player is not in the correct mount for the current sequence! This is very concerning");
+                return false;
+            }
+            else
+            {
+                ModContent.GetInstance<Rocket>().ExecuteLandingAnim(player);
+                return true;
+            }
         }
 
         public void Update()
         {
-            throw new NotImplementedException();
+
         }
     }
     #region single use items
-    public class SpaceShipCrash : ISequenceItem
+    public class SpaceShipCrashItem : ISequenceItem
     {
-        public int Duration => 100; // This needs to be corrected when I decide how long the animation takes
-
+        public int Duration => 180; // This needs to be corrected when I decide how long the animation takes
+        Player player;
+        public SpaceShipCrashItem(Player p)
+        {
+            player = p;
+        }
         public object Clone()
         {
-            throw new NotImplementedException();
+            return new SpaceShipCrashItem(player);
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
-        }
+            StartingShip ship = ModContent.GetInstance<StartingShip>();
+            ship.IncrementState(player);
 
-        public bool Execute()
-        {
-#warning implement this
-            return true;
-        }
-
-        public void Update()
-        {
-#warning implement this
-        }
-    }
-    public class PlanetShipCrash : ISequenceItem
-    {
-        public int Duration => 100; //Fix this too
-
-        public object Clone()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
         }
 
         public bool Execute()
@@ -349,8 +500,14 @@ namespace StarSailor.Sequencing
 
         public void Update()
         {
-            throw new NotImplementedException();
+            StartingShip ship = ModContent.GetInstance<StartingShip>();
+            ship.Update(player);
+            if (ship.GetState(player) == 0)
+            {
+                ModContent.GetInstance<IntroBg>().UpdateOffset();
+            }
         }
     }
+
     #endregion
 }

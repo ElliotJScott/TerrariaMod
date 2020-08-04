@@ -12,7 +12,7 @@ namespace StarSailor
     {
         public override void EditSpawnRate(Player player, ref int spawnRate, ref int maxSpawns)
         {
-            if (player.GetModPlayer<PlayerFixer>().InSpace)
+            //if (player.GetModPlayer<PlayerFixer>().InSpace)
             {
                 maxSpawns = 0;
             }

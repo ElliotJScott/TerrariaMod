@@ -10,24 +10,25 @@ namespace StarSailor.Sequencing
         readonly Sequence sequence;
         private List<SequenceQueueElement> elements = new List<SequenceQueueElement>();
         int ticker = 0;
-        public SequenceQueue()
-        {
-
-        }
         public SequenceQueue(Sequence seq)
         {
             sequence = seq;
         }
+        public Sequence GetSequence() => sequence;
         public void Append(SequenceQueueElement el)
         {
             elements.Add(el);
+        }
+        public void Append(ISequenceItem item)
+        {
+            elements.Add(new SequenceQueueElement(item));
         }
         public void AddInParallel(ISequenceItem item)
         {
             ticker = 0;
             if (elements.Count == 0)
             {
-                Append(new SequenceQueueElement(item));
+                Append(item);
                 return;
             }
             else if (elements[0].GetDuration().HasValue)

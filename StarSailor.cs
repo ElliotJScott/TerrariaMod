@@ -49,6 +49,7 @@ namespace StarSailor
             {1,1,1,1,1,1,1,0,1,1,0,1,0,1,0,1,1,0,0,0,0 },
         };
         public Texture2D pixel;
+        public Texture2D planet0Above;
         public Texture2D boatTex;
         public Texture2D ropeTex;
         public Texture2D overworldSky;
@@ -56,7 +57,8 @@ namespace StarSailor
         public Texture2D sun0;
         public Texture2D sun0Glow;
         public Texture2D mechGatlingGun;
-        public SequenceQueue sequence = new SequenceQueue();
+        public bool haveInitSequences = false;
+        public SequenceQueue sequence = new SequenceQueue(Sequence.None);
         public List<CustomStar> stars = new List<CustomStar>();
         #region bgTexs
         public Texture2D desTreeCaveMid;
@@ -130,6 +132,7 @@ namespace StarSailor
         {   
             if (!Main.dedServ)
             {
+
                 pixel = GetTexture("GUI/pixel");
                 //Main.backgroundTexture[0] = GetTexture("Skies/OverworldSky");
                 overworldSky = GetTexture("Skies/OverworldSky");
@@ -137,6 +140,7 @@ namespace StarSailor
                 ropeTex = GetTexture("Tiles/BoatRope");
                 sun0 = GetTexture("Skies/Star_0");
                 sun0Glow = GetTexture("Skies/Star_0Glow");
+                planet0Above = GetTexture("Skies/planet0Intro");
                 smallStar = GetTexture("Skies/Star");
                 mechGatlingGun = GetTexture("Mounts/MechGatlingGun");
                 #region bgTexs
@@ -289,7 +293,21 @@ namespace StarSailor
             */
             base.UpdateUI(gameTime);
         }
-
+        public void InitialiseSequences()
+        {
+            if (!haveInitSequences)
+            {
+                try
+                {
+                    SequenceBuilder.InitialiseSequences(Main.LocalPlayer);
+                    haveInitSequences = true;
+                }
+                catch
+                {
+                    haveInitSequences = false;
+                }
+            }
+        }
         public override void PostDrawInterface(SpriteBatch spriteBatch)
         {
             //
@@ -368,6 +386,6 @@ namespace StarSailor
             }
             return s;
         }
-        
+
     }
 }

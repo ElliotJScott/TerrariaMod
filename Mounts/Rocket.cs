@@ -14,30 +14,11 @@ namespace StarSailor.Mounts
 {
     class Rocket : ModMountData
     {
-        int offsetCounter = 0;
-        int animCounter = 0;
-        int mode = 0;
+
         int initOffset = -18;
-        int xOffsetBuffer = 0;
-        int yOffsetBuffer = 0;
         float rot = 0;
-        public bool bgland = false;
-        public bool takeOffAnimate = false;
-        public bool landingAnimate = false;
-        public bool spaceAnim = false;
-        public bool crashing = false;
-        int framedelay = 0;
-        float drScale = 1f;
-        public Vector2 destination;
-        public Texture2D[] burnTexs = new Texture2D[3];
-        public Color drColor = new Color(55, 55, 55, 55);
         public override void SetDefaults()
         {
-            //mountData.spawnDust = mod.DustType("Smoke");
-            for (int i = 0; i < 3; i++)
-            {
-                burnTexs[i] = mod.GetTexture("Mounts/BurnOverlay" + i);
-            }
             mountData.buff = mod.BuffType("RocketMount");
             mountData.heightBoost = 0;
             mountData.fallDamage = 0;
@@ -65,6 +46,11 @@ namespace StarSailor.Mounts
                 mountData.textureHeight = mountData.backTexture.Height;
             }
         }
+        public override void SetMount(Player player, ref bool skipDust)
+        {
+            player.mount._mountSpecificData = new RocketData();
+            skipDust = true;
+        }
         public override void UpdateEffects(Player player)
         {
             base.UpdateEffects(player);
@@ -72,7 +58,8 @@ namespace StarSailor.Mounts
         public override bool Draw(List<DrawData> playerDrawData, int drawType, Player drawPlayer, ref Texture2D texture, ref Texture2D glowTexture, ref Vector2 drawPosition, ref Rectangle frame, ref Color drawColor, ref Color glowColor, ref float rotation, ref SpriteEffects spriteEffects, ref Vector2 drawOrigin, ref float drawScale, float shadow)
         {
             rotation = rot;
-            drawScale = drScale;
+            RocketData data = (RocketData)drawPlayer.mount._mountSpecificData;
+            /*
             if (crashing)
             {
                 glowTexture = burnTexs[Main.rand.Next(3)];
@@ -83,49 +70,29 @@ namespace StarSailor.Mounts
                     Dust.NewDust(drawPlayer.position + new Vector2(mountData.xOffset - (glowTexture.Width / 2), mountData.yOffset - (glowTexture.Height / 2)), glowTexture.Width, glowTexture.Height, 174, 0f, 0f, 150, default, 1.5f);
                 }
             }
+            */
+            drawPosition += data.offset;
             return base.Draw(playerDrawData, drawType, drawPlayer, ref texture, ref glowTexture, ref drawPosition, ref frame, ref drawColor, ref glowColor, ref rotation, ref spriteEffects, ref drawOrigin, ref drawScale, shadow);
         }
         public override bool UpdateFrame(Player mountedPlayer, int state, Vector2 velocity)
         {
-            PlayerFixer modPlayer = mountedPlayer.GetModPlayer<PlayerFixer>();
-            if (bgland)
-            {
-                bgland = false;
-                ExecuteLandingAnim(mountedPlayer);
-            }
-            if (modPlayer.amRocket)
-            {
-                mode = 0;
-                offsetCounter = 0;
-                animCounter = 0;
-                mountData.xOffset = 0;
-                mountData.yOffset = initOffset;
-                mountedPlayer.mount._frame = 0;
-            }
-            else if (takeOffAnimate) DoTakeOffAnimation(mountedPlayer);
-            else if (spaceAnim) DoSpaceAnim(mountedPlayer);
-            else if (landingAnimate) DoLandingAnimation(mountedPlayer);
             return false;
         }
-/// <summary>
-/// Do takeoff animation for rocket ship
-/// </summary>
-/// <param name="p">The player in the ship</param>
-/// <param name="newLocation">The new place to send the player to</param>
+        //public void 
         public void DoTakeOffAnimation(Player p)
         {
-            if (!takeOffAnimate) return;
-            offsetCounter++;
-            if (offsetCounter == 30 && mode == 0)
+            RocketData data = (RocketData)p.mount._mountSpecificData;
+            data.offsetCounter++;
+            if (data.offsetCounter == 30 && data.mode == 0)
             {
-                mode++;
-                offsetCounter = 0;
+                data.mode++;
+                data.offsetCounter = 0;
                 p.mount._frame++;
             }
-            else if (mode == 1)
+            else if (data.mode == 1)
             {
-                animCounter++;
-                if (animCounter == 20)
+                data.animCounter++;
+                if (data.animCounter == 20)
                 {
                     switch (p.mount._frame)
                     {
@@ -136,38 +103,38 @@ namespace StarSailor.Mounts
                             p.mount._frame = 1;
                             break;
                     }
-                    animCounter = 0;
+                    data.animCounter = 0;
                 }
-                if (offsetCounter == 80)
+                if (data.offsetCounter == 80)
                 {
-                    offsetCounter = 0;
-                    mode++;
-                    animCounter = 0;
+                    data.offsetCounter = 0;
+                    data.mode++;
+                    data.animCounter = 0;
                     p.mount._frame = 2;
                 }
             }
-            else if (mode == 2)
+            else if (data.mode == 2)
             {
-                animCounter++;
-                mountData.yOffset--;
-                if (animCounter == 20)
+                data.animCounter++;
+                data.offset.Y--;
+                if (data.animCounter == 20)
                 {
                     p.mount._frame++;
-                    animCounter = 0;
+                    data.animCounter = 0;
                 }
-                if (offsetCounter == 60)
+                if (data.offsetCounter == 60)
                 {
-                    offsetCounter = 0;
-                    mode++;
-                    animCounter = 0;
+                    data.offsetCounter = 0;
+                    data.mode++;
+                    data.animCounter = 0;
                 }
             }
-            else if (mode == 3)
+            else if (data.mode == 3)
             {
-                animCounter++;
-                if (offsetCounter < 160)
-                    mountData.yOffset--;
-                if (animCounter == 20)
+                data.animCounter++;
+                if (data.offsetCounter < 160)
+                    data.offset.Y--;
+                if (data.animCounter == 20)
                 {
                     switch (p.mount._frame)
                     {
@@ -178,25 +145,25 @@ namespace StarSailor.Mounts
                             p.mount._frame = 4;
                             break;
                     }
-                    animCounter = 0;
+                    data.animCounter = 0;
                 }
-                if (offsetCounter == 180)
+                if (data.offsetCounter == 180)
                 {
-                    offsetCounter = 0;
-                    mode++;
-                    animCounter = 0;
+                    data.offsetCounter = 0;
+                    data.mode++;
+                    data.animCounter = 0;
                     p.mount._frame = 6;
                 }
             }
-            else if (mode == 4)
+            else if (data.mode == 4)
             {
-                animCounter++;
-                if (offsetCounter > 60)
+                data.animCounter++;
+                if (data.offsetCounter > 60 && data.offsetCounter <= 150)
                 {
-                    mountData.yOffset -= 1;
-                    mountData.xOffset += 10 + (offsetCounter / 10);
+                    data.offset.Y -= 1;
+                    data.offset.X += 10 + (data.offsetCounter / 10);
                 }
-                if (animCounter == 20)
+                if (data.animCounter == 20)
                 {
                     switch (p.mount._frame)
                     {
@@ -207,63 +174,59 @@ namespace StarSailor.Mounts
                             p.mount._frame = 6;
                             break;
                     }
-                    animCounter = 0;
+                    data.animCounter = 0;
                 }
-                if (offsetCounter == 150)
+                if (data.offsetCounter == 150)
                 {
-                    xOffsetBuffer = -mountData.xOffset;
-                    mountData.xOffset = 0;
-                    yOffsetBuffer = mountData.yOffset + 90;
-                    mountData.yOffset = initOffset + 100;
-                    mode = 0;
-                    p.mount._frame = 6;
-                    animCounter = 0;
-                    offsetCounter = 0;
-                    p.Teleport(new Vector2(150 * 16, 150 * 16), 5);
-                    //Main.NewText("player pos " + p.position);
-                    landingAnimate = false;
-                    takeOffAnimate = false;
-                    spaceAnim = true;
-
-                    p.GetModPlayer<PlayerFixer>().InSpace = true;
+                    //removed
                 }
             }
            
         }
         public void ExecuteTakeOffAnim(Player p)
         {
-
+            RocketData data = (RocketData)p.mount._mountSpecificData;
+            data.mode = 0;
+            data.offsetCounter = 0;
+            data.animCounter = 0;
+            mountData.xOffset = 0;
+            mountData.yOffset = initOffset;
+            p.mount._frame = 0;
         }
         public void ExecuteSpaceAnim(Player p)
         {
+            RocketData data = (RocketData)p.mount._mountSpecificData;
+            data.offsetBuffer = new Vector2(-data.offset.X, data.offset.Y + 90);
+            data.offset = new Vector2(0, initOffset + 100);
+            data.mode = 0;
+            p.mount._frame = 6;
+            data.animCounter = 0;
+            data.offsetCounter = 0;
 
         }
         public void ExecuteLandingAnim(Player p)
         {
-            PlayerFixer modp = p.GetModPlayer<PlayerFixer>();
-            mountData.xOffset = xOffsetBuffer;
-            mountData.yOffset = yOffsetBuffer;
-            p.Teleport(16 * destination, 5);
-            spaceAnim = false;
-            modp.InSpace = false;
-            mode = 0;
+            RocketData data = (RocketData)p.mount._mountSpecificData;
+            data.offset = data.offsetBuffer;
+            data.mode = 0;
             p.mount._frame = 4;
-            animCounter = 0;
-            offsetCounter = 0;
-            landingAnimate = true;
-            takeOffAnimate = false;
+            data.animCounter = 0;
+            data.offsetCounter = 0;
         }
-        public void ExecuteLand(Player p, Planet l)
+        public void ExecuteLand(Player p)
         {
-
+            RocketData data = (RocketData)p.mount._mountSpecificData;
+            data.mode = 0;
+            data.offsetCounter = 0;
+            data.animCounter = 0;
+            p.mount._frame = 0;
         }
-        public void DoSpaceAnim(Player p)
+        public bool UpdateSpaceAnim(Player p)
         {
-            //p.Teleport(new Vector2(150 * 16, 150 * 16), 5);
+            RocketData data = (RocketData)p.mount._mountSpecificData;
             p.velocity = Vector2.Zero;
-            //Main.NewText(p.position);
-            animCounter++;
-            if (animCounter == 20)
+            data.animCounter++;
+            if (data.animCounter == 20)
             {
                 
                 switch (p.mount._frame)
@@ -275,20 +238,22 @@ namespace StarSailor.Mounts
                         p.mount._frame = 6;
                         break;
                 }
-                animCounter = 0;
+                data.animCounter = 0;
             }
+            return false;
         }
-        public void DoLandingAnimation(Player p)
+        public void UpdateLandingAnim(Player p)
         {
-            offsetCounter++;
-            if (mode == 0)
+            RocketData data = (RocketData)p.mount._mountSpecificData;
+            data.offsetCounter++;
+            if (data.mode == 0)
             {
-                animCounter++;
-                if (offsetCounter < 186)
+                data.animCounter++;
+                if (data.offsetCounter < 186)
                 {
-                    if (mountData.yOffset < initOffset && offsetCounter % 2 == 0) mountData.yOffset++;
-                    mountData.xOffset += 5 + ((150 - (offsetCounter / 2)) / 20);
-                    if (animCounter == 20)
+                    if (data.offset.Y < initOffset && data.offsetCounter % 2 == 0) data.offset.Y++;
+                    data.offset.X += 5 + ((150 - (data.offsetCounter / 2)) / 20);
+                    if (data.animCounter == 20)
                     {
                         switch (p.mount._frame)
                         {
@@ -299,28 +264,28 @@ namespace StarSailor.Mounts
                                 p.mount._frame = 4;
                                 break;
                         }
-                        animCounter = 0;
+                        data.animCounter = 0;
                     }
                 }
-                else if (p.mount._frame > 2 && animCounter == 20)
+                else if (p.mount._frame > 2 && data.animCounter == 20)
                 {
                     if (p.mount._frame == 5) p.mount._frame = 3;
                     else p.mount._frame--;
                 }
 
-                if (offsetCounter == 240)
+                if (data.offsetCounter == 240)
                 {
-                    mode++;
-                    animCounter = 0;
-                    offsetCounter = 0;
+                    data.mode++;
+                    data.animCounter = 0;
+                    data.offsetCounter = 0;
                     p.mount._frame = 1;
                 }
             }
-            else if (mode == 1)
+            else if (data.mode == 1)
             {
-                animCounter++;
-                if (mountData.yOffset < initOffset) mountData.yOffset++;
-                if (animCounter == 20)
+                data.animCounter++;
+                if (data.offset.Y < initOffset) data.offset.Y++;
+                if (data.animCounter == 20)
                 {
                     switch (p.mount._frame)
                     {
@@ -331,19 +296,19 @@ namespace StarSailor.Mounts
                             p.mount._frame = 1;
                             break;
                     }
-                    animCounter = 0;
+                    data.animCounter = 0;
                 }
-                if (mountData.yOffset == initOffset)
+                if (data.offset.Y == initOffset)
                 {
-                    offsetCounter = 0;
-                    mode++;
-                    animCounter = 0;
+                    data.offsetCounter = 0;
+                    data.mode++;
+                    data.animCounter = 0;
                 }
             }
-            else if (mode == 2)
+            else if (data.mode == 2)
             {
-                animCounter++;
-                if (animCounter == 20)
+                data.animCounter++;
+                if (data.animCounter == 20)
                 {
                     switch (p.mount._frame)
                     {
@@ -354,36 +319,36 @@ namespace StarSailor.Mounts
                             p.mount._frame = 1;
                             break;
                     }
-                    animCounter = 0;
+                    data.animCounter = 0;
                 }
-                if (offsetCounter == 80)
+                if (data.offsetCounter == 80)
                 {
-                    offsetCounter = 0;
-                    mode++;
-                    animCounter = 0;
+                    data.offsetCounter = 0;
+                    data.mode++;
+                    data.animCounter = 0;
                     p.mount._frame = 0;
                 }
             }
-            else if (offsetCounter == 30 && mode == 3)
+            else if (data.offsetCounter == 30 && data.mode == 3)
             {
-                PlayerFixer modp = p.GetModPlayer<PlayerFixer>();
-                Main.blockInput = false;
-                p.QuickMount();
-                modp.custGravity = true;
-                mode = 0;
-                offsetCounter = 0;
-                animCounter = 0;
-                p.mount._frame = 0;
-                takeOffAnimate = false;
-                landingAnimate = false;
-                spaceAnim = false;
-                modp.InSpace = false;
+                //dispose
             }
         }
+            
     }
     class RocketData
     {
-        int mode;
-
+        public int mode;
+        public int animCounter;
+        public int offsetCounter;
+        public Vector2 offset;
+        public Vector2 offsetBuffer;
+        public RocketData()
+        {
+            mode = 0;
+            animCounter = 0;
+            offsetCounter = 0;
+            offset = Vector2.Zero;
+        }
     }
 }

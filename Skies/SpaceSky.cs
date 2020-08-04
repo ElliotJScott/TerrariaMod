@@ -74,6 +74,7 @@ namespace StarSailor.Skies
 
         public override void Update(GameTime gameTime)
         {
+            /*
             if (ModContent.GetInstance<Rocket>().spaceAnim)
             {
                 bgStarPos = (bgStarPos - bgStarVelocity) % tex.Width;
@@ -126,9 +127,10 @@ namespace StarSailor.Skies
                     counter = 0;
                     planetToDraw = 2;
                     planetVelocity = 0.5f;
-                    ModContent.GetInstance<Rocket>().bgland = true;
+                    //ModContent.GetInstance<Rocket>().bgland = true;
                 }
             }
+            */
         }
         public override float GetCloudAlpha()
         {

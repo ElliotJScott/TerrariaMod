@@ -8,7 +8,8 @@ namespace StarSailor.Sequencing
 {
     enum Sequence
     {
+        None,
         IntroCutscene,
-
+        InSpace,
     }
 }

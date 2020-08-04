@@ -1,23 +1,23 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using StarSailor;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace StarSailor.Backgrounds
 {
-    class Level0TopBg : ModSurfaceBgStyle
+    class IntroBg : ModSurfaceBgStyle
     {
-        public const int numStars = 250;
-       
+        public const int numStars = 700;
+        public int yOffset = 0;
         public override void ModifyFarFades(float[] fades, float transitionSpeed)
         {
+            
             for (int i = 0; i < fades.Length; i++)
             {
                 if (i == Slot)
@@ -42,9 +42,7 @@ namespace StarSailor.Backgrounds
         {
             try
             {
-                //PlayerFixer pl = ModContent.GetInstance<PlayerFixer>();
-                
-                return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.DesertOverworld;
+                return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.Intro;
             }
             catch { return false; }
         }
@@ -55,37 +53,35 @@ namespace StarSailor.Backgrounds
         public override int ChooseMiddleTexture()
         {
             return -1;
-            //return mod.GetBackgroundSlot("Backgrounds/DesertAboveMid");
         }
         public override int ChooseCloseTexture(ref float scale, ref double parallax, ref float a, ref float b)
         {
             return -1;
-            //return mod.GetBackgroundSlot("Backgrounds/DesertAboveFront");
+        }
+        public void UpdateOffset()
+        {
+            StarSailorMod sm = (StarSailorMod)mod;
+            if (yOffset > -sm.planet0Above.Height)
+            {
+                yOffset -= 2;
+            }
         }
         public override bool PreDrawCloseBackground(SpriteBatch spriteBatch)
         {
             StarSailorMod sm = (StarSailorMod)mod;
             //return true;
-            DrawData d = new DrawData(sm.overworldSky, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White * 0.8f);
-            
-            //GameShaders.Misc["StarShader"].Apply(d);
-            d.Draw(spriteBatch);
+            DrawData d = new DrawData(sm.pixel, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black);
 
-            Texture2D[] texs = { sm.desOverFront, sm.desOverMid };
-            float[] darkens = { 0.8f, 0.8f};
-            int[] offs = { 400, 150};
-            float[] scales = { 1f, 1f };
+            d.Draw(spriteBatch);
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
-
-            //GameShaders.Misc["StarShader"].Apply();
-            spriteBatch.Draw(sm.sun0, new Rectangle(Main.screenWidth * 11 / 16, 165, 160, 160), Color.White);
+            
+            //spriteBatch.Draw(sm.sun0, new Rectangle(Main.screenWidth * 11 / 16, 165, 160, 160), Color.White);
             sm.DrawStars(spriteBatch);
+            Texture2D planTex = sm.planet0Above;
+            spriteBatch.Draw(planTex, new Rectangle((Main.screenWidth - planTex.Width) / 2, Main.screenHeight + yOffset, planTex.Width, planTex.Height), Color.White);
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-
-
-            BgHooks.DrawBGs(spriteBatch, texs, offs, darkens, scales);
 
 
             return false;

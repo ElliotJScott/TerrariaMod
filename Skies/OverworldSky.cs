@@ -67,7 +67,7 @@ namespace StarSailor.Skies
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
-            //Main.NewText(Main.sunModY + " " + Main.sunCircle);
+           
             if (maxDepth >= 0f && minDepth < 0f)
             {
            

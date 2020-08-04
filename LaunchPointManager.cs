@@ -107,7 +107,7 @@ namespace StarSailor
             }
             List<LaunchPoint> launches = GetLaunchPoints(currentLaunchPoint);
             LaunchPoint destination = launches[(((StarSailorMod)mod).rocketGuiPageNum * 10) + index];
-            ModContent.GetInstance<Rocket>().destination = destination.position + new Vector2(0, -3);
+            //ModContent.GetInstance<Rocket>().destination = destination.position + new Vector2(0, -3);
         }
         public void AddLaunchPoint(LaunchPoint l)
         {
@@ -238,7 +238,7 @@ namespace StarSailor
                                 break;
                             case -2:
                                 ((StarSailorMod)mod).inLaunchGui = false;
-                                ModContent.GetInstance<Rocket>().takeOffAnimate = true;
+                                //ModContent.GetInstance<Rocket>().takeOffAnimate = true;
                                 ModContent.GetInstance<LaunchPointManager>().SetDestination();
                                 break;
                             case -3:

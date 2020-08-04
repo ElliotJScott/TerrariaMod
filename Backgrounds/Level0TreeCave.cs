@@ -40,7 +40,6 @@ namespace StarSailor.Backgrounds
             try
             {
                 //PlayerFixer pl = ModContent.GetInstance<PlayerFixer>();
-                //Main.NewText("In tree cave = " + (pl.biome == Biomes.DesertTreeCave));
                 return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.DesertTreeCave;
             }
             catch { return false; }

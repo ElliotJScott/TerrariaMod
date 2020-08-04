@@ -148,7 +148,7 @@ namespace StarSailor.GUI
 
             }
             buffer.Add(input);
-            Main.NewText(buffer.Count);
+           
             return buffer.ToArray();
         }
     }

@@ -95,11 +95,11 @@ namespace StarSailor.Mounts
         public override void UpdateEffects(Player player)
         {
             MechData dat = (MechData)player.mount._mountSpecificData;
-            //Main.NewText(Main.MouseWorld);
+
             player.ChangeDir(1);
-            //Main.NewText();
+    
             Vector2 dir = Main.MouseWorld - (player.position + new Vector2(0, -165));
-            //Main.NewText(dir);
+       
             float f = (float)Math.Atan(dir.Y / dir.X);
             dat.gunRotation = MathHelper.Clamp(f, MathHelper.ToRadians(-30), MathHelper.ToRadians(30));
             if (Main.mouseLeft && dat.charge > 0.1f)
@@ -109,7 +109,7 @@ namespace StarSailor.Mounts
                 Vector2 bullDir = new Vector2(6f * (float)Math.Cos(dat.gunRotation + spray), 6f * (float)Math.Sin(dat.gunRotation + spray));
                 dat.UpdateFrame(player.position + new Vector2(0, -175) + line, bullDir);
 
-                //Main.NewText(dat.shootCounter);
+          
             }
             else
             {
@@ -134,11 +134,11 @@ namespace StarSailor.Mounts
             {
                 MechData dat = (MechData)drawPlayer.mount._mountSpecificData;
                 Vector2 dir = -Main.screenPosition + drawPlayer.position + new Vector2(0, -156);
-                //Main.NewText(dir + " " + drawPlayer.position);
+               
                 Vector2 initPos = dir + new Vector2(60, 22);
                 Texture2D gunTex = mod.GetTexture("Mounts/MechGatlingGun");
                 Texture2D mountTex = mod.GetTexture("Mounts/Mech_Back");
-                //Main.NewText(new Rectangle(0, dat.getFrame() * (tex.Height / 4), tex.Width, tex.Height / 4));
+                
                 playerDrawData.Add(new DrawData(mountTex, dir - new Vector2(170, 200), new Rectangle(0, drawPlayer.mount._frame * (mountTex.Height / mountData.totalFrames), mountTex.Width, mountTex.Height / mountData.totalFrames), Color.White, 0f, new Vector2(0, 0), 1f, SpriteEffects.None, 0));
                 playerDrawData.Add(new DrawData(gunTex, initPos - new Vector2(60, 48), new Rectangle(0, dat.GetFrame() * (gunTex.Height / 4), gunTex.Width, gunTex.Height / 4), Color.White, dat.gunRotation, new Vector2(10 + (gunTex.Height / 8), gunTex.Height / 8), 1f, SpriteEffects.None, 0));
                 Main.spriteBatch.DrawString(Main.fontDeathText, "Charge = " + Math.Truncate(dat.charge) + "%", new Vector2((Main.screenWidth - Main.fontDeathText.MeasureString("Charge = " + Math.Truncate(dat.charge) + "%").X) / 2, 50), Color.Blue);

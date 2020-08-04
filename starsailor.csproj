@@ -16,5 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Projectiles\" />
+    <Folder Include="Sounds\Backups\" />
   </ItemGroup>
 </Project>
