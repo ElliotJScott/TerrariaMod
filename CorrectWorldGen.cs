@@ -64,7 +64,6 @@ namespace StarSailor
         {
             base.PreUpdate();
         }
-
         public override void Initialize()
         {
             SequenceBuilder.InitialiseSequences(Main.LocalPlayer);

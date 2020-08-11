@@ -19,7 +19,7 @@ namespace StarSailor.Sounds
                 return null;
             }
 
-            soundInstance.Volume = volume;
+            soundInstance.Volume = volume * 0.05f;
             soundInstance.Pan = pan;
             soundInstance.Pitch = 0f;
             return soundInstance;

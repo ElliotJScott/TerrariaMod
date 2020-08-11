@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using StarSailor.Backgrounds;
 using StarSailor.Sequencing;
 using System;
 using System.Collections.Generic;
@@ -63,7 +64,7 @@ namespace StarSailor
         {
 
             StarSailorMod sm = ModContent.GetInstance<StarSailorMod>();
-            sm.GenerateStars(250);
+            sm.GenerateStars(250, Distribution.Atan);
         }
     }
     class CommandRun : ModCommand

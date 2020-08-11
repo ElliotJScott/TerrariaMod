@@ -57,7 +57,6 @@ namespace StarSailor
             
             base.Initialize();
         }
-
         public void SetUpBiomeMappings()
         {
             mappings.Clear();
@@ -115,7 +114,9 @@ namespace StarSailor
         }
         public override void ModifyDrawInfo(ref PlayerDrawInfo drawInfo)
         {
-            drawInfo.drawPlayer.fullRotationOrigin = 0.5f * new Vector2(drawInfo.drawPlayer.width, drawInfo.drawPlayer.height); ;
+            drawInfo.drawPlayer.fullRotationOrigin = 0.5f * new Vector2(drawInfo.drawPlayer.width, drawInfo.drawPlayer.height);
+            StarSailorMod sm = (StarSailorMod)mod;
+
             if (player.mount.Type == ModContent.GetInstance<Rocket>().Type || player.mount.Type == ModContent.GetInstance<StartingShip>().Type)
             {
                 Color invis = new Color(0, 0, 0, 0);

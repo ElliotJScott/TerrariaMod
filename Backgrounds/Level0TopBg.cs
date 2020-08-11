@@ -15,9 +15,12 @@ namespace StarSailor.Backgrounds
     class Level0TopBg : ModSurfaceBgStyle
     {
         public const int numStars = 250;
-       
+        
         public override void ModifyFarFades(float[] fades, float transitionSpeed)
         {
+            StarSailorMod sm = (StarSailorMod)mod;
+            sm.targetStarNum = numStars;
+            sm.currentDistribution = Distribution.Atan;
             for (int i = 0; i < fades.Length; i++)
             {
                 if (i == Slot)

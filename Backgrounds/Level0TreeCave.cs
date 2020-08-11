@@ -14,6 +14,8 @@ namespace StarSailor.Backgrounds
     {
         public override void ModifyFarFades(float[] fades, float transitionSpeed)
         {
+            StarSailorMod sm = (StarSailorMod)mod;
+            sm.targetStarNum = 0;
             for (int i = 0; i < fades.Length; i++)
             {
                 if (i == Slot)
@@ -59,6 +61,7 @@ namespace StarSailor.Backgrounds
         public override bool PreDrawCloseBackground(SpriteBatch spriteBatch)
         {
             StarSailorMod sm = (StarSailorMod)mod;
+            sm.stars.Clear();
             Texture2D[] texs = { sm.desTreeCaveMid3, sm.desTreeCaveMid2, sm.desTreeCaveFront, sm.desTreeCaveMid, sm.desTreeCaveBack };
             float[] darkens = { 1, 1, 0.8f, 0.5f, 0.3f };
             int[] offs = { -300, -250, -150, -250, 0 };

@@ -61,7 +61,6 @@ namespace StarSailor.Sequencing
             {
                 player.mount.SetMount(mountID, player);
                 player.mount.Dismount(player);
-                Main.NewText(player.mount.Type);
                 return true;
             }
             if (player.mount.Type != mountID)
@@ -475,7 +474,22 @@ namespace StarSailor.Sequencing
     #region single use items
     public class SpaceShipCrashItem : ISequenceItem
     {
-        public int Duration => 180; // This needs to be corrected when I decide how long the animation takes
+        public int Duration 
+            {
+            get
+            {
+                StartingShip ship = ModContent.GetInstance<StartingShip>();
+                switch (ship.GetState(player))
+                {
+                    case 0:
+                    case 1:
+                        return 180;
+                    case 2:
+                    default:
+                        return StartingShip.crashTime;
+                }
+            }      
+        } 
         Player player;
         public SpaceShipCrashItem(Player p)
         {
@@ -489,12 +503,40 @@ namespace StarSailor.Sequencing
         public void Dispose()
         {
             StartingShip ship = ModContent.GetInstance<StartingShip>();
+            if (ship.GetState(player) == 2)
+            {
+                Main.PlaySound(SoundID.Item62, player.position);
+                for (int g = 0; g < 2; g++)
+                {
+                    int goreIndex = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2) - 24f, player.position.Y + (float)(player.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
+                    Main.gore[goreIndex].scale = 1.5f;
+                    Main.gore[goreIndex].velocity.X = Main.gore[goreIndex].velocity.X + 1.5f;
+                    Main.gore[goreIndex].velocity.Y = Main.gore[goreIndex].velocity.Y + 1.5f;
+                    goreIndex = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2) - 24f, player.position.Y + (float)(player.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
+                    Main.gore[goreIndex].scale = 1.5f;
+                    Main.gore[goreIndex].velocity.X = Main.gore[goreIndex].velocity.X - 1.5f;
+                    Main.gore[goreIndex].velocity.Y = Main.gore[goreIndex].velocity.Y + 1.5f;
+                    goreIndex = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2) - 24f, player.position.Y + (float)(player.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
+                    Main.gore[goreIndex].scale = 1.5f;
+                    Main.gore[goreIndex].velocity.X = Main.gore[goreIndex].velocity.X + 1.5f;
+                    Main.gore[goreIndex].velocity.Y = Main.gore[goreIndex].velocity.Y - 1.5f;
+                    goreIndex = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2) - 24f, player.position.Y + (float)(player.height / 2) - 24f), default(Vector2), Main.rand.Next(61, 64), 1f);
+                    Main.gore[goreIndex].scale = 1.5f;
+                    Main.gore[goreIndex].velocity.X = Main.gore[goreIndex].velocity.X - 1.5f;
+                    Main.gore[goreIndex].velocity.Y = Main.gore[goreIndex].velocity.Y - 1.5f;
+                }
+            }
             ship.IncrementState(player);
 
         }
 
         public bool Execute()
         {
+            StartingShip ship = ModContent.GetInstance<StartingShip>();
+            if (ship.GetState(player) == 2)
+            {
+                Main.PlaySound(SoundID.Item46, player.position + new Vector2(6 * StartingShip.crashTime, -StartingShip.crashTime - (Main.screenHeight / 2)));
+            }
             return true;
         }
 

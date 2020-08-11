@@ -17,7 +17,9 @@ namespace StarSailor.Backgrounds
         public int yOffset = 0;
         public override void ModifyFarFades(float[] fades, float transitionSpeed)
         {
-            
+            StarSailorMod sm = (StarSailorMod)mod;
+            sm.targetStarNum = numStars;
+            sm.currentDistribution = Distribution.Flat;
             for (int i = 0; i < fades.Length; i++)
             {
                 if (i == Slot)
@@ -75,11 +77,11 @@ namespace StarSailor.Backgrounds
             d.Draw(spriteBatch);
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
-            
             //spriteBatch.Draw(sm.sun0, new Rectangle(Main.screenWidth * 11 / 16, 165, 160, 160), Color.White);
-            sm.DrawStars(spriteBatch);
             Texture2D planTex = sm.planet0Above;
             spriteBatch.Draw(planTex, new Rectangle((Main.screenWidth - planTex.Width) / 2, Main.screenHeight + yOffset, planTex.Width, planTex.Height), Color.White);
+            sm.DrawStars(spriteBatch);
+
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 

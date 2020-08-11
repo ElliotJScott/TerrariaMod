@@ -11,6 +11,11 @@ using Terraria.ModLoader;
 
 namespace StarSailor.Backgrounds
 {
+    enum Distribution
+    {
+        Flat,
+        Atan,
+    }
     class CustomStar
     {
         public Vector2 position;
@@ -27,7 +32,7 @@ namespace StarSailor.Backgrounds
         public const int minSize = 3;
         public const int maxSize = 15;
 
-        public CustomStar(Vector2 pos, Color c, int s, int p, float a = 0.6f)
+        private CustomStar(Vector2 pos, Color c, int s, int p, float a = 0.6f)
         {
             position = pos;
             color = c;
@@ -39,13 +44,13 @@ namespace StarSailor.Backgrounds
             rot = 0;
             period = p;
         }
-        public static CustomStar CreateNewStar(int yMax)
+        public static CustomStar CreateNewStar(int yMax, Distribution dist)
         {
             Color c = colors[Main.rand.Next(colors.Length)];
-            Vector2 pos = GeneratePosition(yMax);
+            Vector2 pos = GeneratePosition(yMax, dist);
             int s = GenSize();
             int p = Main.rand.Next(180, 300);
-            float a = 1f - ((pos.Y / yMax));
+            float a = GenAlpha(dist, pos, yMax);
             return new CustomStar(pos, c, s, p, a);
         }
         public static int GenSize()
@@ -55,14 +60,38 @@ namespace StarSailor.Backgrounds
             if (Main.rand.NextFloat() > frac) return s;
             else return GenSize();
         }
-        public static Vector2 GeneratePosition(int yMax)
+        public static float GenAlpha(Distribution dist, Vector2 pos, int yMax)
+        {
+            switch (dist)
+            {
+                case Distribution.Atan:
+                    return 1f - ((pos.Y / yMax));
+                case Distribution.Flat:
+                default:
+                    float fl = Main.rand.NextFloat() / 5;
+                    return 0.8f + fl;
+            }
+        }
+        public static Vector2 GeneratePosition(int yMax, Distribution dist)
         {
             int y = Main.rand.Next(yMax);
-            float d = GetDistFunc(y, yMax);
+            float d;
+            switch (dist)
+            {
+                case Distribution.Atan:
+                    d = GetDistFunc(y, yMax);
+                    break;
+                case Distribution.Flat:
+                default:
+                    d = 1;
+                    break;
+                    
+            }
+           
             float trial = Main.rand.NextFloat();
             if (d > trial)
                 return new Vector2(Main.rand.Next(-10, Main.screenWidth), y);
-            else return GeneratePosition(yMax);
+            else return GeneratePosition(yMax, dist);
         }
         public static float GetDistFunc(int y, int yMax)
         {

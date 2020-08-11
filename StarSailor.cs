@@ -59,7 +59,11 @@ namespace StarSailor
         public Texture2D mechGatlingGun;
         public bool haveInitSequences = false;
         public SequenceQueue sequence = new SequenceQueue(Sequence.None);
+        public List<SequenceTrigger> triggers = new List<SequenceTrigger>();
         public List<CustomStar> stars = new List<CustomStar>();
+        public int targetStarNum = 0;
+        public int currentStarNum = 0;
+        public Distribution currentDistribution;
         #region bgTexs
         public Texture2D desTreeCaveMid;
         public Texture2D desTreeCaveFront;
@@ -96,12 +100,12 @@ namespace StarSailor
             biomeSunlightStrength.Add(Biomes.DesertTreeCave, 63);
             biomeSunlightStrength.Add(Biomes.DesertMoleCave, 63);
         }
-        public void GenerateStars(int numStars)
+        public void GenerateStars(int numStars, Distribution dist)
         {
             stars.Clear();
             for (int i = 0; i < numStars; i++)
             {
-                stars.Add(CustomStar.CreateNewStar(Main.screenHeight));
+                stars.Add(CustomStar.CreateNewStar(Main.screenHeight, dist));
             }
         }
         public void DrawStars(SpriteBatch sb)
@@ -276,8 +280,22 @@ namespace StarSailor
             }
             return text;
         }
+        
+        public override void PostUpdateEverything()
+        {
+            if (currentStarNum != targetStarNum)
+            {
+                GenerateStars(targetStarNum, currentDistribution);
+                currentStarNum = targetStarNum;
+            }
+            base.PostUpdateEverything();
+        }
         public override void UpdateUI(GameTime gameTime)
         {
+            foreach (SequenceTrigger t in triggers)
+            {
+                t.Update(Main.LocalPlayer);
+            }
             sequence.Update();
             /*
             int prevNumSpeechBubbles = speechBubbles.Count;
@@ -308,8 +326,11 @@ namespace StarSailor
                 }
             }
         }
+        
         public override void PostDrawInterface(SpriteBatch spriteBatch)
         {
+            //if (!Main.gameMenu)
+            //    Main.spriteBatch.Draw(pixel, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black);
             //
             //spriteBatch.Draw(ModContent.GetInstance<StarSailorMod>().sun0Glow, new Rectangle(Main.screenWidth / 2, 25, 100, 100), Color.White * 0.5f);
             foreach (SpeechBubble sp in speechBubbles)

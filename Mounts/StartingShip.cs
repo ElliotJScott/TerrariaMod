@@ -15,9 +15,12 @@ namespace StarSailor.Mounts
     class StartingShip : ModMountData
     {
         int initOffset = -18;
+        public const int crashTime = 40;
+        Texture2D[] burnTexs = new Texture2D[3];
         public override void SetDefaults()
         {
             mountData.buff = mod.BuffType("StartingShipMount");
+            for (int i = 0; i < burnTexs.Length; i++) burnTexs[i] = mod.GetTexture("Mounts/BurnOverlay" + i);
             mountData.heightBoost = 0;
             mountData.fallDamage = 0;
             mountData.runSpeed = 0f;
@@ -68,7 +71,7 @@ namespace StarSailor.Mounts
                     data.offset += new Vector2(0, 2 + (data.offset.Y / 100));
                     break;
                 case 2:
-                    data.offset += new Vector2(-3, 10);
+                    data.offset += new Vector2(-6, 1 + (Main.screenHeight/(2f * crashTime)));
                     break;
                 default:
                     throw new InvalidOperationException("I done fucked up");
@@ -80,6 +83,12 @@ namespace StarSailor.Mounts
             StartingShipData data = (StartingShipData)player.mount._mountSpecificData;
             data.mode++;
             data.mode %= 3;
+            if (data.mode == 2)
+            {
+                
+                data.offset = new Vector2(6 * crashTime, -crashTime - (Main.screenHeight / 2));
+                
+            }
         }
         public int GetState(Player player)
         {
@@ -91,18 +100,18 @@ namespace StarSailor.Mounts
             spriteEffects = SpriteEffects.FlipHorizontally;
             StartingShipData data = (StartingShipData)drawPlayer.mount._mountSpecificData;
             rotation = data.rot;
-            /*
-            if (crashing)
+            
+            if (data.mode == 2 && data.offset != new Vector2(6 * crashTime, -crashTime - (Main.screenHeight / 2)))
             {
                 glowTexture = burnTexs[Main.rand.Next(3)];
-                glowColor = drColor;
+
                 for (int d = 0; d < 2; d++)
                 {
-                    Dust.NewDust(drawPlayer.position + new Vector2(mountData.xOffset - (glowTexture.Width / 2), mountData.yOffset - (glowTexture.Height / 2)), glowTexture.Width, glowTexture.Height, 6, 0f, 0f, 150, default, 1.5f);
-                    Dust.NewDust(drawPlayer.position + new Vector2(mountData.xOffset - (glowTexture.Width / 2), mountData.yOffset - (glowTexture.Height / 2)), glowTexture.Width, glowTexture.Height, 174, 0f, 0f, 150, default, 1.5f);
+                    Dust.NewDust(drawPlayer.position + data.offset + new Vector2(-(glowTexture.Width / 2), -(glowTexture.Height / 2)), glowTexture.Width, glowTexture.Height, 6, 0f, 0f, 150, default, 1.5f);
+                    Dust.NewDust(drawPlayer.position + data.offset + new Vector2(-(glowTexture.Width / 2), -(glowTexture.Height / 2)), glowTexture.Width, glowTexture.Height, 174, 0f, 0f, 150, default, 1.5f);
                 }
             }
-            */
+            
             drawPosition += data.offset;
             return base.Draw(playerDrawData, drawType, drawPlayer, ref texture, ref glowTexture, ref drawPosition, ref frame, ref drawColor, ref glowColor, ref rotation, ref spriteEffects, ref drawOrigin, ref drawScale, shadow);
         }

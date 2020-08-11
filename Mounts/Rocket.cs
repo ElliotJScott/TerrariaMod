@@ -74,6 +74,7 @@ namespace StarSailor.Mounts
             drawPosition += data.offset;
             return base.Draw(playerDrawData, drawType, drawPlayer, ref texture, ref glowTexture, ref drawPosition, ref frame, ref drawColor, ref glowColor, ref rotation, ref spriteEffects, ref drawOrigin, ref drawScale, shadow);
         }
+        
         public override bool UpdateFrame(Player mountedPlayer, int state, Vector2 velocity)
         {
             return false;

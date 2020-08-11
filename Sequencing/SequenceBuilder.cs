@@ -15,6 +15,7 @@ namespace StarSailor.Sequencing
         static readonly Vector2 spaceLocation = 16 * new Vector2(4556, 249);
         public static void InitialiseSequences(Player player)
         {
+            sequences.Clear();
             sequences.Add(ConstructIntroSequence(player));
         }
 
@@ -63,6 +64,7 @@ namespace StarSailor.Sequencing
             queue.Append(new SpeechItem(new SpeechBubble("This is not at all good...", (int)pf.GetScreenPosition().X, (int)pf.GetScreenPosition().Y, 400, 180), pf, new Vector2(100, -100)));
             queue.Append(new SpaceShipCrashItem(player));
             queue.Append(new PlayerHolderItem(player, destination));
+            queue.Append(new PauseItem(240));
             queue.Append(new SpaceShipCrashItem(player));
             queue.Append(new ChangeMountItem(player));
             queue.Append(new PlayerHolderItem(player));
