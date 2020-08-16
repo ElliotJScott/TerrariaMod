@@ -356,9 +356,9 @@ namespace StarSailor
             playerRect.Y -= (int)(0.5f * (playerRect.Height - maxSize));
             Vector2 centre = new Vector2((playerRect.X - Main.screenPosition.X) + (playerRect.Width / 2), (playerRect.Y - Main.screenPosition.Y) + (playerRect.Height / 2));
             sb.Draw(ModContent.GetInstance<StarSailorMod>().pixel, new Rectangle((int)(playerRect.X - Main.screenPosition.X), (int)(playerRect.Y - Main.screenPosition.Y), playerRect.Width, playerRect.Height), Color.Pink * 0.3f);
-            GravDisplay.DrawLine(sb, centre, centre + (tangVel * perpDir * 30f), 5, Color.Red);
-            GravDisplay.DrawLine(sb, centre, centre + (radVel * direction * 30f), 5, Color.Blue);
-            GravDisplay.DrawLine(sb, centre, centre + (16f * dirToGrav), 2, Color.Green);
+            GuiHelpers.DrawLine(sb, centre, centre + (tangVel * perpDir * 30f), 5, Color.Red);
+            GuiHelpers.DrawLine(sb, centre, centre + (radVel * direction * 30f), 5, Color.Blue);
+            GuiHelpers.DrawLine(sb, centre, centre + (16f * dirToGrav), 2, Color.Green);
         }
 
         public Vector2 GetPosition()

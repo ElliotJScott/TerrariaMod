@@ -29,7 +29,7 @@ namespace StarSailor.GUI
         string[] lines;
         Vector2 dims;
         DynamicSpriteFont font = Main.fontDeathText;
-
+        public int GetDuration() => duration;
         public static void HelpText(string text)
         {
 
@@ -116,7 +116,6 @@ namespace StarSailor.GUI
         public void Dispose()
         {
             ModContent.GetInstance<StarSailorMod>().speechBubbles.Remove(this);
-            GC.SuppressFinalize(this);
         }
         public string[] GetLines(string input, List<string> buffer)
         {

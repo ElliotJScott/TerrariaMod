@@ -128,7 +128,7 @@ namespace StarSailor.Sequencing
         }
         public bool Execute()
         {
-            ModContent.GetInstance<StarSailorMod>().speechBubbles.Add(bubble);
+            //ModContent.GetInstance<StarSailorMod>().speechBubbles.Add(bubble);
             Update();
             return true;
         }
@@ -146,7 +146,7 @@ namespace StarSailor.Sequencing
         }
         public void Dispose()
         {
-            ModContent.GetInstance<StarSailorMod>().speechBubbles.Remove(bubble);
+            //ModContent.GetInstance<StarSailorMod>().speechBubbles.Remove(bubble);
         }
     }
 

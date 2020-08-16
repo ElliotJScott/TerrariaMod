@@ -14,6 +14,7 @@ using Terraria.ModLoader;
 using Terraria.UI.Chat;
 using StarSailor.Backgrounds;
 using StarSailor.Sequencing;
+using StarSailor.NPCs;
 
 namespace StarSailor
 {
@@ -55,6 +56,7 @@ namespace StarSailor
         public Texture2D overworldSky;
         public Texture2D smallStar;
         public Texture2D sun0;
+        public Texture2D corner;
         public Texture2D sun0Glow;
         public Texture2D mechGatlingGun;
         public bool haveInitSequences = false;
@@ -64,6 +66,7 @@ namespace StarSailor
         public int targetStarNum = 0;
         public int currentStarNum = 0;
         public Distribution currentDistribution;
+        public Shop currentShop;
         #region bgTexs
         public Texture2D desTreeCaveMid;
         public Texture2D desTreeCaveFront;
@@ -73,22 +76,23 @@ namespace StarSailor
         public Texture2D desOverMid;
         public Texture2D desOverFront;
         #endregion
-        public List<SpeechBubble> speechBubbles = new List<SpeechBubble>();
+        //public List<SpeechBubble> speechBubbles = new List<SpeechBubble>();
+        public List<AmbientSpeechItem> ambientSpeechItems = new List<AmbientSpeechItem>();
         public int rocketGuiPageNum = 0;
         public LaunchGuiButton exitButton;
         public LaunchGuiButton launchButton;
         public LaunchGuiButton nameButton;
-        public Dictionary<Biomes, int> biomeSunlightStrength = new Dictionary<Biomes, int>(); 
+        public Dictionary<Biomes, int> biomeSunlightStrength = new Dictionary<Biomes, int>();
         public List<Vector2> rapidWaterRedraws = new List<Vector2>();
         public LaunchGuiButton[] locationButtons = new LaunchGuiButton[11];
         string oldText = "wew";
-        MouseState currentState;
-        MouseState oldState;
+        public MouseState currentState;
+        public MouseState oldState;
         public bool updateButtonsFlag = false;
         public bool inLaunchGui;
         public StarSailorMod()
         {
-
+            CharacterLocationMapping.Initialise();
             PopulateSunlightStrength();
             currentState = Mouse.GetState();
         }
@@ -133,7 +137,7 @@ namespace StarSailor
             base.ModifySunLightColor(ref tileColor, ref backgroundColor);
         }
         public override void Load()
-        {   
+        {
             if (!Main.dedServ)
             {
 
@@ -147,6 +151,7 @@ namespace StarSailor
                 planet0Above = GetTexture("Skies/planet0Intro");
                 smallStar = GetTexture("Skies/Star");
                 mechGatlingGun = GetTexture("Mounts/MechGatlingGun");
+                corner = GetTexture("GUI/spBubble");
                 #region bgTexs
                 desTreeCaveMid = GetTexture("Backgrounds/DesertTreeCaveMid");
                 desTreeCaveFront = GetTexture("Backgrounds/DesertTreeCaveFront");
@@ -186,7 +191,7 @@ namespace StarSailor
             bool flag = false;
             if (Main.inputText.IsKeyDown(Keys.LeftControl) || Main.inputText.IsKeyDown(Keys.RightControl))
             {
-               
+
                 if (Main.inputText.IsKeyDown(Keys.Z) && !Main.oldInputText.IsKeyDown(Keys.Z))
                 {
                     text = "";
@@ -280,7 +285,7 @@ namespace StarSailor
             }
             return text;
         }
-        
+
         public override void PostUpdateEverything()
         {
             if (currentStarNum != targetStarNum)
@@ -326,18 +331,16 @@ namespace StarSailor
                 }
             }
         }
-        
+
         public override void PostDrawInterface(SpriteBatch spriteBatch)
         {
             //if (!Main.gameMenu)
             //    Main.spriteBatch.Draw(pixel, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black);
             //
             //spriteBatch.Draw(ModContent.GetInstance<StarSailorMod>().sun0Glow, new Rectangle(Main.screenWidth / 2, 25, 100, 100), Color.White * 0.5f);
-            foreach (SpeechBubble sp in speechBubbles)
-                sp.Draw(spriteBatch);
             DrawRapidWater(spriteBatch);
             GravDisplay.Draw(spriteBatch);
-            
+            if (currentShop != null) currentShop.Draw(spriteBatch);
             if (inLaunchGui)
             {
                 Main.blockInput = true;
@@ -400,7 +403,7 @@ namespace StarSailor
         public string GenerateName()
         {
             Random rnd = new Random();
-            string s = words[rnd.Next(words.Length)] +  " " + words[rnd.Next(words.Length)] + " " + rnd.Next(1000);
+            string s = words[rnd.Next(words.Length)] + " " + words[rnd.Next(words.Length)] + " " + rnd.Next(1000);
             foreach (LaunchPoint l in ModContent.GetInstance<LaunchPointManager>().GetLaunchPoints())
             {
                 if (l.name == s) return GenerateName();
@@ -409,4 +412,7 @@ namespace StarSailor
         }
 
     }
+
+
+
 }

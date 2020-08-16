@@ -32,11 +32,11 @@ namespace StarSailor
         public override void Action(CommandCaller caller, string input, string[] args)
         {
 
-            foreach (string s in CorrectWorldGen.tsk)
+            foreach (string s in WorldFixer.tsk)
             {
                 if (s.Contains("spawn") || s.Contains("Spawn"))
                 {
-                    Main.NewText(CorrectWorldGen.tsk.IndexOf(s) + ": " + s);
+                    Main.NewText(WorldFixer.tsk.IndexOf(s) + ": " + s);
                 }
             }
 
@@ -112,6 +112,29 @@ namespace StarSailor
         {
 
             SequenceBuilder.InitialiseSequences(Main.LocalPlayer);
+        }
+    }
+    class CommandNPCs : ModCommand
+    {
+        public override CommandType Type
+        {
+            get { return CommandType.Chat; }
+        }
+
+        public override string Command
+        {
+            get { return "loadnpcs"; }
+        }
+
+        public override string Description
+        {
+            get { return "Load all the characters"; }
+        }
+
+        public override void Action(CommandCaller caller, string input, string[] args)
+        {
+
+            ModContent.GetInstance<WorldFixer>().UpdateNPCSpawns();
         }
     }
 }
