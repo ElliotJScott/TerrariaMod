@@ -33,7 +33,7 @@ namespace StarSailor.GUI
         public static void HelpText(string text)
         {
 
-            ModContent.GetInstance<StarSailorMod>().speechBubbles.Add(new SpeechBubble(text, Main.screenWidth / 4, Main.screenWidth / 10, Main.screenWidth / 2, 600));
+            //ModContent.GetInstance<StarSailorMod>().speechBubbles.Add(new SpeechBubble(text, Main.screenWidth / 4, Main.screenWidth / 10, Main.screenWidth / 2, 600));
         }
         public SpeechBubble(string t, int x, int y, int w, int d)
         {
@@ -115,7 +115,7 @@ namespace StarSailor.GUI
 
         public void Dispose()
         {
-            ModContent.GetInstance<StarSailorMod>().speechBubbles.Remove(this);
+            //ModContent.GetInstance<StarSailorMod>().speechBubbles.Remove(this);
         }
         public string[] GetLines(string input, List<string> buffer)
         {

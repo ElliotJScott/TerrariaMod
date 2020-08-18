@@ -3,13 +3,13 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Localization;
 
-namespace StarSailor.Items
+namespace StarSailor.Items.Placeable
 {
-	public class RapidWater : ModItem
+	public class AsteroidRock : ModItem
 	{
 		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("This is rapid water");
+			Tooltip.SetDefault("This is a rock");
 
 		}
 
@@ -24,7 +24,7 @@ namespace StarSailor.Items
 			item.useTime = 10;
 			item.useStyle = 1;
 			item.consumable = true;
-			item.createTile = mod.TileType("RapidWater");
+			item.createTile = mod.TileType("AsteroidRock");
 		}
 
 		public override void AddRecipes()

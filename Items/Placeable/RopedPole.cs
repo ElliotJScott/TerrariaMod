@@ -3,7 +3,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Localization;
 
-namespace StarSailor.Items
+namespace StarSailor.Items.Placeable
 {
 	public class RopedPole : ModItem
 	{

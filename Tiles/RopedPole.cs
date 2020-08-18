@@ -75,7 +75,7 @@ namespace StarSailor.Tiles
                 Vector2 screenPos = pixelPos - Main.screenPosition;
                 Vector2 boatPos = new Vector2((int)screenPos.X - 140, (int)screenPos.Y + 46 + disp);
                 StarSailorMod t = ModContent.GetInstance<StarSailorMod>();
-                GravDisplay.DrawLine(spriteBatch, screenPos + new Vector2(10, 10), boatPos + new Vector2(t.boatTex.Width - 10, 20), t.ropeTex.Height, Color.White, t.ropeTex);
+                GuiHelpers.DrawLine(spriteBatch, screenPos + new Vector2(10, 10), boatPos + new Vector2(t.boatTex.Width - 10, 20), t.ropeTex.Height, Color.White, t.ropeTex);
                 spriteBatch.Draw(t.boatTex, new Rectangle((int)screenPos.X - 140, (int)screenPos.Y + 46 + disp, t.boatTex.Width, t.boatTex.Height), Color.White);
             }
             return base.PreDraw(i, j, spriteBatch);

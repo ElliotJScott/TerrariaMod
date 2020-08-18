@@ -14,6 +14,7 @@ using StarSailor.Sequencing;
 using StarSailor.NPCs.Characters;
 using System.Reflection;
 using Terraria.GameContent.Events;
+using StarSailor.NPCs;
 
 namespace StarSailor
 {

@@ -12,6 +12,8 @@ namespace StarSailor.NPCs.Characters
     {
         public override string InternalName => "Boris";
 
+        public override IInteraction Interaction => null;
+
 
 
         //public override

@@ -1,7 +1,7 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace StarSailor.Items
+namespace StarSailor.Items.Placeable
 {
 	public class GravitySource : ModItem
 	{
