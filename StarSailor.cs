@@ -59,6 +59,7 @@ namespace StarSailor
         public Texture2D corner;
         public Texture2D sun0Glow;
         public Texture2D mechGatlingGun;
+        public Texture2D friendlyTentacle;
         public bool haveInitSequences = false;
         public SequenceQueue sequence = new SequenceQueue(Sequence.None);
         public List<SequenceTrigger> triggers = new List<SequenceTrigger>();
@@ -152,6 +153,7 @@ namespace StarSailor
                 smallStar = GetTexture("Skies/Star");
                 mechGatlingGun = GetTexture("Mounts/MechGatlingGun");
                 corner = GetTexture("GUI/spBubble");
+                friendlyTentacle = GetTexture("Projectiles/Tentacle");
                 #region bgTexs
                 desTreeCaveMid = GetTexture("Backgrounds/DesertTreeCaveMid");
                 desTreeCaveFront = GetTexture("Backgrounds/DesertTreeCaveFront");

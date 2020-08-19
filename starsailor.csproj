@@ -16,7 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Items\Armor\" />
-    <Folder Include="Projectiles\" />
     <Folder Include="Sounds\Backups\" />
   </ItemGroup>
 </Project>
