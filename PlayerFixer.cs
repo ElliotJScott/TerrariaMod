@@ -13,6 +13,8 @@ using Terraria.ModLoader;
 using StarSailor;
 using StarSailor.NPCs;
 using StarSailor.Sequencing;
+using Terraria.DataStructures;
+using StarSailor.Items.Weapons;
 
 namespace StarSailor
 {
@@ -31,6 +33,8 @@ namespace StarSailor
         public int jumpTicker = 0;
         public Vector2 gravVelocity = Vector2.Zero;
         public PlayerHolder playerHolder;
+
+        public int ampedCounter;
 
         public Planet planet;
         public Biomes biome;
@@ -54,8 +58,13 @@ namespace StarSailor
             SetUpBiomeMappings();
             SetUpGravityValues();
             SetUpStarCounts();
-            
+
             base.Initialize();
+        }
+        public override void ResetEffects()
+        {
+            ampedCounter = 0;
+            base.ResetEffects();
         }
         public void SetUpBiomeMappings()
         {
@@ -85,14 +94,14 @@ namespace StarSailor
                 if (b.CheckPlayerSatisfies(playerPos))
                     valids.Add(b);
             valids.Sort();
-            
+
             if (valids.Count > 0)
             {
                 return (valids[0].biome, valids[0].planet);
             }
             else return (Biomes.InFlight, Planet.InFlight);
         }
-        
+
         public override void PreUpdateMovement()
         {
             #region boat stuff
@@ -241,12 +250,34 @@ namespace StarSailor
             else
             {
                 drawInfo.drawPlayer.fullRotation = 0;
+
             }
             if (drawInfo.drawPlayer.mount.Type == ModContent.GetInstance<Mech>().Type)
             {
                 drawInfo.spriteEffects = SpriteEffects.None;
             }
+
             base.ModifyDrawInfo(ref drawInfo);
+        }
+        public override void ModifyDrawLayers(List<PlayerLayer> layers)
+        {
+            int[] valids = { ModContent.ItemType<PowerGloveV1>(), ModContent.ItemType<PowerGloveV2>(), ModContent.ItemType<PowerGloveV3>(), ModContent.ItemType<PowerGloveVMax>() };
+            if (valids.Contains(player.HeldItem.type))
+            {
+                PlayerLayer layer = null;
+                foreach (PlayerLayer l in layers)
+                {
+                    if (l.Name == "HeldItem")
+
+                    {
+                        layer = l;
+                        break;
+                    }
+                }
+                layers.Remove(layer);
+                layers.Add(layer);
+            }
+            base.ModifyDrawLayers(layers);
         }
         public override void UpdateBiomeVisuals()
         {
@@ -288,7 +319,7 @@ namespace StarSailor
 
                     scale = 1f;
                 }
-                
+
                 if (player.controlRight && !player.controlLeft)
                 {
                     maxRunFactor = 1f;
@@ -331,11 +362,21 @@ namespace StarSailor
                     jumpTicker += 30;
                     gravVelocity += -direction * 7f;
                 }
-                
+
                 if (jumpTicker > 0) jumpTicker--;
                 player.velocity = gravVelocity;
             }
             #endregion
+            else
+            {
+                player.maxRunSpeed = 3 + (ampedCounter / 60f);
+                player.runAcceleration = 0.08f + (ampedCounter / 1000f);
+            }
+        }
+        public override void DrawEffects(PlayerDrawInfo drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)
+        {
+
+            base.DrawEffects(drawInfo, ref r, ref g, ref b, ref a, ref fullBright);
 
         }
         public void DrawGravGui(SpriteBatch sb)

@@ -18,16 +18,65 @@ namespace StarSailor
         public Vector2 oldPosition;
         //public bool bleed;
         public bool slow;
+        public int distortion;
+        public bool bigSlow;
+        public bool freeze;
+        public Dictionary<int, int> numShotgunStacks = new Dictionary<int, int>();
         public override void ResetEffects(NPC npc)
         {
+            Dictionary<int, int> tempDict = new Dictionary<int, int>();
+            foreach (var v in numShotgunStacks)
+            {
+                tempDict[v.Key] = Math.Max(0, v.Value - 1);
+            }
+            numShotgunStacks = tempDict;
+            
             slow = false;
+            bigSlow = false;
+            freeze = false;
+            distortion = 0;
         }
         public override void UpdateLifeRegen(NPC npc, ref int damage)
         {
-            if (slow)
+            if (freeze)
+            {
+                npc.velocity.X = 0;
+            }
+            else if (bigSlow)
+            {
+                if (Math.Abs(npc.velocity.X) > 0.3f) npc.velocity.X = 0.3f * Math.Sign(npc.velocity.X);
+            }
+            else if (slow)
             {
                 if (Math.Abs(npc.velocity.X) > 1f) npc.velocity.X = 1f * Math.Sign(npc.velocity.X);
             }
+            if (distortion != 0)
+            {
+                int lifeChange = 0;
+                int damageNum = 0;
+                switch (distortion)
+                {
+                    case 1:
+                        lifeChange = 1;
+                        damageNum = 1;
+                        break;
+                    case 2:
+                        lifeChange = 3;
+                        damageNum = 3;
+                        break;
+                    case 3:
+                        lifeChange = 5;
+                        damageNum = 5;
+                        break;
+                    case 4:
+                        lifeChange = 10;
+                        damageNum = 10;
+                        break;
+                }
+                npc.lifeRegen -= lifeChange * 20;
+                if (damage < damageNum) damage = damageNum;
+            }
+
             if (bleedLocations.Count > 0)
             {
 
@@ -37,11 +86,14 @@ namespace StarSailor
                     damage = bleedLocations.Count;
                 }
             }
+
         }
         
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
-            if (slow) drawColor = Color.SkyBlue;
+            if (freeze) drawColor = Color.DarkBlue;
+            else if (bigSlow) drawColor = Color.Blue;
+            else if (slow) drawColor = Color.SkyBlue;
             for (int i = 0; i < bleedLocations.Count; i++)
             {
                 BleedLocation b = bleedLocations[i];
@@ -76,4 +128,5 @@ namespace StarSailor
             timer--;
         }
     }
+
 }

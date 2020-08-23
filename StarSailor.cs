@@ -60,6 +60,10 @@ namespace StarSailor
         public Texture2D sun0Glow;
         public Texture2D mechGatlingGun;
         public Texture2D friendlyTentacle;
+        public Texture2D cryoCloud;
+        public Texture2D orbGlow;
+        public Texture2D orbVmaxGlow;
+        public Texture2D orbConnector;
         public bool haveInitSequences = false;
         public SequenceQueue sequence = new SequenceQueue(Sequence.None);
         public List<SequenceTrigger> triggers = new List<SequenceTrigger>();
@@ -154,6 +158,11 @@ namespace StarSailor
                 mechGatlingGun = GetTexture("Mounts/MechGatlingGun");
                 corner = GetTexture("GUI/spBubble");
                 friendlyTentacle = GetTexture("Projectiles/Tentacle");
+                cryoCloud = GetTexture("Projectiles/CryogunCloud");
+                orbGlow = GetTexture("Projectiles/OrbOfVitalityEffect");
+                orbVmaxGlow = GetTexture("Projectiles/OrbOfVitalityVMaxEffect");
+                orbConnector = GetTexture("Projectiles/OrbConnector");
+
                 #region bgTexs
                 desTreeCaveMid = GetTexture("Backgrounds/DesertTreeCaveMid");
                 desTreeCaveFront = GetTexture("Backgrounds/DesertTreeCaveFront");
@@ -163,13 +172,17 @@ namespace StarSailor
                 desOverFront = GetTexture("Backgrounds/DesertAboveFront");
                 desOverMid = GetTexture("Backgrounds/DesertAboveMid");
                 #endregion
-                Filters.Scene["StarSailorMod:SkySpace"] = new Filter(new ScreenShaderData("FilterMoonLord"), EffectPriority.Medium);
+                Filters.Scene["StarSailorMod:SkySpace"] = new Filter(new ScreenShaderData("FilterMoonLord"), EffectPriority.Medium); //write an empty effect to put in here
                 SkyManager.Instance["StarSailorMod:SkySpace"] = new SpaceSky();
                 Filters.Scene["StarSailorMod:SkyOverworld"] = Filters.Scene["WaterDistortion"];
                 SkyManager.Instance["StarSailorMod:SkyOverworld"] = new OverworldSky();
-
+                GameShaders.Misc["StarSailor:OrbEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/OrbEffect")), "OrbEffect");
+                GameShaders.Misc["StarSailor:OrbVMaxEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/OrbVMaxEffect")), "OrbVMaxEffect");
+                GameShaders.Misc["StarSailor:OrbConnectorEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/OrbConnectorEffect")), "OrbConnectorEffect");
                 Ref<Effect> starglowRef = new Ref<Effect>(GetEffect("Effects/StarGlow"));
                 GameShaders.Misc["StarShader"] = new MiscShaderData(starglowRef, "StarShader");
+                Filters.Scene["AmpedEffect"] = new Filter(new ScreenShaderData(new Ref<Effect>(GetEffect("Effects/AmpedEffect")), "AmpedEffect"), EffectPriority.Medium);
+
             }
             base.Load();
         }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace StarSailor.GUI
@@ -19,6 +20,12 @@ namespace StarSailor.GUI
         public static void DrawLine(SpriteBatch sb, Vector2 p1, Vector2 p2, int thickness, Color color, Texture2D tex)
         {
             Line line = new Line(p1, p2, thickness, color);
+            line.pixel = tex;
+            line.Draw(sb);
+        }
+        public static void DrawLineExactPositions(SpriteBatch sb, Vector2 p1, Vector2 p2, int thickness, Color color, Texture2D tex)
+        {
+            Line line = new Line(p1 - Main.screenPosition, p2 - Main.screenPosition, thickness, color);
             line.pixel = tex;
             line.Draw(sb);
         }
