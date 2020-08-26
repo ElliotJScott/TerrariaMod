@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -136,6 +137,11 @@ namespace StarSailor.Items.Weapons
             if (crit)
             {
                 player.AddBuff(ModContent.BuffType<Amped>(), 360);
+                if (Main.netMode != NetmodeID.Server && !Filters.Scene["AmpedEffect"].IsActive()) // This all needs to happen client-side!
+                {
+                    Filters.Scene.Activate("AmpedEffect");
+                    Filters.Scene["AmpedEffect"].GetShader().UseProgress(90);
+                }
             }
             base.OnHitNPC(player, target, damage, knockBack, crit);
         }

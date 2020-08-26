@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
+using Terraria.Graphics.Effects;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace StarSailor.Buffs
@@ -23,6 +25,16 @@ namespace StarSailor.Buffs
         public override void Update(Player player, ref int buffIndex)
         {
             player.GetModPlayer<PlayerFixer>().ampedCounter = player.buffTime[buffIndex];
+            if (Main.netMode != NetmodeID.Server && Filters.Scene["AmpedEffect"].IsActive()) // This all needs to happen client-side!
+            {
+                int time = player.buffTime[buffIndex];
+                float progress = 1f - (time / 360f);
+                Filters.Scene["AmpedEffect"].GetShader().UseProgress(progress);
+                if (player.buffTime[buffIndex] < 2)
+                {
+                    Filters.Scene.Deactivate("AmpedEffect");
+                }
+            }
             base.Update(player, ref buffIndex);
         }
     }

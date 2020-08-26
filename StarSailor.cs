@@ -15,6 +15,7 @@ using Terraria.UI.Chat;
 using StarSailor.Backgrounds;
 using StarSailor.Sequencing;
 using StarSailor.NPCs;
+using StarSailor.Projectiles;
 
 namespace StarSailor
 {
@@ -49,6 +50,7 @@ namespace StarSailor
             {1,0,0,0,0,0,1,0,1,0,1,1,1,0,1,0,1,0,0,1,0 },
             {1,1,1,1,1,1,1,0,1,1,0,1,0,1,0,1,1,0,0,0,0 },
         };
+        public List<ShieldChargerBarrier> barriers = new List<ShieldChargerBarrier>();
         public Texture2D pixel;
         public Texture2D planet0Above;
         public Texture2D boatTex;
@@ -177,6 +179,7 @@ namespace StarSailor
                 Filters.Scene["StarSailorMod:SkyOverworld"] = Filters.Scene["WaterDistortion"];
                 SkyManager.Instance["StarSailorMod:SkyOverworld"] = new OverworldSky();
                 GameShaders.Misc["StarSailor:OrbEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/OrbEffect")), "OrbEffect");
+                GameShaders.Misc["StarSailor:NoiseEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/NoiseEffect")), "NoiseEffect");
                 GameShaders.Misc["StarSailor:OrbVMaxEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/OrbVMaxEffect")), "OrbVMaxEffect");
                 GameShaders.Misc["StarSailor:OrbConnectorEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/OrbConnectorEffect")), "OrbConnectorEffect");
                 Ref<Effect> starglowRef = new Ref<Effect>(GetEffect("Effects/StarGlow"));

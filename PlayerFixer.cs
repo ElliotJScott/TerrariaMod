@@ -277,8 +277,12 @@ namespace StarSailor
                 layers.Remove(layer);
                 layers.Add(layer);
             }
+            //layers.Add(new PlayerLayer())
             base.ModifyDrawLayers(layers);
         }
+        
+
+
         public override void UpdateBiomeVisuals()
         {
             //Main.numStars = Main.maxStars;
