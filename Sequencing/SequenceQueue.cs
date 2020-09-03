@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace StarSailor.Sequencing
 {
@@ -42,6 +43,11 @@ namespace StarSailor.Sequencing
             elements[0].Add(item);
             
         }
+        public void Execute()
+        {
+            ModContent.GetInstance<StarSailorMod>().sequence = this;
+            elements[0].Execute();
+        }
         public object Clone()
         {
             SequenceQueue queue = new SequenceQueue(sequence);
@@ -75,9 +81,11 @@ namespace StarSailor.Sequencing
         }
         public bool RemoveStart()
         {
+            //Main.NewText("Removing item at start");
             elements[0].Dispose();
             ticker = 0;
             elements.RemoveAt(0);
+            Main.NewText(elements.Count);
             if (elements.Count > 0)
             {
                 elements[0].Execute();
@@ -85,6 +93,7 @@ namespace StarSailor.Sequencing
             }
             else return true;
         }
+        public bool GetActive() => elements.Count > 0;
     }
     class SequenceQueueElement : ICloneable, IDisposable
     {

@@ -11,5 +11,6 @@ namespace StarSailor.NPCs
     {
         Vector2 GetPosition();
         Vector2 GetScreenPosition();
+        bool WithinDistance();
     }
 }

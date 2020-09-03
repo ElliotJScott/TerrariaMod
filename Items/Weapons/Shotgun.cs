@@ -30,7 +30,7 @@ namespace StarSailor.Items.Weapons
             item.autoReuse = false;
             item.shoot = 10; //idk why but all the guns in the vanilla source have this
             item.shootSpeed = 8f;
-            item.useAmmo = AmmoID.Bullet;
+            item.useAmmo = AmmoID.CandyCorn;
         }
 
     }

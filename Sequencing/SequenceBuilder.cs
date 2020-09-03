@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using StarSailor.GUI;
 using StarSailor.Mounts;
+using StarSailor.NPCs;
 using StarSailor.Sounds;
 using System;
 using System.Collections.Generic;
@@ -13,17 +14,18 @@ namespace StarSailor.Sequencing
     {
         static List<SequenceQueue> sequences = new List<SequenceQueue>();
         static readonly Vector2 spaceLocation = 16 * new Vector2(4556, 249);
+        static string[] goodbyeText = { "Goodbye!", "See you again soon!", "Come again soon!"};
         public static void InitialiseSequences(Player player)
         {
             sequences.Clear();
             sequences.Add(ConstructIntroSequence(player));
         }
-
         //If origin == destination don't do the space sequence
         //Change spawn, takeoff, teleport, inflight, teleport, landing, changemount, mobilise
         static SequenceQueue ConstructSpaceSequence(Planet origin, Planet destination, Player player, Vector2 destLoc)
         {
             SequenceQueue queue = new SequenceQueue(Sequence.InSpace);
+            queue.Append(new ImmobiliseItem());
             queue.Append(new SpawnChangeItem(destLoc, player));
             queue.Append(new ShipTakeOffItem(player));
             if (origin != destination)
@@ -40,6 +42,18 @@ namespace StarSailor.Sequencing
             queue.Append(new MobiliseItem());
             return queue;
 
+        }
+        public static SequenceQueue ConstructBasicShopSequence(Character src, string introText, params ShopItem[] items)
+        {
+            //Main.NewText("...building a sequence...");
+            SequenceQueue queue = new SequenceQueue(Sequence.ShopTalk);
+            queue.Append(new StopAIItem(src));
+            queue.Append(new ClearAmbientTextItem());
+            queue.Append(new CancellableSpeechItem(introText, src, new Vector2(40, -40), 400, 60));
+            queue.Append(new ShopSeqItem(src, items));
+            queue.Append(new SpeechItem(Main.rand.Next(goodbyeText), src, new Vector2(40, -40), 400, 60));
+            queue.Append(new StartAIItem(src));
+            return queue;
         }
         //(probably teleport) changemount, change spawn, speech, speech, play sound, play sound, speech, animate ship + sky, speech, speech, teleport, animate ship, changemount, mobilise
         static SequenceQueue ConstructIntroSequence(Player player)

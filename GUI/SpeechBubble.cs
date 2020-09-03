@@ -47,6 +47,8 @@ namespace StarSailor.GUI
             width = w;
             dims = Main.fontDeathText.MeasureString(t);
             lines = GetLines(t, new List<string>());
+            int measWidth = (int)(Main.fontDeathText.MeasureString(lines[0]).X * scale);
+            width = Math.Min(measWidth + 30, width);
             height = 2 * corner.Height;
             foreach (string l in lines)
             {

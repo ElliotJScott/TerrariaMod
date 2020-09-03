@@ -11,5 +11,6 @@ namespace StarSailor.Sequencing
         None,
         IntroCutscene,
         InSpace,
+        ShopTalk,
     }
 }

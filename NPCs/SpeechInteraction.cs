@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Terraria.ModLoader;
 
 namespace StarSailor.NPCs
 {
     class SpeechInteraction : IInteraction
     {
         ITalkable talker;
-        List<AmbientSpeechItem> items; 
+        List<WorldSpeechItem> items; 
 
-        public SpeechInteraction(ITalkable src, List<AmbientSpeechItem> i)
+        public SpeechInteraction(ITalkable src, List<WorldSpeechItem> i)
         {
             talker = src;
             items = i;
             Enabled = false;
         }
-        public SpeechInteraction(ITalkable src, params AmbientSpeechItem[] i)
+        public SpeechInteraction(ITalkable src, params WorldSpeechItem[] i)
         {
             talker = src;
             items = i.ToList();
@@ -42,6 +43,7 @@ namespace StarSailor.NPCs
                 items[0].Update();
                 if (!items[0].Enabled)
                 {
+                    ModContent.GetInstance<StarSailorMod>().speechBubbles.Remove(items[0]);
                     items.RemoveAt(0);
                     Execute();
                 }

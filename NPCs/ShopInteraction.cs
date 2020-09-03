@@ -10,6 +10,7 @@ namespace StarSailor.NPCs
 {
     class ShopInteraction : IInteraction
     {
+        //I should get rid of this
         public bool Enabled { get; set; }
         ITalkable source;
         Item[] items;

@@ -25,8 +25,8 @@ namespace StarSailor.Sequencing
         }
         void Trigger()
         {
-            ModContent.GetInstance<StarSailorMod>().sequence = sequence;
-            //sequence.Execute(); This is not necessary as it doesn't exist - all execution is done in the update method
+            sequence.Execute();
+            
         }
     }
 }

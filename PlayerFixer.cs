@@ -15,6 +15,7 @@ using StarSailor.NPCs;
 using StarSailor.Sequencing;
 using Terraria.DataStructures;
 using StarSailor.Items.Weapons;
+using Terraria.ID;
 
 namespace StarSailor
 {
@@ -58,7 +59,6 @@ namespace StarSailor
             SetUpBiomeMappings();
             SetUpGravityValues();
             SetUpStarCounts();
-
             base.Initialize();
         }
         public override void ResetEffects()
@@ -75,6 +75,34 @@ namespace StarSailor
             mappings.Add(new BiomeLocationMapping(new Vector2(1317, 1881), new Vector2(1668, 2038), Biomes.DesertMoleCave, Planet.Desert, 2));
             mappings.Add(new BiomeLocationMapping(new Vector2(192, 1554), new Vector2(2187, 2069), Biomes.DesertCaves, Planet.Desert, 0));
             mappings.Add(new BiomeLocationMapping(new Rectangle(4656, 200, 200, 100), Biomes.Intro, Planet.Intro, 0));
+        }
+        public bool CanPurchase(ShopItem i)
+        {
+            int cost = i.cost;
+            Resource res = i.resource;
+            return CanPurchase(cost, res);
+        }
+        public bool CanPurchase(int cost, Resource res)
+        {
+            int num = 0;
+            switch (res)
+            {
+                case Resource.Money:
+                    foreach (Item it in player.inventory)
+                    {
+                        if (it.type == ItemID.PlatinumCoin) num += it.stack * 1000000;
+                        else if (it.type == ItemID.GoldCoin) num += it.stack * 10000;
+                        else if (it.type == ItemID.SilverCoin) num += it.stack * 100;
+                        else if (it.type == ItemID.CopperCoin) num += it.stack;
+                    }
+                    break;
+            }
+            return num >= cost;
+        }
+        public void ChargeCoins(int c)
+        {
+            bool b = player.BuyItem(c);
+            if (!b) Main.NewText("Uh oh stinky");
         }
         public void SetUpGravityValues()
         {
@@ -115,6 +143,7 @@ namespace StarSailor
                 ModContent.GetInstance<RapidWater>().accelMyPlayer = false;
             }
             #endregion
+            if (((StarSailorMod)mod).currentShop != null) player.AddBuff(BuffID.Cursed, 10);
             (Biomes, Planet) loc = GetCurrentBiomePlanet();
             biome = loc.Item1;
             planet = loc.Item2;
@@ -385,6 +414,7 @@ namespace StarSailor
         }
         public void DrawGravGui(SpriteBatch sb)
         {
+            
             Vector2 direction = dirToGrav / dirToGrav.Length();
             Vector2 perpDir = new Vector2(-direction.Y, direction.X);
             float tangVel = Vector2.Dot(player.velocity, perpDir);
@@ -415,6 +445,8 @@ namespace StarSailor
         {
             return GetPosition() - Main.screenPosition;
         }
+
+        public bool WithinDistance() => false;
     }
     public struct BiomeLocationMapping : IComparable<BiomeLocationMapping>
     {

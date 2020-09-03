@@ -50,8 +50,11 @@ namespace StarSailor
             {1,0,0,0,0,0,1,0,1,0,1,1,1,0,1,0,1,0,0,1,0 },
             {1,1,1,1,1,1,1,0,1,1,0,1,0,1,0,1,1,0,0,0,0 },
         };
+        public bool inputEnabled = true;
         public List<ShieldChargerBarrier> barriers = new List<ShieldChargerBarrier>();
         public Texture2D pixel;
+        public Texture2D box;
+        public Texture2D boxInside;
         public Texture2D planet0Above;
         public Texture2D boatTex;
         public Texture2D ropeTex;
@@ -83,8 +86,7 @@ namespace StarSailor
         public Texture2D desOverMid;
         public Texture2D desOverFront;
         #endregion
-        //public List<SpeechBubble> speechBubbles = new List<SpeechBubble>();
-        public List<AmbientSpeechItem> ambientSpeechItems = new List<AmbientSpeechItem>();
+        public List<WorldSpeechItem> speechBubbles = new List<WorldSpeechItem>();
         public int rocketGuiPageNum = 0;
         public LaunchGuiButton exitButton;
         public LaunchGuiButton launchButton;
@@ -93,15 +95,18 @@ namespace StarSailor
         public List<Vector2> rapidWaterRedraws = new List<Vector2>();
         public LaunchGuiButton[] locationButtons = new LaunchGuiButton[11];
         string oldText = "wew";
-        public MouseState currentState;
-        public MouseState oldState;
+        public KeyboardState oldKeyState;
+        public KeyboardState currentKeyState;
+        public MouseState oldMouseState;
+        public MouseState newMouseState;
         public bool updateButtonsFlag = false;
         public bool inLaunchGui;
         public StarSailorMod()
         {
             CharacterLocationMapping.Initialise();
             PopulateSunlightStrength();
-            currentState = Mouse.GetState();
+            currentKeyState = Keyboard.GetState();
+            newMouseState = Mouse.GetState();
         }
         public void PopulateSunlightStrength()
         {
@@ -110,6 +115,17 @@ namespace StarSailor
             biomeSunlightStrength.Add(Biomes.DesertTown, 210);
             biomeSunlightStrength.Add(Biomes.DesertTreeCave, 63);
             biomeSunlightStrength.Add(Biomes.DesertMoleCave, 63);
+        }
+        public void RemoveSpeechBubble(SpeechBubble bubble)
+        {
+            for (int i = 0; i < speechBubbles.Count; i++)
+            {
+                if (speechBubbles[i].MatchBubble(bubble))
+                {
+                    speechBubbles.RemoveAt(i);
+                    return;
+                }
+            }
         }
         public void GenerateStars(int numStars, Distribution dist)
         {
@@ -154,6 +170,8 @@ namespace StarSailor
                 boatTex = GetTexture("Tiles/DisplayBoat");
                 ropeTex = GetTexture("Tiles/BoatRope");
                 sun0 = GetTexture("Skies/Star_0");
+                box = GetTexture("GUI/Box");
+                boxInside = GetTexture("GUI/BoxInside");
                 sun0Glow = GetTexture("Skies/Star_0Glow");
                 planet0Above = GetTexture("Skies/planet0Intro");
                 smallStar = GetTexture("Skies/Star");
@@ -315,11 +333,15 @@ namespace StarSailor
         }
         public override void UpdateUI(GameTime gameTime)
         {
+            newMouseState = Mouse.GetState();
             foreach (SequenceTrigger t in triggers)
             {
                 t.Update(Main.LocalPlayer);
             }
             sequence.Update();
+            foreach (WorldSpeechItem s in speechBubbles) s.Update();
+            if (currentShop != null) currentShop.Update();
+            oldMouseState = newMouseState;
             /*
             int prevNumSpeechBubbles = speechBubbles.Count;
             for (int i = 0; i < speechBubbles.Count; i++)
@@ -332,6 +354,7 @@ namespace StarSailor
                 }
             }
             */
+
             base.UpdateUI(gameTime);
         }
         public void InitialiseSequences()
@@ -358,7 +381,9 @@ namespace StarSailor
             //spriteBatch.Draw(ModContent.GetInstance<StarSailorMod>().sun0Glow, new Rectangle(Main.screenWidth / 2, 25, 100, 100), Color.White * 0.5f);
             DrawRapidWater(spriteBatch);
             GravDisplay.Draw(spriteBatch);
-            if (currentShop != null) currentShop.Draw(spriteBatch);
+            if (currentShop != null)  currentShop.Draw(spriteBatch); 
+            Main.blockInput = !inputEnabled;
+            foreach (WorldSpeechItem s in speechBubbles) s.Draw(spriteBatch);
             if (inLaunchGui)
             {
                 Main.blockInput = true;
@@ -407,7 +432,10 @@ namespace StarSailor
                 //spriteBatch.DrawString(Main.fontMouseText, "Exit", exitTextLocation, textCol);
                 oldText = InputText(oldText);
                 //spriteBatch.End();
+                
             }
+
+            
             base.PostDrawInterface(spriteBatch);
         }
         public void DrawRapidWater(SpriteBatch sb)

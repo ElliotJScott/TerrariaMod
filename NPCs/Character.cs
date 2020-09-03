@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using StarSailor.Sequencing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +14,11 @@ using Terraria.ModLoader;
 
 namespace StarSailor.NPCs
 {
-    abstract class Character : ModNPC, ITalkable, IInteractable
+    public abstract class Character : ModNPC, ITalkable, IInteractable
     {
         public static NPC FindNPC(int npcType) => Main.npc.FirstOrDefault(npc => npc.type == npcType && npc.active);
         public abstract string InternalName { get; }
+        public bool doMotion = true;
         public float WalkSpeed { get
             {
                 return 1;
@@ -41,6 +43,7 @@ namespace StarSailor.NPCs
 
         public void Interact()
         {
+            Main.playerInventory = false;
             Interaction.Execute();
         }
         
@@ -78,11 +81,15 @@ namespace StarSailor.NPCs
         {
             StarSailorMod sm = (StarSailorMod)mod;
             Rectangle mouseRect = new Rectangle((int)Main.MouseWorld.X, (int)Main.MouseWorld.Y, 1, 1);
-            Vector2 disp = npc.Center - Main.LocalPlayer.Center;
-            //Main.NewText(Main.mouseRight + " " + Main.mouseRightRelease + " " + Main.playerInventory);
             Rectangle npcRect = npc.getRect();
             Rectangle clicktangle = new Rectangle(npcRect.X - 6, npcRect.Y - 6, npcRect.Width + 12, npcRect.Height + 12);
-            return (mouseRect.Intersects(clicktangle) && Math.Abs(disp.X) < 3200 && Math.Abs(disp.Y) < 800);
+            return mouseRect.Intersects(clicktangle) && WithinDistance() && !Main.ingameOptionsWindow && !sm.sequence.GetActive();
+        }
+        public bool WithinDistance()
+        {
+            StarSailorMod sm = (StarSailorMod)mod;
+            Vector2 disp = npc.Center - Main.LocalPlayer.Center;
+            return Math.Abs(disp.X) < 320 && Math.Abs(disp.Y) < 80;
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {
@@ -96,6 +103,13 @@ namespace StarSailor.NPCs
         }
         public override void FindFrame(int frameHeight)
         {
+            if (!doMotion)
+            {
+                npc.frameCounter = 0;
+                npc.frame.Y = 0;
+                frameNum = 0;
+                return;
+            }
             if (CanRightClick()) 
             {
                 
@@ -149,6 +163,11 @@ namespace StarSailor.NPCs
         }
         public override void AI()
         {
+            if (!doMotion)
+            {
+                npc.velocity = Vector2.Zero;
+                return;
+            }
             switch (walkMode)
             {
                 case 0:

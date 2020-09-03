@@ -88,7 +88,7 @@ namespace StarSailor
         {
 
             StarSailorMod sm = ModContent.GetInstance<StarSailorMod>();
-            sm.sequence = SequenceBuilder.CloneSequence(Sequence.IntroCutscene);
+            SequenceBuilder.CloneSequence(Sequence.IntroCutscene).Execute();
         }
     }
     class CommandConstruct : ModCommand
@@ -135,6 +135,29 @@ namespace StarSailor
         {
 
             ModContent.GetInstance<WorldFixer>().UpdateNPCSpawns();
+        }
+    }
+    class CommandCoins : ModCommand
+    {
+        public override CommandType Type
+        {
+            get { return CommandType.Chat; }
+        }
+
+        public override string Command
+        {
+            get { return "docoins"; }
+        }
+
+        public override string Description
+        {
+            get { return "Does the coins"; }
+        }
+
+        public override void Action(CommandCaller caller, string input, string[] args)
+        {
+            Main.LocalPlayer.GetModPlayer<PlayerFixer>().ChargeCoins(int.Parse(args[0]));
+            
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StarSailor.GUI;
 using System;
 using System.Collections.Generic;
@@ -8,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace StarSailor.NPCs
 {
-    public class AmbientSpeechItem : IInteraction
+    public class WorldSpeechItem : IInteraction
     {
         SpeechBubble bubble;
         ITalkable target;
         Vector2 offset;
 
-        public AmbientSpeechItem(SpeechBubble b, ITalkable t, Vector2 o)
+        public WorldSpeechItem(SpeechBubble b, ITalkable t, Vector2 o)
         {
             bubble = b;
             target = t;
@@ -37,5 +38,10 @@ namespace StarSailor.NPCs
             bubble.Update(newPos);
             if (bubble.GetDuration() <= 0) Enabled = false;
         }
+        public void Draw(SpriteBatch sb)
+        {
+            bubble.Draw(sb);
+        }
+        public bool MatchBubble(SpeechBubble b) => bubble == b;
     }
 }

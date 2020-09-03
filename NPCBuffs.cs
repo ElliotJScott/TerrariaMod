@@ -35,6 +35,7 @@ namespace StarSailor
             bigSlow = false;
             freeze = false;
             distortion = 0;
+            
         }
         public override void UpdateLifeRegen(NPC npc, ref int damage)
         {

@@ -45,6 +45,64 @@ namespace StarSailor.Sequencing
 
         }
     }
+    public class StopAIItem : ISequenceItem
+    {
+        public int Duration => 0;
+        Character target;
+        public StopAIItem(Character tr)
+        {
+            target = tr;
+        }
+        public object Clone()
+        {
+            return new StopAIItem(target);
+        }
+        public void Dispose()
+        {
+
+        }
+
+        public bool Execute()
+        {
+            //Main.NewText("Weeeheh " + target.Name);
+            target.doMotion = false;
+            return true;
+        }
+
+        public void Update()
+        {
+
+        }
+    }
+    public class StartAIItem : ISequenceItem
+    {
+        public int Duration => 0;
+        Character target;
+        public StartAIItem(Character tr)
+        {
+            target = tr;
+        }
+        public object Clone()
+        {
+            return new StartAIItem(target);
+        }
+        public void Dispose()
+        {
+
+        }
+
+        public bool Execute()
+        {
+            //Main.NewText("Wahhahha " + target.Name);
+            target.doMotion = true;
+            return true;
+        }
+
+        public void Update()
+        {
+
+        }
+    }
     public class ChangeMountItem : ISequenceItem
     {
         public int Duration => 0;
@@ -116,9 +174,9 @@ namespace StarSailor.Sequencing
     }
     public class SpeechItem : ISequenceItem
     {
-        SpeechBubble bubble;
-        public int Duration => bubble.GetInitDuration();
-        ITalkable source;
+        public SpeechBubble bubble;
+        public virtual int Duration => bubble.GetInitDuration();
+        public ITalkable source;
         Vector2 offset;
         public SpeechItem(SpeechBubble b, ITalkable src, Vector2 o)
         {
@@ -126,14 +184,21 @@ namespace StarSailor.Sequencing
             source = src;
             offset = o;
         }
+        public SpeechItem(string s, ITalkable src, Vector2 offs, int w = 400, int d = 300)
+        {
+            Vector2 loc = src.GetScreenPosition();
+            bubble = new SpeechBubble(s, (int)loc.X, (int)loc.Y, w, d);
+            offset = offs;
+            source = src;
+        }
         public bool Execute()
         {
-            //ModContent.GetInstance<StarSailorMod>().speechBubbles.Add(bubble);
-            Update();
+            ModContent.GetInstance<StarSailorMod>().speechBubbles.Add(new WorldSpeechItem(bubble, source, offset));
+            //Update();
             return true;
         }
 
-        public void Update()
+        public virtual void Update()
         {
             Vector2 newPos = source.GetScreenPosition() + offset;
             bubble.Update(newPos);
@@ -144,12 +209,30 @@ namespace StarSailor.Sequencing
             SpeechBubble sb = new SpeechBubble(bubble.GetText(), (int)bubble.GetPos().X, (int)bubble.GetPos().Y, bubble.GetWidth(), bubble.GetInitDuration());
             return new SpeechItem(sb, source, offset);
         }
-        public void Dispose()
+        public virtual void Dispose()
         {
-            //ModContent.GetInstance<StarSailorMod>().speechBubbles.Remove(bubble);
+            ModContent.GetInstance<StarSailorMod>().RemoveSpeechBubble(bubble);
         }
     }
-
+    public class CancellableSpeechItem : SpeechItem
+    {
+        public override int Duration => duration;
+        int duration;
+        public CancellableSpeechItem(string s, ITalkable src, Vector2 o, int w = 400, int d = 300) : base(s, src, o, w, d)
+        {
+            duration = bubble.GetInitDuration();
+        }
+        public override void Update()
+        {
+            if (Main.playerInventory || Main.ingameOptionsWindow || !source.WithinDistance()) Dispose();
+            base.Update();
+        }
+        public override void Dispose()
+        {
+            base.Dispose();
+            duration = 0;
+        }
+    }
     public class ImmobiliseItem : ISequenceItem
     {
         public int Duration => 0;
@@ -161,7 +244,8 @@ namespace StarSailor.Sequencing
 
         public bool Execute()
         {
-            Main.blockInput = true;
+            Main.NewText("wewewe");
+            ModContent.GetInstance<StarSailorMod>().inputEnabled = false;
             return true;
         }
 
@@ -180,7 +264,7 @@ namespace StarSailor.Sequencing
 
         public bool Execute()
         {
-            Main.blockInput = false;
+            ModContent.GetInstance<StarSailorMod>().inputEnabled = true;
             return true;
         }
 
@@ -469,6 +553,66 @@ namespace StarSailor.Sequencing
         public void Update()
         {
 
+        }
+    }
+    public class ClearAmbientTextItem : ISequenceItem
+    {
+        public int Duration => 0;
+
+        public object Clone()
+        {
+            return new ClearAmbientTextItem();
+        }
+
+        public void Dispose()
+        {
+        }
+
+        public bool Execute()
+        {
+            Main.NewText("weh");
+            ModContent.GetInstance<StarSailorMod>().speechBubbles.Clear();
+            return true;
+        }
+
+        public void Update()
+        {
+        }
+    }
+    public class ShopSeqItem : ISequenceItem
+    {
+        public int Duration => duration;
+        int duration = int.MaxValue;
+        ShopItem[] items;
+        ITalkable source;
+
+        public ShopSeqItem(ITalkable src, params ShopItem[] i)
+        {
+            items = i;
+            source = src;
+        }
+        public object Clone()
+        {
+            return new ShopSeqItem(source, items);
+        }
+
+        public void Dispose()
+        {
+            ModContent.GetInstance<StarSailorMod>().currentShop = null;
+            duration = 0;
+        }
+
+        public bool Execute()
+        {
+            //Main.NewText("ree");
+            ModContent.GetInstance<StarSailorMod>().currentShop = new Shop(items);
+            return true;
+        }
+
+        public void Update()
+        {
+            if (Main.playerInventory || Main.ingameOptionsWindow || !source.WithinDistance()) Dispose();
+            //Updating is done in the mod class
         }
     }
     #region single use items

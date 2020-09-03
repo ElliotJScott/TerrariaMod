@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StarSailor.NPCs
 {
-    interface IInteraction
+    public interface IInteraction
     {
         bool Enabled { get; set; }
         void Update();
