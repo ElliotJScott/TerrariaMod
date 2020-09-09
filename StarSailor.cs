@@ -16,6 +16,8 @@ using StarSailor.Backgrounds;
 using StarSailor.Sequencing;
 using StarSailor.NPCs;
 using StarSailor.Projectiles;
+using StarSailor.Tiles;
+using Terraria.ID;
 
 namespace StarSailor
 {
@@ -107,6 +109,10 @@ namespace StarSailor
             PopulateSunlightStrength();
             currentKeyState = Keyboard.GetState();
             newMouseState = Mouse.GetState();
+            Main.tileMerge[TileID.Marble][TileID.Mud] = true;
+            Main.tileMerge[TileID.MarbleBlock][TileID.Mud] = true;
+            Main.tileMerge[TileID.Mud][TileID.Marble] = true;
+            Main.tileMerge[TileID.Mud][TileID.MarbleBlock] = true;
         }
         public void PopulateSunlightStrength()
         {
@@ -197,6 +203,8 @@ namespace StarSailor
                 Filters.Scene["StarSailorMod:SkyOverworld"] = Filters.Scene["WaterDistortion"];
                 SkyManager.Instance["StarSailorMod:SkyOverworld"] = new OverworldSky();
                 GameShaders.Misc["StarSailor:OrbEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/OrbEffect")), "OrbEffect");
+                GameShaders.Misc["StarSailor:FloatingUnderTownEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/FloatingUnderTownEffect")), "FloatingUnderTownEffect");
+                GameShaders.Misc["StarSailor:FloatingUnderTreeEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/FloatingUnderTreeEffect")), "FloatingUnderTreeEffect");
                 GameShaders.Misc["StarSailor:NoiseEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/NoiseEffect")), "NoiseEffect");
                 GameShaders.Misc["StarSailor:OrbVMaxEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/OrbVMaxEffect")), "OrbVMaxEffect");
                 GameShaders.Misc["StarSailor:OrbConnectorEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/OrbConnectorEffect")), "OrbConnectorEffect");
@@ -379,6 +387,7 @@ namespace StarSailor
             //    Main.spriteBatch.Draw(pixel, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black);
             //
             //spriteBatch.Draw(ModContent.GetInstance<StarSailorMod>().sun0Glow, new Rectangle(Main.screenWidth / 2, 25, 100, 100), Color.White * 0.5f);
+            //Main.NewText(rapidWaterRedraws.Count + " " + Main.time);
             DrawRapidWater(spriteBatch);
             GravDisplay.Draw(spriteBatch);
             if (currentShop != null)  currentShop.Draw(spriteBatch); 
@@ -442,9 +451,12 @@ namespace StarSailor
         {
             foreach (Vector2 v in rapidWaterRedraws)
             {
-                ModContent.GetInstance<Tiles.RapidWater>().CorrectDraw((int)v.X, (int)v.Y, sb);
+                Rectangle testRect = new Rectangle((int)v.X, (int)v.Y, 16, 16);
+                Rectangle screenrect = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
+                //if (testRect.Intersects(screenrect))
+                    ModContent.GetInstance<RapidWater>().CorrectDraw((int)v.X, (int)v.Y, sb);
             }
-            rapidWaterRedraws.Clear();
+            //rapidWaterRedraws.Clear();
         }
         public string GenerateName()
         {

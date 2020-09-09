@@ -9,6 +9,7 @@ using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Terraria.UI.Chat;
 using ReLogic.Graphics;
+using StarSailor.NPCs;
 
 namespace StarSailor.GUI
 {
@@ -28,6 +29,8 @@ namespace StarSailor.GUI
         int duration;
         string[] lines;
         Vector2 dims;
+        Color border = new Color(12, 11, 36, 221);
+        Color intColor = new Color(58, 56, 136, 221);
         DynamicSpriteFont font = Main.fontDeathText;
         public int GetDuration() => duration;
         public static void HelpText(string text)
@@ -114,7 +117,29 @@ namespace StarSailor.GUI
                 }
             }
         }
-
+        public void DrawSpike(SpriteBatch sb, ITalkable target, int side)
+        {
+            int size = 20;
+            Vector2 dest = target.GetScreenPosition() + new Vector2(30, 30);
+            if (side >= 0)
+            {
+                for (int i = 1; i < size; i++)
+                {
+                    GuiHelpers.DrawLine(sb, new Vector2(xPos + corner.Width + i, yPos + height), dest, 1, intColor);
+                }
+                GuiHelpers.DrawLine(sb, new Vector2(xPos + corner.Width, yPos + height), dest, 2, border);
+                GuiHelpers.DrawLine(sb, new Vector2(xPos + corner.Width + size, yPos + height), dest, 2, border);
+            }
+            else
+            {
+                for (int i = 1; i < size; i++)
+                {
+                    GuiHelpers.DrawLine(sb, new Vector2(xPos + width - (corner.Width + i), yPos + height), dest, 1, intColor);
+                }
+                GuiHelpers.DrawLine(sb, new Vector2(xPos + width - corner.Width, yPos + height), dest, 2, border);
+                GuiHelpers.DrawLine(sb, new Vector2(xPos + width - (corner.Width + size), yPos + height), dest, 2, border);
+            }
+        }
         public void Dispose()
         {
             //ModContent.GetInstance<StarSailorMod>().speechBubbles.Remove(this);

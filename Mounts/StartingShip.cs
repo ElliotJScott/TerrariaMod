@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StarSailor.NPCs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -113,6 +114,16 @@ namespace StarSailor.Mounts
             }
             
             drawPosition += data.offset;
+            if (playerDrawData.Count > 0)
+            {
+                //playerDrawData[0].Draw(Main.spriteBatch);
+                foreach (DrawData d in playerDrawData)
+                {
+                    drawPlayer.GetModPlayer<PlayerFixer>().drawDataBuffer.Add(d);
+                }
+                playerDrawData.Clear();
+
+            }
             return base.Draw(playerDrawData, drawType, drawPlayer, ref texture, ref glowTexture, ref drawPosition, ref frame, ref drawColor, ref glowColor, ref rotation, ref spriteEffects, ref drawOrigin, ref drawScale, shadow);
         }
     }

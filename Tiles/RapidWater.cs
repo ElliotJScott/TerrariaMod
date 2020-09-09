@@ -35,8 +35,12 @@ namespace StarSailor.Tiles
             g = 0f;
             b = 0f;
         }
-
-        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            ModContent.GetInstance<StarSailorMod>().rapidWaterRedraws.Remove(new Vector2(i, j));
+            base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
+        }
+        public override void SetSpriteEffects(int i, int j, ref SpriteEffects spriteEffects)
         {
             Vector2 playerPos = Main.player[Main.myPlayer].position;
             Rectangle tileRect = new Rectangle(i * 16, j * 16, 16, 16);
@@ -45,7 +49,13 @@ namespace StarSailor.Tiles
             {
                 accelMyPlayer = true;
             }
-            ModContent.GetInstance<StarSailorMod>().rapidWaterRedraws.Add(new Vector2(i, j));
+            if (!ModContent.GetInstance<StarSailorMod>().rapidWaterRedraws.Contains(new Vector2(i, j)))
+                ModContent.GetInstance<StarSailorMod>().rapidWaterRedraws.Add(new Vector2(i, j));
+            base.SetSpriteEffects(i, j, ref spriteEffects);
+        }
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+
             //spriteBatch.Draw(ModContent.GetInstance<TEO>().pixel, playerRect, Color.Red * 0.5f);
             return false;
         }

@@ -10,6 +10,7 @@ using System;
 using Terraria.ID;
 using Terraria.Localization;
 using StarSailor.Items.Ammo;
+using Terraria.UI;
 
 namespace StarSailor.GUI
 {
@@ -51,15 +52,44 @@ namespace StarSailor.GUI
             ChatManager.DrawColorCodedStringWithShadow(sb, Main.fontDeathText, text, new Vector2(260 + (Main.screenWidth / 2), -325 + (Main.screenHeight / 2)), Color.White, 0f, vector / 2f, new Vector2(1f), -1f, 1.5f);
             string text2 = "Main Items";
             Vector2 vector2 = Main.fontDeathText.MeasureString(text2);
-            ChatManager.DrawColorCodedStringWithShadow(sb, Main.fontDeathText, text2, new Vector2(-280 + (Main.screenWidth / 2), -325 + (Main.screenHeight / 2)), Color.White, 0f, vector / 2f, new Vector2(1f), -1f, 1.5f);
+            string text3 = "Owned";
+            Vector2 vector3 = Main.fontDeathText.MeasureString(text3);
+            ChatManager.DrawColorCodedStringWithShadow(sb, Main.fontDeathText, text2, new Vector2(-235 + (Main.screenWidth / 2), -325 + (Main.screenHeight / 2)), Color.White, 0f, vector2 / 2f, new Vector2(1f), -1f, 1.5f);
+            ChatManager.DrawColorCodedStringWithShadow(sb, Main.fontDeathText, text3, new Vector2(560 + (Main.screenWidth / 2), -310 + (Main.screenHeight / 2)), Color.White, 0f, vector3 / 2f, new Vector2(0.6f), -1f, 1.5f);
 
             foreach (ShopButton b in mainItems) b.Draw(sb);
             foreach (AmmoButton b in ammoButtons) b.Draw(sb);
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, GetBankString(), new Vector2(10 + (Main.screenWidth / 2), Main.screenHeight / 2), Color.White, 0f, Vector2.Zero, Vector2.One, -1f, 2f);
+
         }
         public void Update()
         {
             foreach (ShopButton b in mainItems) b.Update();
             foreach (AmmoButton b in ammoButtons) b.Update();
+        }
+        string GetBankString()
+        {
+            PlayerFixer pf = Main.LocalPlayer.GetModPlayer<PlayerFixer>();
+            string coinsText = "In Bank: ";
+            int[] coins = Utils.CoinsSplit(pf.GetMoney());
+            if (coins[3] > 0)
+            {
+                coinsText = coinsText + "[c/" + Colors.AlphaDarken(Colors.CoinPlatinum).Hex3() + ":" + coins[3] + " " + Language.GetTextValue("LegacyInterface.15") + "] ";
+            }
+            if (coins[2] > 0)
+            {
+                coinsText = coinsText + "[c/" + Colors.AlphaDarken(Colors.CoinGold).Hex3() + ":" + coins[2] + " " + Language.GetTextValue("LegacyInterface.16") + "] ";
+            }
+            if (coins[1] > 0)
+            {
+                coinsText = coinsText + "[c/" + Colors.AlphaDarken(Colors.CoinSilver).Hex3() + ":" + coins[1] + " " + Language.GetTextValue("LegacyInterface.17") + "] ";
+            }
+            if (coins[0] > 0)
+            {
+                coinsText = coinsText + "[c/" + Colors.AlphaDarken(Colors.CoinCopper).Hex3() + ":" + coins[0] + " " + Language.GetTextValue("LegacyInterface.18") + "] ";
+            }
+            return coinsText;
+
         }
 
     }
@@ -97,9 +127,9 @@ namespace StarSailor.GUI
                     if (coins[0] > 0)
                     {
                         coinsText = coinsText + "[c/" + Colors.AlphaDarken(Colors.CoinCopper).Hex3() + ":" + coins[0] + " " + Language.GetTextValue("LegacyInterface.18") + "] ";
-                    }                   
+                    }
                     return coinsText;
-                //ItemSlot.DrawSavings(Main.spriteBatch, slotX + 130, Main.instance.invBottom, true);
+                //
                 //ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, costText, new Vector2(slotX + 50, slotY), new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, Vector2.Zero, Vector2.One, -1f, 2f);
                 default:
                     return "";
@@ -208,7 +238,7 @@ namespace StarSailor.GUI
     }
     class AmmoButton
     {
-        static int[] ammoPrices = { 1, 2, 3, 4, 100 };
+        static int[] ammoPrices = { 10, 20, 200, 500, 50 };
         int index;
         Rectangle rect;
         float alpha;
@@ -223,6 +253,17 @@ namespace StarSailor.GUI
             rect = r;
             alpha = 0.8f;
             index = i;
+        }
+        int GetQuantity()
+        {
+            int count = 0;
+            int[] ammoIDS = { ModContent.ItemType<NinemmRound>(), ModContent.ItemType<FiveFivemmRound>(), ModContent.ItemType<RocketItem>(), ModContent.ItemType<MeteorBombItem>(), ModContent.ItemType<ShotgunShell>() };
+            int id = ammoIDS[index];
+            foreach (Item i in Main.LocalPlayer.inventory)
+            {
+                if (i.type == id) count += i.stack;
+            }
+            return count;
         }
         public void Draw(SpriteBatch sb)
         {
@@ -249,49 +290,52 @@ namespace StarSailor.GUI
             }
             else color = Color.DarkRed;
             string text = "Buy " + quantity;
-            float scale = 0.55f;
+            float scale = 0.40f;
             Vector2 vector = Main.fontDeathText.MeasureString(text);
             Vector2 location = new Vector2(rect.X, rect.Y + 4) + (0.5f * new Vector2(rect.Width, rect.Height));
             DrawBox(sb, rect, color, alpha);
-            ChatManager.DrawColorCodedStringWithShadow(sb, Main.fontDeathText, text, location, Color.White, 0f, vector / 2f, new Vector2(scale), -1f, 1.5f);
+            ChatManager.DrawColorCodedStringWithShadow(sb, Main.fontDeathText, text, new Vector2(0, -10) + location, Color.White, 0f, vector / 2f, new Vector2(scale), -1f, 1.5f);
+            int[] ammoIDS = { ModContent.ItemType<NinemmRound>(), ModContent.ItemType<FiveFivemmRound>(), ModContent.ItemType<RocketItem>(), ModContent.ItemType<MeteorBombItem>(), ModContent.ItemType<ShotgunShell>() };
+            Vector2 dims = Main.fontMouseText.MeasureString(GetCostMeasureString());
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, GetCostString(), new Vector2(0, 10) + location, Color.White, 0f, dims/2, Vector2.One, -1f, 2f);
 
             if (quantity == 1)
             {
                 int type1;
-                int typeMax;
+                //int typeMax;
                 switch (index)
                 {
                     case 0:
                         type1 = ModContent.ItemType<PistolV1>();
-                        typeMax = ModContent.ItemType<PistolVMax>();
+                        //typeMax = ModContent.ItemType<PistolVMax>();
                         break;
                     case 1:
                         type1 = ModContent.ItemType<AssaultRifleV1>();
-                        typeMax = ModContent.ItemType<AssaultRifleVMax>();
+                        //typeMax = ModContent.ItemType<AssaultRifleVMax>();
                         break;
                     case 2:
                         type1 = ModContent.ItemType<RocketLauncherV1>();
-                        typeMax = ModContent.ItemType<RocketLauncherVMax>();
+                        //typeMax = ModContent.ItemType<RocketLauncherVMax>();
                         break;
                     case 3:
                         type1 = ModContent.ItemType<MeteorBombV1>();
-                        typeMax = ModContent.ItemType<MeteorBombVMax>();
+                        //typeMax = ModContent.ItemType<MeteorBombVMax>();
                         break;
                     case 4:
                         type1 = ModContent.ItemType<ShotgunV1>();
-                        typeMax = ModContent.ItemType<ShotgunVMax>();
+                        //typeMax = ModContent.ItemType<ShotgunVMax>();
                         break;
                     default:
                         throw new ArgumentException();
                 }
                 Texture2D tex1 = Main.itemTexture[type1];
-                Texture2D texMax = Main.itemTexture[typeMax];
-                sb.Draw(tex1, new Rectangle(20 + (Main.screenWidth / 2), rect.Y, tex1.Width, tex1.Height), Color.White);
-                sb.Draw(texMax, new Rectangle(tex1.Width + 30 + (Main.screenWidth / 2), rect.Y, texMax.Width, texMax.Height), Color.White);
+                Texture2D texMax = Main.itemTexture[ammoIDS[index]];
+                sb.Draw(tex1, new Rectangle(50 + (Main.screenWidth / 2) - (tex1.Width / 2), rect.Y + (int)(0.5f * (rect.Height - tex1.Height)), tex1.Width, tex1.Height), Color.White);
+                sb.Draw(texMax, new Rectangle(130 + (Main.screenWidth / 2) - (texMax.Width / 2), rect.Y + (int)(0.5f * (rect.Height - tex1.Height)), texMax.Width, texMax.Height), Color.White);
             }
             else if (quantity == 100)
             {
-
+                ChatManager.DrawColorCodedStringWithShadow(sb, Main.fontDeathText, "x" + GetQuantity(), location + new Vector2(30 + rect.Width, 0), Color.White, 0f, vector / 2, new Vector2(scale), -1f, 1.5f);
             }
         }
         public void Update()
@@ -307,6 +351,55 @@ namespace StarSailor.GUI
                 Item.NewItem(Main.LocalPlayer.position, ammoIDS[index], quantity);
                 pf.ChargeCoins(quantity * pricePerAmmo);
             }
+        }
+        string GetCostString()
+        {
+
+            string coinsText = "";
+            int[] coins = Utils.CoinsSplit(quantity * pricePerAmmo);
+            if (coins[3] > 0)
+            {
+                coinsText = coinsText + "[c/" + Colors.AlphaDarken(Colors.CoinPlatinum).Hex3() + ":" + coins[3] + " " + Language.GetTextValue("LegacyInterface.15") + "] ";
+            }
+            if (coins[2] > 0)
+            {
+                coinsText = coinsText + "[c/" + Colors.AlphaDarken(Colors.CoinGold).Hex3() + ":" + coins[2] + " " + Language.GetTextValue("LegacyInterface.16") + "] ";
+            }
+            if (coins[1] > 0)
+            {
+                coinsText = coinsText + "[c/" + Colors.AlphaDarken(Colors.CoinSilver).Hex3() + ":" + coins[1] + " " + Language.GetTextValue("LegacyInterface.17") + "] ";
+            }
+            if (coins[0] > 0)
+            {
+                coinsText = coinsText + "[c/" + Colors.AlphaDarken(Colors.CoinCopper).Hex3() + ":" + coins[0] + " " + Language.GetTextValue("LegacyInterface.18") + "] ";
+            }
+            return coinsText;
+
+        }
+        string GetCostMeasureString()
+        {
+
+            string coinsText = "";
+            int[] coins = Utils.CoinsSplit(quantity * pricePerAmmo);
+            if (coins[3] > 0)
+            {
+                coinsText = coinsText + " " + coins[3] + " " + Language.GetTextValue("LegacyInterface.15");
+            }
+            if (coins[2] > 0)
+            {
+                coinsText = coinsText + " " + coins[2] + " " + Language.GetTextValue("LegacyInterface.16");
+            }
+            if (coins[1] > 0)
+            {
+                coinsText = coinsText + " " + coins[1] + " " + Language.GetTextValue("LegacyInterface.17");
+            }
+            if (coins[0] > 0)
+            {
+                coinsText = coinsText + " " + coins[0] + " " + Language.GetTextValue("LegacyInterface.18");
+            }
+            return coinsText;
+
+
         }
     }
     public enum Resource

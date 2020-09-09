@@ -42,9 +42,9 @@ namespace StarSailor.Tiles
             {
                 Main.NewText("Throwing your items at the pole does nothing, you dingus!");
             }
-            else if (p.mount.Type != ModContent.GetInstance<Mech>().Type)
+            else if (p.mount.Type != ModContent.GetInstance<Boat>().Type)
             {
-                p.mount.SetMount(ModContent.GetInstance<Mech>().Type, p);
+                p.mount.SetMount(ModContent.GetInstance<Boat>().Type, p);
             }
             return base.NewRightClick(i, j);
         }
@@ -71,12 +71,14 @@ namespace StarSailor.Tiles
 
             if (Framing.GetTileSafely(i, j-1).type != Type && Main.player[Main.myPlayer].mount.Type != ModContent.GetInstance<Boat>().Type)
             {
-                Vector2 pixelPos = 16f * new Vector2(i, j);
+                Vector2 zero = new Vector2(Main.offScreenRange, Main.offScreenRange);
+                Vector2 pixelPos = 16f * new Vector2(i, j) + zero;
                 Vector2 screenPos = pixelPos - Main.screenPosition;
                 Vector2 boatPos = new Vector2((int)screenPos.X - 140, (int)screenPos.Y + 46 + disp);
+                //Main.NewText(screenPos + " " + pixelPos + "  " + Main.screenPosition);
                 StarSailorMod t = ModContent.GetInstance<StarSailorMod>();
                 GuiHelpers.DrawLine(spriteBatch, screenPos + new Vector2(10, 10), boatPos + new Vector2(t.boatTex.Width - 10, 20), t.ropeTex.Height, Color.White, t.ropeTex);
-                spriteBatch.Draw(t.boatTex, new Rectangle((int)screenPos.X - 140, (int)screenPos.Y + 46 + disp, t.boatTex.Width, t.boatTex.Height), Color.White);
+                spriteBatch.Draw(t.boatTex, new Rectangle((int)boatPos.X, (int)boatPos.Y, t.boatTex.Width, t.boatTex.Height), Color.White);
             }
             return base.PreDraw(i, j, spriteBatch);
         }

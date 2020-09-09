@@ -19,6 +19,7 @@ namespace StarSailor.NPCs
         public static NPC FindNPC(int npcType) => Main.npc.FirstOrDefault(npc => npc.type == npcType && npc.active);
         public abstract string InternalName { get; }
         public bool doMotion = true;
+        Texture2D speechTexture;
         public float WalkSpeed { get
             {
                 return 1;
@@ -60,6 +61,7 @@ namespace StarSailor.NPCs
         {
             DisplayName.SetDefault(InternalName);
             Main.npcFrameCount[npc.type] = 15;
+
         }
 
 
@@ -76,6 +78,9 @@ namespace StarSailor.NPCs
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.knockBackResist = 0.5f;
+            Texture2D texture = ModContent.GetTexture(Texture);
+            speechTexture = TextureHooks.GetShrunkTexture(texture, 15);
+            //speechTexture = texture;
         }
         public bool CanRightClick()
         {
@@ -93,6 +98,7 @@ namespace StarSailor.NPCs
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {
+            if (Interaction == null) return base.PreDraw(spriteBatch, drawColor); 
             if (Interaction.Enabled) Interaction.Update();
             if (CanRightClick())
             {
@@ -101,6 +107,7 @@ namespace StarSailor.NPCs
             }
             return base.PreDraw(spriteBatch, drawColor);
         }
+
         public override void FindFrame(int frameHeight)
         {
             if (!doMotion)
@@ -130,7 +137,7 @@ namespace StarSailor.NPCs
                 {
                     npc.frameCounter %= speed;
                     frameNum++;
-                    if (frameNum >= 15) frameNum = 1 + (frameNum % 15);
+                    if (frameNum >= Main.npcFrameCount[npc.type]) frameNum = 1 + (frameNum % Main.npcFrameCount[npc.type]);
                 }
             }
             else
@@ -229,5 +236,20 @@ namespace StarSailor.NPCs
         {
             return GetPosition() - Main.screenPosition;
         }
+
+        public void DrawHeadSpeech(SpriteBatch sb, Rectangle rect)
+        {
+            //sb = Main.spriteBatch;
+            int w = speechTexture.Width;
+            //int factor = rect.Width / w;
+            int factor = 2;
+            int newWidth = factor * w;
+            sb.End();
+            sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
+            sb.Draw(speechTexture, new Rectangle(rect.X + (rect.Width / 2) - (newWidth / 2), rect.Y + rect.Height - newWidth, newWidth, newWidth), new Rectangle(0, 0, speechTexture.Width, speechTexture.Width), Color.White);
+            sb.End();
+            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+        }
+        public string GetName() => InternalName;
     }
 }

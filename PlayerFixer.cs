@@ -47,11 +47,12 @@ namespace StarSailor
         public float bodyFrameCounter = 0;
         public int legFrameY = 0;
         public int bodyFrameY = 0;
-
+        public List<DrawData> drawDataBuffer = new List<DrawData>();
         public Biomes[] overworldBiomes = { Biomes.DesertOverworld, Biomes.DesertTown };
-
+        public string GetName() => player.name;
         public override void Initialize()
         {
+
             playerHolder = new PlayerHolder();
             //player.rotati
             biome = Biomes.DesertOverworld;
@@ -59,7 +60,28 @@ namespace StarSailor
             SetUpBiomeMappings();
             SetUpGravityValues();
             SetUpStarCounts();
+            //Texture2D tempTex = TextureHooks.StackTextures(20, Main.playerHairTexture[player.hair], )
             base.Initialize();
+        }
+        public void DrawHeadSpeech(SpriteBatch sb, Rectangle rect)
+        {
+            Rectangle src = new Rectangle(0, 0, 40, 40);
+            sb.End();
+            sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
+            //Main.NewText(Main.playerDrawData.Count);
+            //sb.Draw(Main.playerTextures);
+            //sb.Draw(Main.playerTextures[0, 0], rect, src, player.skinColor);
+            //sb.Draw(Main.playerTextures[0, 1], rect, src, Color.White);
+            //sb.Draw(Main.playerTextures[0, 2], rect, src, player.eyeColor);
+            //sb.Draw(Main.playerHairTexture[player.hair], rect, src, player.hairColor);
+            for (int i = 0; i < drawDataBuffer.Count; i++)
+            {
+                //sb.Draw(Main.playerDrawData[i].texture, new Vector2(100 * i, 50*i), Main.playerDrawData[i].color);
+                sb.Draw(drawDataBuffer[i].texture, rect, src, drawDataBuffer[i].color);
+            }
+            sb.End();
+            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            drawDataBuffer.Clear(); //Might have to copy this back across
         }
         public override void ResetEffects()
         {
@@ -88,16 +110,22 @@ namespace StarSailor
             switch (res)
             {
                 case Resource.Money:
-                    foreach (Item it in player.inventory)
-                    {
-                        if (it.type == ItemID.PlatinumCoin) num += it.stack * 1000000;
-                        else if (it.type == ItemID.GoldCoin) num += it.stack * 10000;
-                        else if (it.type == ItemID.SilverCoin) num += it.stack * 100;
-                        else if (it.type == ItemID.CopperCoin) num += it.stack;
-                    }
+                    num = GetMoney();
                     break;
             }
             return num >= cost;
+        }
+        public int GetMoney()
+        {
+            int num = 0;
+            foreach (Item it in player.inventory)
+            {
+                if (it.type == ItemID.PlatinumCoin) num += it.stack * 1000000;
+                else if (it.type == ItemID.GoldCoin) num += it.stack * 10000;
+                else if (it.type == ItemID.SilverCoin) num += it.stack * 100;
+                else if (it.type == ItemID.CopperCoin) num += it.stack;
+            }
+            return num;
         }
         public void ChargeCoins(int c)
         {
@@ -154,15 +182,17 @@ namespace StarSailor
         {
             drawInfo.drawPlayer.fullRotationOrigin = 0.5f * new Vector2(drawInfo.drawPlayer.width, drawInfo.drawPlayer.height);
             StarSailorMod sm = (StarSailorMod)mod;
-
-            if (player.mount.Type == ModContent.GetInstance<Rocket>().Type || player.mount.Type == ModContent.GetInstance<StartingShip>().Type)
+            Color invis = new Color(0, 0, 0, 0);
+            if (player.mount.Type == ModContent.GetInstance<Rocket>().Type)
             {
-                Color invis = new Color(0, 0, 0, 0);
+                
+                
                 drawInfo.bodyColor = invis;
                 drawInfo.hairColor = invis;
                 drawInfo.headGlowMaskColor = invis;
                 drawInfo.armGlowMaskColor = invis;
                 drawInfo.bodyGlowMaskColor = invis;
+
                 drawInfo.eyeColor = invis;
                 drawInfo.eyeWhiteColor = invis;
                 drawInfo.faceColor = invis;
@@ -175,6 +205,7 @@ namespace StarSailor
                 drawInfo.shoeColor = invis;
                 drawInfo.underShirtColor = invis;
                 drawInfo.upperArmorColor = invis;
+                
             }
 
             if (custGravity)
@@ -288,6 +319,7 @@ namespace StarSailor
 
             base.ModifyDrawInfo(ref drawInfo);
         }
+        
         public override void ModifyDrawLayers(List<PlayerLayer> layers)
         {
             int[] valids = { ModContent.ItemType<PowerGloveV1>(), ModContent.ItemType<PowerGloveV2>(), ModContent.ItemType<PowerGloveV3>(), ModContent.ItemType<PowerGloveVMax>() };
@@ -306,6 +338,19 @@ namespace StarSailor
                 layers.Remove(layer);
                 layers.Add(layer);
             }
+            if (player.mount.Type == ModContent.GetInstance<StartingShip>().Type)
+            {
+                foreach (PlayerLayer l in layers)
+                {
+                    if (l.Name == "Arms")
+
+                    {
+                        layers.Remove(l);
+                        break;
+                    }
+                }
+            }
+            //layers[0].
             //layers.Add(new PlayerLayer())
             base.ModifyDrawLayers(layers);
         }
