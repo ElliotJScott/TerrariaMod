@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace StarSailor.Sequencing
 {
-    class SequenceQueue : ICloneable
+    public class SequenceQueue : ICloneable
     {
         readonly Sequence sequence;
         private List<SequenceQueueElement> elements = new List<SequenceQueueElement>();

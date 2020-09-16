@@ -39,7 +39,7 @@ namespace StarSailor
 
         public Planet planet;
         public Biomes biome;
-        public List<BiomeLocationMapping> mappings = new List<BiomeLocationMapping>();
+
         public Dictionary<Planet, float> gravityValues = new Dictionary<Planet, float>();
         public Dictionary<Biomes, int> starCounts = new Dictionary<Biomes, int>();
 
@@ -57,7 +57,7 @@ namespace StarSailor
             //player.rotati
             biome = Biomes.DesertOverworld;
             planet = Planet.Desert;
-            SetUpBiomeMappings();
+            
             SetUpGravityValues();
             SetUpStarCounts();
             //Texture2D tempTex = TextureHooks.StackTextures(20, Main.playerHairTexture[player.hair], )
@@ -88,16 +88,7 @@ namespace StarSailor
             ampedCounter = 0;
             base.ResetEffects();
         }
-        public void SetUpBiomeMappings()
-        {
-            mappings.Clear();
-            mappings.Add(new BiomeLocationMapping(new Vector2(201, 1572), new Vector2(1741, 1812), Biomes.DesertOverworld, Planet.Desert, 1));
-            mappings.Add(new BiomeLocationMapping(new Vector2(313, 1843), new Vector2(1294, 2047), Biomes.DesertTown, Planet.Desert, 1));
-            mappings.Add(new BiomeLocationMapping(new Vector2(1899, 1640), new Vector2(2157, 1784), Biomes.DesertTreeCave, Planet.Desert, 2));
-            mappings.Add(new BiomeLocationMapping(new Vector2(1317, 1881), new Vector2(1668, 2038), Biomes.DesertMoleCave, Planet.Desert, 2));
-            mappings.Add(new BiomeLocationMapping(new Vector2(192, 1554), new Vector2(2187, 2069), Biomes.DesertCaves, Planet.Desert, 0));
-            mappings.Add(new BiomeLocationMapping(new Rectangle(4656, 200, 200, 100), Biomes.Intro, Planet.Intro, 0));
-        }
+
         public bool CanPurchase(ShopItem i)
         {
             int cost = i.cost;
@@ -144,18 +135,8 @@ namespace StarSailor
         }
         public (Biomes, Planet) GetCurrentBiomePlanet()
         {
-            Vector2 playerPos = player.position / 16;
-            List<BiomeLocationMapping> valids = new List<BiomeLocationMapping>();
-            foreach (BiomeLocationMapping b in mappings)
-                if (b.CheckPlayerSatisfies(playerPos))
-                    valids.Add(b);
-            valids.Sort();
-
-            if (valids.Count > 0)
-            {
-                return (valids[0].biome, valids[0].planet);
-            }
-            else return (Biomes.InFlight, Planet.InFlight);
+            StarSailorMod sm = (StarSailorMod)mod;
+            return sm.GetBiomePlanet(player.Center/ 16f);
         }
 
         public override void PreUpdateMovement()
@@ -207,7 +188,7 @@ namespace StarSailor
                 drawInfo.upperArmorColor = invis;
                 
             }
-
+            //Main.NewText(custGravity);
             if (custGravity)
             {
                 drawInfo.drawPlayer.mount.SetMount(ModContent.GetInstance<SpaceControls>().Type, drawInfo.drawPlayer);
@@ -362,9 +343,10 @@ namespace StarSailor
             //Main.numStars = Main.maxStars;
             bool conditionInSpace = false;
             bool conditionOverworld = overworldBiomes.Contains(biome);
+            bool conditionLava = biome == Biomes.LavaOverworld;
             player.ManageSpecialBiomeVisuals("StarSailorMod:SkySpace", conditionInSpace);
             player.ManageSpecialBiomeVisuals("StarSailorMod:SkyOverworld", conditionOverworld);
-
+            player.ManageSpecialBiomeVisuals("StarSailorMod:SkyLava", conditionLava);
         }
         public override void PostUpdateRunSpeeds()
         {
@@ -493,38 +475,7 @@ namespace StarSailor
 
         public bool WithinDistance() => false;
     }
-    public struct BiomeLocationMapping : IComparable<BiomeLocationMapping>
-    {
-        public int priority;
-        public Rectangle location;
-        public Biomes biome;
-        public Planet planet;
 
-        public BiomeLocationMapping(Rectangle loc, Biomes b, Planet pl, int pr)
-        {
-            location = loc;
-            biome = b;
-            planet = pl;
-            priority = pr;
-        }
-        public BiomeLocationMapping(Vector2 tl, Vector2 br, Biomes b, Planet pl, int pr)
-        {
-            location = new Rectangle((int)tl.X, (int)tl.Y, (int)(br.X - tl.X), (int)(br.Y - tl.Y));
-            biome = b;
-            planet = pl;
-            priority = pr;
-        }
-        public bool CheckPlayerSatisfies(Vector2 pos)
-        {
-            Rectangle testRect = new Rectangle((int)pos.X, (int)pos.Y, 1, 1);
-            return testRect.Intersects(location);
-        }
-
-        public int CompareTo(BiomeLocationMapping other)
-        {
-            return other.priority - priority;
-        }
-    }
     public class PlayerHolder
     {
         bool engaged = false;

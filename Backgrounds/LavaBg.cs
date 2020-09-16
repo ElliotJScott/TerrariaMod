@@ -12,10 +12,10 @@ using Terraria.ModLoader;
 
 namespace StarSailor.Backgrounds
 {
-    class Level0TopBg : ModSurfaceBgStyle
+    class LavaBg : ModSurfaceBgStyle
     {
         public const int numStars = 250;
-        
+        int ticker = 0;
         public override void ModifyFarFades(float[] fades, float transitionSpeed)
         {
             StarSailorMod sm = (StarSailorMod)mod;
@@ -47,7 +47,7 @@ namespace StarSailor.Backgrounds
             {
                 //PlayerFixer pl = ModContent.GetInstance<PlayerFixer>();
                 
-                return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.DesertOverworld;
+                return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.LavaOverworld;
             }
             catch { return false; }
         }
@@ -69,26 +69,24 @@ namespace StarSailor.Backgrounds
         {
             StarSailorMod sm = (StarSailorMod)mod;
             //return true;
-            DrawData d = new DrawData(sm.overworldSky, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White * 0.8f);
+            DrawData d = new DrawData(sm.lavaSky, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
             
             //GameShaders.Misc["StarShader"].Apply(d);
             d.Draw(spriteBatch);
-
-            Texture2D[] texs = { sm.desOverFront, sm.desOverMid };
-            float[] darkens = { 0.8f, 0.8f};
-            int[] offs = { 400, 150};
-            float[] scales = { 1f, 1f };
+            if (++ticker > 12) ticker = 0;
+            Texture2D[] texs = { sm.lavaMid, sm.lavaBack, sm.lavaMid2 };
+            float[] darkens = { 0.8f, 0.6f, 0.6f};
+            int[] offs = { 100, 0, 270};
+            float[] scales = { 1f,0.8f, 1f };
+            int[] frameCounts = { 2,1, 2 };
+            int[] frames = { ticker>=6?1:0,0, ticker >= 6 ? 1 : 0};
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
-
-            //GameShaders.Misc["StarShader"].Apply();
-            spriteBatch.Draw(sm.sun0a, new Rectangle(Main.screenWidth * 11 / 16, 165, 160, 160), Color.White);
             sm.DrawStars(spriteBatch);
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-
-            BgHooks.DrawBGs(spriteBatch, texs, offs, darkens, scales);
+            BgHooks.DrawAnimatedBGs(spriteBatch, texs, offs, darkens, scales, frameCounts, frames);
 
 
             return false;

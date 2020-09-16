@@ -27,7 +27,6 @@ namespace StarSailor
             planetNames[Planet.End] = ""; //
             planetNames[Planet.Floating] = "FloatingName";
             planetNames[Planet.Ice] = "IcePlanetName";
-            planetNames[Planet.IceMoon] = "IceMoonName";
             planetNames[Planet.InFlight] = ""; //
             planetNames[Planet.Intro] = ""; //
             planetNames[Planet.Jungle] = "JungleName";

@@ -85,6 +85,7 @@ namespace StarSailor.Items
                 {
                     t.wall = id;
                     WorldGen.SquareWallFrame(i, j, true);
+                    WorldGen.SlopeTile(i, j, 1);
                     if (Vector2.Distance(new Vector2(i, j), new Vector2(initI, initJ)) <= max)
                     {
                         SpreadPlacer(i - 1, j, initI, initJ, wall, id, max, IDtoReplace);
@@ -109,6 +110,7 @@ namespace StarSailor.Items
                     t.frameY = 0;
                     t.wall = w;
                     WorldGen.SquareTileFrame(i, j, true);
+                    WorldGen.SlopeTile(i, j, 1);
                     if (Vector2.Distance(new Vector2(i, j), new Vector2(initI, initJ)) <= max)
                     {
                         SpreadPlacer(i - 1, j, initI, initJ, wall, id, max, IDtoReplace);

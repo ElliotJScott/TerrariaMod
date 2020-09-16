@@ -44,14 +44,23 @@ namespace StarSailor.Backgrounds
             rot = 0;
             period = p;
         }
-        public static CustomStar CreateNewStar(int yMax, Distribution dist)
+        public static CustomStar CreateNewStar(int yMax, Distribution dist, (Vector2, int)[] forbiddenRegions)
         {
             Color c = colors[Main.rand.Next(colors.Length)];
             Vector2 pos = GeneratePosition(yMax, dist);
+            if (IsForbidden(pos, forbiddenRegions)) return CreateNewStar(yMax, dist, forbiddenRegions);
             int s = GenSize();
             int p = Main.rand.Next(180, 300);
             float a = GenAlpha(dist, pos, yMax);
             return new CustomStar(pos, c, s, p, a);
+        }
+        static bool IsForbidden(Vector2 position, (Vector2, int)[] forbiddenRegions)
+        {
+            foreach ((Vector2, int) t in forbiddenRegions)
+            {
+                if (Vector2.Distance(t.Item1, position) <= t.Item2) return true;
+            }
+            return false;
         }
         public static int GenSize()
         {

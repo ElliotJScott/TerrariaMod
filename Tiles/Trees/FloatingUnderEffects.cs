@@ -16,7 +16,8 @@ namespace StarSailor.Tiles.Trees
     {
         public override bool PreDraw(int i, int j, int type, SpriteBatch spriteBatch)
         {
-            if (type == TileID.Trees)
+            Biomes b = ((StarSailorMod)mod).GetBiomePlanet(new Vector2(i,j)).Item1;
+            if (type == TileID.Trees && b == Biomes.FloatingUTown)
             {
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);

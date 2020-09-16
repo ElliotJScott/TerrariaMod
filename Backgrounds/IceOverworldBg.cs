@@ -12,15 +12,17 @@ using Terraria.ModLoader;
 
 namespace StarSailor.Backgrounds
 {
-    class Level0TopBg : ModSurfaceBgStyle
+    class IceOverworldBg : ModSurfaceBgStyle
     {
-        public const int numStars = 250;
+        public const int numStars = 150;
         
         public override void ModifyFarFades(float[] fades, float transitionSpeed)
         {
             StarSailorMod sm = (StarSailorMod)mod;
             sm.targetStarNum = numStars;
             sm.currentDistribution = Distribution.Atan;
+            sm.forbiddenStarRegions = new (Vector2, int)[1];
+            sm.forbiddenStarRegions[0] = (new Vector2(Main.screenWidth * 7 / 16, 85) + new Vector2(80, 80), (200 * 160) / sm.sun1.Width);
             for (int i = 0; i < fades.Length; i++)
             {
                 if (i == Slot)
@@ -47,7 +49,7 @@ namespace StarSailor.Backgrounds
             {
                 //PlayerFixer pl = ModContent.GetInstance<PlayerFixer>();
                 
-                return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.DesertOverworld;
+                return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.IceOverworld;
             }
             catch { return false; }
         }
@@ -69,20 +71,20 @@ namespace StarSailor.Backgrounds
         {
             StarSailorMod sm = (StarSailorMod)mod;
             //return true;
-            DrawData d = new DrawData(sm.overworldSky, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White * 0.8f);
+            DrawData d = new DrawData(sm.iceSky, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White * 0.8f);
             
-            //GameShaders.Misc["StarShader"].Apply(d);
             d.Draw(spriteBatch);
 
-            Texture2D[] texs = { sm.desOverFront, sm.desOverMid };
-            float[] darkens = { 0.8f, 0.8f};
-            int[] offs = { 400, 150};
-            float[] scales = { 1f, 1f };
+            Texture2D[] texs = { sm.iceOverworldNear, sm.iceOverworldMid, sm.iceOverworldFar};
+            float[] darkens = { 1f, 1f, 1f };
+            int[] offs = { 300, 100, 500};
+            float[] scales = { 0.850f, 0.85f, 1f};
+            //spriteBatch.Draw(texs[0], new Rectangle(0, 0, 1024, 1024), Color.White);
+
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
-
-            //GameShaders.Misc["StarShader"].Apply();
-            spriteBatch.Draw(sm.sun0a, new Rectangle(Main.screenWidth * 11 / 16, 165, 160, 160), Color.White);
+            spriteBatch.Draw(sm.sun1, new Rectangle(Main.screenWidth * 7 / 16, 85, 160, 160), Color.White);
+            //spriteBatch.Draw(sm.sun0, new Rectangle(Main.screenWidth * 5 / 16, 165, 160, 160), Color.White);
             sm.DrawStars(spriteBatch);
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);

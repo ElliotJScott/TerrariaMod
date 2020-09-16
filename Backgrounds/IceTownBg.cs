@@ -3,24 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StarSailor;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace StarSailor.Backgrounds
 {
-    class Level0TopBg : ModSurfaceBgStyle
+    class iceTownBg : ModSurfaceBgStyle
     {
-        public const int numStars = 250;
-        
         public override void ModifyFarFades(float[] fades, float transitionSpeed)
         {
             StarSailorMod sm = (StarSailorMod)mod;
-            sm.targetStarNum = numStars;
-            sm.currentDistribution = Distribution.Atan;
+            sm.targetStarNum = 0;
             for (int i = 0; i < fades.Length; i++)
             {
                 if (i == Slot)
@@ -41,56 +36,37 @@ namespace StarSailor.Backgrounds
                 }
             }
         }
+     
         public override bool ChooseBgStyle()
         {
             try
             {
                 //PlayerFixer pl = ModContent.GetInstance<PlayerFixer>();
-                
-                return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.DesertOverworld;
+                return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.IceCaveTown;
             }
             catch { return false; }
         }
         public override int ChooseFarTexture()
         {
-            return base.ChooseFarTexture();
+            return -1;
         }
         public override int ChooseMiddleTexture()
         {
             return -1;
-            //return mod.GetBackgroundSlot("Backgrounds/DesertAboveMid");
         }
         public override int ChooseCloseTexture(ref float scale, ref double parallax, ref float a, ref float b)
         {
             return -1;
-            //return mod.GetBackgroundSlot("Backgrounds/DesertAboveFront");
         }
         public override bool PreDrawCloseBackground(SpriteBatch spriteBatch)
         {
             StarSailorMod sm = (StarSailorMod)mod;
-            //return true;
-            DrawData d = new DrawData(sm.overworldSky, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White * 0.8f);
-            
-            //GameShaders.Misc["StarShader"].Apply(d);
-            d.Draw(spriteBatch);
-
-            Texture2D[] texs = { sm.desOverFront, sm.desOverMid };
-            float[] darkens = { 0.8f, 0.8f};
-            int[] offs = { 400, 150};
-            float[] scales = { 1f, 1f };
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
-
-            //GameShaders.Misc["StarShader"].Apply();
-            spriteBatch.Draw(sm.sun0a, new Rectangle(Main.screenWidth * 11 / 16, 165, 160, 160), Color.White);
-            sm.DrawStars(spriteBatch);
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-
-
+            sm.stars.Clear();
+            Texture2D[] texs = { sm.iceCaveFront, sm.iceCaveMid1, sm.iceCaveMid3, sm.iceCaveMid2, sm.iceCaveBack };
+            float[] darkens = { 1, 1, 0.8f, 0.5f, 0.3f };
+            int[] offs = { -300, -250, -150, -250, 0 };
+            float[] scales = { 1.5f, 1.5f, 1.3f, 1.5f, 1.3f };
             BgHooks.DrawBGs(spriteBatch, texs, offs, darkens, scales);
-
-
             return false;
         }
     }

@@ -16,7 +16,7 @@ namespace StarSailor.Tiles
     {
         public Dictionary<Vector2, List<BoundingTile>> boundingTiles = new Dictionary<Vector2, List<BoundingTile>>();
         //public List<Vector2> boundingPositions = new List<Vector2>();
-        
+
         bool clearBoundPos = true;
         public override void SetDefaults()
         {
@@ -27,13 +27,16 @@ namespace StarSailor.Tiles
             drop = mod.ItemType("GravitySource");
             AddMapEntry(new Color(20, 20, 20));
         }
+
         public void CreateSurfaceMap(int i, int j, List<BoundingTile> appList)
         {
-
-            CheckBound(i, j, new Vector2(i, j), appList);
+            List<Vector2> checkedLocations = new List<Vector2>();
+            CheckBound(i, j, new Vector2(i, j), appList, checkedLocations);
         }
         public override void RandomUpdate(int i, int j)
         {
+            
+            //Main.NewText(Main.LocalPlayer.GetModPlayer<PlayerFixer>().gravSources.Count);
             List<BoundingTile> appList;
             if (boundingTiles.TryGetValue(new Vector2(i, j), out appList))
             {
@@ -44,10 +47,13 @@ namespace StarSailor.Tiles
             {
                 boundingTiles.Add(new Vector2(i, j), new List<BoundingTile>());
             }
+            
             base.RandomUpdate(i, j);
         }
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            
+            
             //.Clear();
             if (!boundingTiles.ContainsKey(new Vector2(i, j)))
             {
@@ -55,6 +61,8 @@ namespace StarSailor.Tiles
                 boundingTiles.Add(new Vector2(i, j), appList);
                 CreateSurfaceMap(i, j, appList);
             }
+            
+
             return base.PreDraw(i, j, spriteBatch);
         }
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
@@ -62,9 +70,10 @@ namespace StarSailor.Tiles
             boundingTiles.Remove(new Vector2(i, j));
             base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
         }
-        public void CheckBound(int i, int j, Vector2 home, List<BoundingTile> appList)
+        public void CheckBound(int i, int j, Vector2 home, List<BoundingTile> appList, List<Vector2> checkedLocations)
         {
             Vector2 thisPos = new Vector2(i, j);
+            checkedLocations.Add(thisPos);
             List<Tile> checkTiles = new List<Tile>();
             List<Vector2> positions = new List<Vector2>();
             for (int p = -1; p <= 1; p += 2)
@@ -81,8 +90,11 @@ namespace StarSailor.Tiles
                 vals[q] = checkTiles[q].type == 0;
                 if (checkTiles[q].type == 0)
                     nextToAir = true;
-                else if (Vector2.Distance(positions[q], home) > Vector2.Distance(thisPos, home) && (checkTiles[q].type == ModContent.GetInstance<AsteroidRock>().Type || checkTiles[q].type == ModContent.GetInstance<LaunchPad>().Type))
-                    CheckBound((int)positions[q].X, (int)positions[q].Y, home, appList);
+                else if (Vector2.Distance(positions[q], home) > Vector2.Distance(thisPos, home)
+                    && !checkedLocations.Contains(positions[q])
+                    && (checkTiles[q].type == ModContent.GetInstance<AsteroidRock>().Type || checkTiles[q].type == ModContent.GetInstance<LaunchPad>().Type))
+                    CheckBound((int)positions[q].X, (int)positions[q].Y, home, appList, checkedLocations);
+                    //Main.NewText("Penis");
             }
             if (nextToAir && !CheckListForTile(appList, thisPos)) appList.Add(new BoundingTile(thisPos, vals));
         }
@@ -97,6 +109,7 @@ namespace StarSailor.Tiles
         {
             num = fail ? 1 : 3;
         }
+        
         public override void NearbyEffects(int i, int j, bool closer)
         {
             //Main.player[Main.myPlayer].gravControl = true;
@@ -107,6 +120,7 @@ namespace StarSailor.Tiles
             //Main.player[Main.myPlayer].GetModPlayer<PlayerFixer>().custGravity = true;
             base.NearbyEffects(i, j, closer);
         }
+        
         public bool CheckIntersectSurface(Player player)
         {
             foreach (List<BoundingTile> l in boundingTiles.Values)
@@ -158,7 +172,7 @@ namespace StarSailor.Tiles
                             {
                                 return true;
                             }
-                         }
+                        }
 
                     }
 
@@ -177,7 +191,7 @@ namespace StarSailor.Tiles
                     Vector2 tileTLC = (16f * v.pos) - Main.screenPosition;
                     for (int i = 0; i < 4; i++)
                     {
-                       
+
                         if (v.getDirValue((Direction)i))
                         {
                             Vector2 loc = v.pos;
@@ -220,17 +234,18 @@ namespace StarSailor.Tiles
                                 c = Color.Green * 0.5f;
                             }
                             sb.Draw(ModContent.GetInstance<StarSailorMod>().pixel, rect, c);
-                            
+
                         }
-                        
+
                     }
-                    
+
                     //sb.Draw(ModContent.GetInstance<TEO>().pixel, new Rectangle((int)tileTLC.X, (int)tileTLC.Y, 16, 16), Color.Red * 0.5f);
                 }
             }
         }
 
     }
+
     public enum Direction
     {
         Up,
@@ -240,7 +255,7 @@ namespace StarSailor.Tiles
     }
     public class BoundingTile
     {
-        
+
         public Vector2 pos;
         bool[] isAir = new bool[4];
         public BoundingTile(Vector2 p, bool[] vals)
@@ -256,5 +271,7 @@ namespace StarSailor.Tiles
         {
             return isAir[(int)dir];
         }
+
     }
+
 }

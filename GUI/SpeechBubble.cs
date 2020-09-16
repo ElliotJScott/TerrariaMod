@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Terraria.UI.Chat;
 using ReLogic.Graphics;
 using StarSailor.NPCs;
+using StarSailor.Sequencing;
 
 namespace StarSailor.GUI
 {
@@ -63,7 +64,7 @@ namespace StarSailor.GUI
         public int GetInitDuration() => initDuration;
         public int GetWidth() => width;
 
-        public void Update()
+        public virtual void Update()
         {
             totChars += numCharsPerFrame;
             duration--;
@@ -78,7 +79,7 @@ namespace StarSailor.GUI
             yPos = (int)newPos.Y;
             Update();
         }
-        public void Draw(SpriteBatch sb)
+        public virtual void Draw(SpriteBatch sb)
         {
             sb.Draw(corner, new Rectangle(xPos, yPos, corner.Width, corner.Height), Color.White * 0.8f);
             sb.Draw(corner, new Rectangle(xPos + width, yPos, corner.Width, corner.Height), null, Color.White * 0.8f, (float)Math.PI / 2f, new Vector2(0, 0), SpriteEffects.None, 0);
@@ -174,8 +175,46 @@ namespace StarSailor.GUI
 
             }
             buffer.Add(input);
-           
+
             return buffer.ToArray();
+        }
+        public int GetNumChars()
+        {
+            int i = 0;
+            foreach (string s in lines) i += s.Length;
+            return i;
+        }
+    }
+    public class InteractableSpeechBubble : SpeechBubble
+    {
+        SpeechOption[] options;
+        public InteractableSpeechBubble(string t, int x, int y, int w, int d, params SpeechOption[] o) : base(t, x, y, w, d)
+        {
+            options = o;
+        }
+        public override void Draw(SpriteBatch sb)
+        {
+            base.Draw(sb);
+
+        }
+        public override void Update()
+        {
+            base.Update();
+
+        }
+    }
+    public class SpeechOption
+    {
+        string text;
+        SequenceQueue result;
+        public SpeechOption(string t, SequenceQueue r)
+        {
+            text = t;
+            result = r;
+        }
+        public void Update()
+        {
+
         }
     }
 }

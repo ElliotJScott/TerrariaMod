@@ -14,7 +14,7 @@ using Terraria.ModLoader;
 
 namespace StarSailor.Skies
 {
-    class LavaSky : CustomSky
+    class OverworldSky : CustomSky
     {
 
         private bool _isActive;
