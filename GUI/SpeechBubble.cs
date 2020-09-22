@@ -11,6 +11,7 @@ using Terraria.UI.Chat;
 using ReLogic.Graphics;
 using StarSailor.NPCs;
 using StarSailor.Sequencing;
+using Microsoft.Xna.Framework.Input;
 
 namespace StarSailor.GUI
 {
@@ -18,21 +19,21 @@ namespace StarSailor.GUI
     {
         Texture2D corner;
         Texture2D spike;
-        int xPos;
-        int yPos;
+        public int xPos;
+        public int yPos;
         int width;
         int initDuration;
         int height;
         string text;
-        const float scale = 0.37f;
+        public const float scale = 0.37f;
         const int numCharsPerFrame = 3;
-        int totChars = 0;
+        public int totChars = 0;
         int duration;
-        string[] lines;
-        Vector2 dims;
+        public string[] lines;
+        public Vector2 dims;
         Color border = new Color(12, 11, 36, 221);
         Color intColor = new Color(58, 56, 136, 221);
-        DynamicSpriteFont font = Main.fontDeathText;
+        public DynamicSpriteFont font = Main.fontDeathText;
         public int GetDuration() => duration;
         public static void HelpText(string text)
         {
@@ -195,26 +196,121 @@ namespace StarSailor.GUI
         public override void Draw(SpriteBatch sb)
         {
             base.Draw(sb);
-
+            if (totChars > GetNumChars())
+            {
+                int numLines = 0;
+                float height = 3 + (font.MeasureString(lines[0]).Y * scale);
+                Vector2 init = new Vector2(xPos, yPos + dims.Y);
+                for (int i = 0; i < options.Length; i++)
+                {
+                    SpeechOption current = options[i];
+                    current.Draw(sb, init + new Vector2(40, (numLines * height) + i));
+                    numLines += current.lines.Length;
+                }
+            }
         }
         public override void Update()
         {
             base.Update();
-
+            if (totChars > GetNumChars())
+            {
+                int numLines = 0;
+                float height = 3 + (font.MeasureString(lines[0]).Y * scale);
+                Vector2 init = new Vector2(xPos, yPos + dims.Y);
+                for (int i = 0; i < options.Length; i++)
+                {
+                    SpeechOption current = options[i];
+                    current.Update(init + new Vector2(40, (numLines * height) + (i * 5)));
+                    numLines += current.lines.Length;
+                }
+            }
         }
+
     }
     public class SpeechOption
     {
-        string text;
+        public string text;
+        public string[] lines;
         SequenceQueue result;
+        const float scale = 0.37f;
+        float hoverScale = scale;
+        DynamicSpriteFont font = Main.fontDeathText;
         public SpeechOption(string t, SequenceQueue r)
         {
             text = t;
             result = r;
+            lines = GetLines(text, new List<string>(), 600);
         }
-        public void Update()
+        public void Update(Vector2 position)
         {
+            StarSailorMod sm = ModContent.GetInstance<StarSailorMod>();
+            float height = 0f;
+            float maxWidth = 0;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                Vector2 mea = font.MeasureString(lines[i]) * hoverScale;
+                maxWidth = Math.Max(mea.X, maxWidth);
+                height += mea.Y + 3;
+            }
+            Rectangle mouseRect = new Rectangle(Mouse.GetState().X, Mouse.GetState().Y, 1, 1);
+            Rectangle boundingBox = new Rectangle((int)position.X, (int)position.Y, (int)maxWidth, (int)height);
+            if (mouseRect.Intersects(boundingBox))
+            {
+                HoverUpdate(true);
+                if (sm.newMouseState.LeftButton == ButtonState.Pressed && sm.oldMouseState.LeftButton == ButtonState.Released)
+                {
+                    Main.NewText(text);
+                    sm.speechBubbles.Clear();
+                    result.Execute();
+                }
+            }
+            else HoverUpdate(false);
+        }
+        public string[] GetLines(string input, List<string> buffer, int width)
+        {
+            Texture2D corner = ModContent.GetInstance<StarSailorMod>().GetTexture("GUI/spBubble");
+            Vector2 measure = font.MeasureString(input);
+            if (measure.X > width - (2 * corner.Width))
+            {
+                string[] splitto = input.Split(' ');
+                string line = "";
+                for (int i = 0; i < splitto.Length; i++)
+                {
+                    string tempLine = (line + " " + splitto[i]).Trim();
+                    Vector2 m = font.MeasureString(tempLine) * scale;
+                    if (m.X > width - (2 * corner.Width))
+                    {
+                        buffer.Add(line);
+                        string remainingInput = "";
+                        for (int j = i; j < splitto.Length; j++)
+                        {
+                            remainingInput += " " + splitto[j];
+                            remainingInput = remainingInput.Trim();
+                        }
+                        return GetLines(remainingInput, buffer, width);
+                    }
+                    else
+                    {
+                        line = tempLine;
+                    }
+                }
 
+            }
+            buffer.Add(input);
+
+            return buffer.ToArray();
+        }
+        void HoverUpdate(bool hovered)
+        {
+            if (hovered) hoverScale = (float)Math.Min(0.45f, hoverScale + 0.2);
+            else hoverScale = (float)Math.Max(scale, hoverScale - 0.2);
+        }
+        public void Draw(SpriteBatch sb, Vector2 position)
+        {
+            for (int i = 0; i < lines.Length; i++) {
+                Vector2 mea = font.MeasureString(lines[i]) * scale;
+                ChatManager.DrawColorCodedStringWithShadow(sb, font, lines[i], position, Color.White, 0f, mea / (2f), new Vector2(hoverScale), -1f, 1.5f);
+            }
         }
     }
 }

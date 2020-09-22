@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace StarSailor.Sequencing
 {
-    enum Sequence
+    public enum Sequence
     {
         None,
         IntroCutscene,
         InSpace,
         ShopTalk,
+        NPCtalk,
     }
 }

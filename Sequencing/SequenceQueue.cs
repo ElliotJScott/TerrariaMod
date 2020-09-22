@@ -95,7 +95,7 @@ namespace StarSailor.Sequencing
         }
         public bool GetActive() => elements.Count > 0;
     }
-    class SequenceQueueElement : ICloneable, IDisposable
+    public class SequenceQueueElement : ICloneable, IDisposable
     {
         List<ISequenceItem> items = new List<ISequenceItem>();
         public SequenceQueueElement(ISequenceItem item)

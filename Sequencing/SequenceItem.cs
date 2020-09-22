@@ -233,6 +233,19 @@ namespace StarSailor.Sequencing
             duration = 0;
         }
     }
+    public class SelectionSpeechItem : CancellableSpeechItem
+    {
+        public SelectionSpeechItem(string s, ITalkable src, Vector2 o, int w, params SpeechOption[] options) : base(s, src, o, w, 99999999)
+        {
+            Vector2 loc = src.GetScreenPosition();
+            bubble = new InteractableSpeechBubble(s, (int)loc.X, (int)loc.Y, w, 99999999, options); 
+        }
+        public override void Update()
+        {
+            base.Update();
+            Main.LocalPlayer.AddBuff(BuffID.Cursed, 10);
+        }
+    }
     public class ImmobiliseItem : ISequenceItem
     {
         public int Duration => 0;

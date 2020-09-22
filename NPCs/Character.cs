@@ -234,7 +234,7 @@ namespace StarSailor.NPCs
 
         public Vector2 GetScreenPosition()
         {
-            return GetPosition() - Main.screenPosition;
+            return GetPosition() - Main.screenPosition + npc.visualOffset;
         }
 
         public void DrawHeadSpeech(SpriteBatch sb, Rectangle rect)
