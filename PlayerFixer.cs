@@ -212,6 +212,11 @@ namespace StarSailor
                                     closestDist = currDist;
                                     displ = v - (drawInfo.position / 16f);
                                 }
+                                else if (currDist == closestDist)
+                                {
+                                    Vector2 tdis = v - (drawInfo.position / 16f);
+                                    if (tdis.Length() < displ.Length()) displ = tdis;
+                                }
                             }
                         }
                     }

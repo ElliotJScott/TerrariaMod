@@ -18,6 +18,7 @@ using StarSailor.NPCs;
 using StarSailor.Projectiles;
 using StarSailor.Tiles;
 using Terraria.ID;
+using StarSailor.Dimensions;
 
 namespace StarSailor
 {
@@ -195,6 +196,8 @@ namespace StarSailor
             biomeLocMappings.Add(new BiomeLocationMapping(new Vector2(4100, 497), new Vector2(6056, 1015), Biomes.AsteroidBelt, Planet.AsteroidBelt, 1));
             biomeLocMappings.Add(new BiomeLocationMapping(new Vector2(6032, 249), new Vector2(8117, 1557), Biomes.AsteroidField, Planet.AsteroidBelt, 0));
 
+            //Spaceport
+            biomeLocMappings.Add(new BiomeLocationMapping(new Vector2(4188, 1035), new Vector2(6028, 1555), Biomes.SpacePort, Planet.SpacePort, 0));
 
             //Misc
             biomeLocMappings.Add(new BiomeLocationMapping(new Rectangle(4656, 200, 200, 100), Biomes.Intro, Planet.Intro, 0));
@@ -296,6 +299,7 @@ namespace StarSailor
                 ropeTex = GetTexture("Tiles/BoatRope");
                 sun0a = GetTexture("Skies/Star_0a");
                 sun1 = GetTexture("Skies/Star_1");
+                sun2 = GetTexture("Skies/Star_2");
                 box = GetTexture("GUI/Box");
                 boxInside = GetTexture("GUI/BoxInside");
                 sun0Glow = GetTexture("Skies/Star_0Glow");
@@ -353,6 +357,7 @@ namespace StarSailor
                 GameShaders.Misc["StarSailor:NoiseEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/NoiseEffect")), "NoiseEffect");
                 GameShaders.Misc["StarSailor:OrbVMaxEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/OrbVMaxEffect")), "OrbVMaxEffect");
                 GameShaders.Misc["StarSailor:OrbConnectorEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/OrbConnectorEffect")), "OrbConnectorEffect");
+                GameShaders.Misc["StarSailor:StarNoiseEffect"] = new MiscShaderData(new Ref<Effect>(GetEffect("Effects/StarNoiseEffect")), "StarNoiseEffect");
                 Ref<Effect> starglowRef = new Ref<Effect>(GetEffect("Effects/StarGlow"));
                 GameShaders.Misc["StarShader"] = new MiscShaderData(starglowRef, "StarShader");
                 Filters.Scene["AmpedEffect"] = new Filter(new ScreenShaderData(new Ref<Effect>(GetEffect("Effects/AmpedEffect")), "AmpedEffect"), EffectPriority.Medium);

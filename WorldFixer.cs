@@ -15,6 +15,7 @@ using StarSailor.NPCs.Characters;
 using System.Reflection;
 using Terraria.GameContent.Events;
 using StarSailor.NPCs;
+using Terraria.ModLoader.IO;
 
 namespace StarSailor
 {
@@ -24,20 +25,47 @@ namespace StarSailor
         static bool preInit = true;
         bool haveLoadedNPCs = false;
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
-
         {
-
             foreach (GenPass t in tasks)
             {
+                
                 tsk.Add(t.Name);
+                Main.NewText(t.Name);
             }
-            int SpawnIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Spawn Point"));
-            GenPass spawnTask = tasks[SpawnIndex];
-            tasks.Clear();
-            tasks.Add(spawnTask);
-            tasks.Add(new PassLegacy("Insert Correct World", InsertWorld));
+            //int SpawnIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Spawn Point"));
+            //GenPass spawnTask = tasks[SpawnIndex];
+            //tasks.Clear();
+            //tasks.Add(spawnTask);
+            //tasks.Add(new PassLegacy("Insert Correct World", InsertWorld));
         }
+        public override TagCompound Save()
+        {
+            int spawnX = Main.spawnTileX;
+            int spawnY = Main.spawnTileY;
+            for (int i = 0; i < 21; i++)
+            {
+                for (int j = 0; j < 21; j++)
+                {
 
+                    Tile tile = Framing.GetTileSafely(i + spawnX - 25, j + spawnY - 25);
+                    tile.type = StarSailorMod.QRCode[j, i] == 1 ? TileID.ObsidianBrick : TileID.Glass;
+                    tile.active(true);
+                    tile.slope(0);
+                    /*
+                    Tile tile2 = Framing.GetTileSafely(i, j);
+                    tile2.type = teo.QRCode[j, i] == 1 ? TileID.ObsidianBrick : TileID.Glass;
+                    tile2.active(true);
+                    tile2.slope(0);
+                    */
+                }
+            }
+            return base.Save();
+        }
+        public void ModifyWorld(GenerationProgress progress)
+        {
+            progress.Message = "Breaking game";
+            Main.tile = new Tile[8400, 2400];
+        }
         public void InsertWorld(GenerationProgress progress)
         {
             progress.Message = "Loading map";
@@ -77,6 +105,7 @@ namespace StarSailor
         public void UpdateNPCSpawns()
         {
             //All of this is from stack overflow I have no idea how it works
+            //Well like I get pretty much what it's doing but, yeah...
             List<Type> subclassTypes = Assembly
                 .GetAssembly(typeof(Character))
                 .GetTypes()

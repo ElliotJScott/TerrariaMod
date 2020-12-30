@@ -88,10 +88,10 @@ namespace StarSailor.Tiles
             for (int q = 0; q < checkTiles.Count; q++)
             {
                 vals[q] = checkTiles[q].type == 0;
-                if (checkTiles[q].type == 0)
+                if (checkTiles[q].type == 0 && !checkTiles[q].active())
                     nextToAir = true;
-                else if (Vector2.Distance(positions[q], home) > Vector2.Distance(thisPos, home)
-                    && !checkedLocations.Contains(positions[q])
+                else if (/*Vector2.Distance(positions[q], home) > Vector2.Distance(thisPos, home)
+                    && */!checkedLocations.Contains(positions[q])
                     && (checkTiles[q].type == ModContent.GetInstance<AsteroidRock>().Type || checkTiles[q].type == ModContent.GetInstance<LaunchPad>().Type))
                     CheckBound((int)positions[q].X, (int)positions[q].Y, home, appList, checkedLocations);
                     //Main.NewText("Penis");
