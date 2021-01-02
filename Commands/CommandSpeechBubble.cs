@@ -54,6 +54,7 @@ namespace StarSailor
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {
+            
             SpeechBubble.HelpText("This is an example of a piece of help text to guide the player. I am making this text longer just to see how it appears with a bit more to it but we will see what it looks like i don't really know.");
         }
     }

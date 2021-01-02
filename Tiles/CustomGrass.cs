@@ -71,6 +71,7 @@ namespace StarSailor.Tiles
     }
     public abstract class CustomGrass : ModTile
     {
+        
         List<TileMask> tileMasks = new List<TileMask>();
         void SetupTileMasks()
         {

@@ -37,6 +37,7 @@ namespace StarSailor
             //tasks.Clear();
             //tasks.Add(spawnTask);
             //tasks.Add(new PassLegacy("Insert Correct World", InsertWorld));
+            base.ModifyWorldGenTasks(tasks, ref totalWeight);
         }
         public override TagCompound Save()
         {
@@ -132,6 +133,7 @@ namespace StarSailor
         public override void Initialize()
         {
             SequenceBuilder.InitialiseSequences(Main.LocalPlayer);
+            base.Initialize();
             return;
             tsk.Clear();
             if (Main.worldName != "TEO") throw new InvalidOperationException("Wrong map dingus");

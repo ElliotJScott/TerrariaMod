@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using StarSailor.Tiles;
+using StarSailor.Walls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,7 @@ namespace StarSailor.Dimensions
             t.type = TileID.IceBlock;
             t.active(true);
             Tile wat = new Tile();
-            wat.liquid = 1;
+            wat.liquid = 255;
             wat.liquidType(Tile.Liquid_Water);
             //wat.active(true);
             for (int i = 0; i < maxX; i++)
@@ -48,18 +49,31 @@ namespace StarSailor.Dimensions
                 }
             }
             int caveCounter = 0;
-            while (caveCounter < areaScaleFactor * 400)
+            while (caveCounter < areaScaleFactor * 6000)
             {
                 int x = Main.rand.Next(0, maxX);
-                int y = Main.rand.Next(b1, b3 + 10);
+                int y = Main.rand.Next(0, maxY);
                 Tile tes = product[x, y];
                 if (tes != null)
                 {
                     if (tes.type == TileID.IceBlock)
                     {
                         int[] walls = { -1, -1, WallID.IceUnsafe, WallID.SnowWallUnsafe };
+                        int liquid = -1;
+                        if (y > b1 + (int)((b2 - b1) * 0.5f) && y < b3 + floorHeights[30] - caveDisps[30])
+                        {
+                            int[] wallsNew = { WallID.IceUnsafe, WallID.SnowWallUnsafe };
+                            walls = wallsNew;
+                        }
+                        else if (y >=  b3 + floorHeights[30] - caveDisps[30])
+                        {
+                            liquid = Tile.Liquid_Water;
+                            int[] wallsNew = { WallID.IceUnsafe, ModContent.WallType<BedrockStoneWall>(), ModContent.WallType<BedrockStoneWall>() };
+                            walls = wallsNew;
+                        }
+
                         //product = AddCave(x, y, product, Main.rand.Next(10, 35), maxX, maxY, walls[Main.rand.Next(0, walls.Length)]);
-                        //product = TileRunner(product, 0, x, y, Main.rand.NextFloat(0.25f, 0.49f), Main.rand.Next(10, 40), new Vector2(0), true, false, walls[Main.rand.Next(0, walls.Length)]);
+                        product = TileRunner(product, 0, x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.69f), Main.rand.Next(8, 40), new Vector2(0, 0), true, false, walls[Main.rand.Next(0, walls.Length)], liquid);
                         caveCounter++;
                         ModContent.GetInstance<StarSailorMod>().Logger.Info("cave number " + caveCounter);
                     }
@@ -70,8 +84,8 @@ namespace StarSailor.Dimensions
             int roughingCounter = 0;
             while (roughingCounter < areaScaleFactor * 200)
             {
-                int x = Main.rand.Next(1, maxX-1);
-                int y = Main.rand.Next(b1, b3 + 10);
+                int x = Main.rand.Next(1, maxX - 1);
+                int y = Main.rand.Next(0, maxY - 1);
                 Tile tes = product[x, y];
                 if (tes != null)
                 {
@@ -86,9 +100,79 @@ namespace StarSailor.Dimensions
                         if (Main.rand.Next(0, free + 1) != 0)
                         {
                             int[] walls = { -1, -1, WallID.IceUnsafe, WallID.SnowWallUnsafe };
-                            product = TileRunner(product, 0, x, y, Main.rand.NextFloat(0.45f, 0.49f), Main.rand.Next(4, 12), new Vector2(0, 0), true, false, walls[Main.rand.Next(0, walls.Length)]);
+                            int liquid = -1;
+                            if (y > b1 + (int)((b2 - b1) * 0.5f) && y < b3 + floorHeights[30] - caveDisps[30])
+                            {
+                                int[] wallsNew = { WallID.IceUnsafe, WallID.SnowWallUnsafe };
+                                walls = wallsNew;
+                            }
+
+                            else if (y >= b3 + floorHeights[30] - caveDisps[30])
+                            {
+                                liquid = Tile.Liquid_Water;
+                                int[] wallsNew = { WallID.IceUnsafe, ModContent.WallType<BedrockStoneWall>(), ModContent.WallType<BedrockStoneWall>() };
+                                walls = wallsNew;
+                            }
+                            product = TileRunner(product, 0, x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.49f), Main.rand.Next(4, 12), new Vector2(0, 0), true, false, walls[Main.rand.Next(0, walls.Length)], liquid);
                             roughingCounter++;
-                            ModContent.GetInstance<StarSailorMod>().Logger.Info("roughing number " + roughingCounter);
+                            //ModContent.GetInstance<StarSailorMod>().Logger.Info("roughing number " + roughingCounter);
+                        }
+                    }
+                }
+            }
+            for (int i = 1; i < maxX - 1; i++)
+            {
+                for (int j = 1; j < maxY - 1; j++)
+                {
+                    if (product[i, j] != null)
+                    {
+                        if (product[i, j].type != 0)
+                        {
+                            int free = 0;
+                            int wall = -2;
+                            Tile tileel = new Tile();
+                            for (int p = -1; p <= 1; p += 2)
+                            {
+                                if (product[i + p, j] == null || product[i + p, j].type == TileID.Dirt)
+                                {
+                                    if (product[i + p, j] != null) wall = Math.Max(wall, product[i + p, j].wall);
+                                    free++;
+                                }
+                                if (product[i, j + p] == null || product[i, j + p].type == TileID.Dirt)
+                                {
+                                    if (product[i, j + p] != null) wall = Math.Max(wall, product[i, j + p].wall);
+                                    free++;
+                                }
+                            }
+                            if (wall >= 0) tileel.wall = (ushort)wall;
+                            //if (free >= 3) product[i, j] = new Tile();
+                            if (free == 4 && Main.rand.NextFloat(0, 1) < 0.99f) product[i, j] = new Tile(tileel);
+                            else if (free == 3 && Main.rand.NextFloat(0, 1) < 0.95f) product[i, j] = new Tile(tileel);
+                        }
+                    }
+                }
+            }
+            int tilingCounter = 0;
+            while (tilingCounter < 6000 * areaScaleFactor)
+            {
+                int x = Main.rand.Next(1, maxX - 1);
+                int y = Main.rand.Next(1, maxY - 1);
+                Tile tes = product[x, y];
+                if (tes != null)
+                {
+                    if (tes.active())
+                    {
+                        tilingCounter++;
+                        if (y < b3)
+                        {
+                            ushort[] tiles = { TileID.SnowBlock, TileID.Slush };
+                            product = TileRunner(product, tiles[Main.rand.Next(0, tiles.Length)], x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.49f), Main.rand.Next(4, 8), Vector2.Zero);
+                        }
+                        else
+                        {
+                            ushort[] tiles = { TileID.SnowBlock, TileID.Slush, (ushort)ModContent.TileType<BedrockStone>(), (ushort)ModContent.TileType<BedrockStone>() };
+                            product = TileRunner(product, tiles[Main.rand.Next(0, tiles.Length)], x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.49f), Main.rand.Next(6, 18), Vector2.Zero);
+
                         }
                     }
                 }
@@ -239,7 +323,7 @@ namespace StarSailor.Dimensions
                 {
                     for (int y = -1; y <= 1; y++)
                     {
-                        if ((x ^ 2) + (y ^ 2) <= 1)
+                        if ((x * x) + (y * y) <= 1)
                         {
                             Tile t = new Tile();
                             t.type = 0;
@@ -480,19 +564,25 @@ namespace StarSailor.Dimensions
             return output;
 
         }
-        static Tile[,] TileRunner(Tile[,] tile, ushort type, int i, int j, float chance, int numSteps, Vector2 relPos, bool onlyReplaceTiles = true, bool active = true, int wall = -1)
+        static Tile[,] TileRunner(Tile[,] tile, ushort type, int i, int j, int maxX, int maxY, float chance, int numSteps, Vector2 relPos, bool onlyReplaceTiles = true, bool active = true, int wall = -1, int liquid = -1)
         {
+            if (i < 0 || i >= maxX || j < 0 || j >= maxY) return tile;
             if (onlyReplaceTiles && (tile[i, j] == null || !tile[i, j].active())) return tile;
             Tile t = new Tile();
             t.type = type;
             t.active(active);
+            if (liquid != -1)
+            {
+                t.liquid = 255;
+                t.liquidType(liquid);
+            }
             if (wall != -1) t.wall = (ushort)wall;
             tile[i, j] = new Tile(t);
             if (numSteps <= 0) return tile;
             for (int p = -1; p <= 1; p += 2)
             {
-                if (Main.rand.NextFloat(0, 1) < chance && (relPos + new Vector2(p, 0)).Length() > relPos.Length()) tile = TileRunner(tile, type, i + p, j, chance, numSteps - 1, relPos, onlyReplaceTiles, active, wall);
-                if (Main.rand.NextFloat(0, 1) < chance && (relPos + new Vector2(0, p)).Length() > relPos.Length()) tile = TileRunner(tile, type, i, j + p, chance, numSteps - 1, relPos, onlyReplaceTiles, active, wall);
+                if (Main.rand.NextFloat(0, 1) < chance && (relPos + new Vector2(p, 0)).Length() > relPos.Length()) tile = TileRunner(tile, type, i + p, j, maxX, maxY, chance, numSteps - 1, relPos, onlyReplaceTiles, active, wall, liquid);
+                if (Main.rand.NextFloat(0, 1) < chance && (relPos + new Vector2(0, p)).Length() > relPos.Length()) tile = TileRunner(tile, type, i, j + p, maxX, maxY, chance, numSteps - 1, relPos, onlyReplaceTiles, active, wall, liquid);
             }
             return tile;
         }

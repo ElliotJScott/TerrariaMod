@@ -105,6 +105,7 @@ namespace StarSailor.Dimensions
                 dimensions[i] = new Dimension((Dimensions)i);
             }
             currentDimension = Dimensions.Overworld;
+            base.Initialize();
         }
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
@@ -113,6 +114,7 @@ namespace StarSailor.Dimensions
         }
         public void GenerateDimensions(GenerationProgress progress)
         {
+            
             progress.Message = "Generating alternate dimensions";
             dimensions = new Dimension[6];
             dimensions[(int)Dimensions.Overworld] = new Dimension(Dimensions.Overworld);

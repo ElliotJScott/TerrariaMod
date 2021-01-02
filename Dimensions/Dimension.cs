@@ -271,11 +271,11 @@ namespace StarSailor.Dimensions
                     if (t != null)
                     {
                         int num = 0;
-                        num += t.actuator() ? 2 ^ 0 : 0;
-                        num += t.wire() ? 2 ^ 1 : 0;
-                        num += t.wire2() ? 2 ^ 2 : 0;
-                        num += t.wire3() ? 2 ^ 3 : 0;
-                        num += t.wire4() ? 2 ^ 4 : 0;
+                        num += t.actuator() ? 1 : 0;
+                        num += t.wire() ? 2 : 0;
+                        num += t.wire2() ? 4 : 0;
+                        num += t.wire3() ? 8 : 0;
+                        num += t.wire4() ? 16 : 0;
                         if (num != 0)
                         {
                             pos.Add(new Vector2(i, j));
