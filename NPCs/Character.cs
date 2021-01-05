@@ -149,11 +149,13 @@ namespace StarSailor.NPCs
             //base.FindFrame(frameHeight);
 
         }
+        /*
         public static bool NeedToSpawn(string name, int type)
         {
             NPC nipple = FindNPC(type);
             return nipple == null && IsNpcOnscreen(CharacterLocationMapping.npcLocations[name]);
         }
+        */
         //ty examplemod for this code that i stole
         private static bool IsNpcOnscreen(Vector2 center)
         {
@@ -223,9 +225,11 @@ namespace StarSailor.NPCs
             }
             //base.AI();
         }
+
         public float GetDistFromHome()
         {
-            return GetPosition().X - CharacterLocationMapping.npcLocations[InternalName].X;
+            return 0;
+            //return GetPosition().X - CharacterLocationMapping.npcLocations[InternalName].X;
         }
         public Vector2 GetPosition()
         {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StarSailor.Dimensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,10 +13,11 @@ namespace StarSailor
     {
         public override void EditSpawnRate(Player player, ref int spawnRate, ref int maxSpawns)
         {
+            if (ModContent.GetInstance<DimensionManager>().currentDimension == Dimensions.Dimensions.Travel) maxSpawns = 0;
             //if (player.GetModPlayer<PlayerFixer>().InSpace)
-            {
-                maxSpawns = 0;
-            }
+            //{
+            //    maxSpawns = 0;
+            //}
         }
         //public override 
     }

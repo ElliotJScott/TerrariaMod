@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace StarSailor
 {
+    /*
     static class BiomeNameMapping
     {
         public static Dictionary<Planet, string> planetNames = new Dictionary<Planet, string>();
@@ -44,4 +45,5 @@ namespace StarSailor
             biomeNames[Biomes.DesertOverworld] = "Unknown Location";
         }
     }
+    */
 }

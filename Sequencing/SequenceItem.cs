@@ -8,6 +8,7 @@ using StarSailor.Mounts;
 using Microsoft.Xna.Framework.Audio;
 using Terraria.ID;
 using StarSailor.Backgrounds;
+using StarSailor.Dimensions;
 
 namespace StarSailor.Sequencing
 {
@@ -482,14 +483,14 @@ namespace StarSailor.Sequencing
     public class ShipTravelItem : ISequenceItem
     {
         public int Duration => throw new NotImplementedException();
-        public (Planet, Planet) originDest;
+        public (Dimensions.Dimensions, Dimensions.Dimensions) originDest;
         Player player;
-        public ShipTravelItem(Planet or, Planet dest, Player pl)
+        public ShipTravelItem(Dimensions.Dimensions or, Dimensions.Dimensions dest, Player pl)
         {
             originDest = (or, dest);
             player = pl;
         }
-        public ShipTravelItem((Planet, Planet) p, Player pl)
+        public ShipTravelItem((Dimensions.Dimensions, Dimensions.Dimensions) p, Player pl)
         {
             originDest = p;
             player = pl;
@@ -508,7 +509,7 @@ namespace StarSailor.Sequencing
             }
             else
             {
-                ModContent.GetInstance<Rocket>().ExecuteLandingAnim(player);
+                ModContent.GetInstance<Rocket>().ExecuteSpaceAnim(player);
                 return true;
             }
         }
@@ -592,10 +593,40 @@ namespace StarSailor.Sequencing
         {
         }
     }
+    public class ChangeDimensionItem : ISequenceItem
+    {
+        public int Duration => 0;
+        Dimensions.Dimensions destination;
+        public ChangeDimensionItem(Dimensions.Dimensions dim)
+        {
+            destination = dim;
+        }
+        public object Clone()
+        {
+            return new ChangeDimensionItem(destination);
+        }
+
+        public void Dispose()
+        {
+            
+        }
+
+        public bool Execute()
+        {
+            ModContent.GetInstance<DimensionManager>().SwitchDimension(destination);
+            return true;
+        }
+
+        public void Update()
+        {
+            //throw new NotImplementedException();
+        }
+    }
     public class ShopSeqItem : ISequenceItem
     {
         public int Duration => duration;
-        int duration = int.MaxValue;
+
+        private int duration = int.MaxValue;
         ShopItem[] items;
         ITalkable source;
 

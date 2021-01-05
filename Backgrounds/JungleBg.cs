@@ -43,6 +43,8 @@ namespace StarSailor.Backgrounds
         }
         public override bool ChooseBgStyle()
         {
+            return false;
+            /*
             try
             {
                 //PlayerFixer pl = ModContent.GetInstance<PlayerFixer>();
@@ -50,6 +52,7 @@ namespace StarSailor.Backgrounds
                 return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.JungleOverworld;
             }
             catch { return false; }
+            */
         }
         public override int ChooseFarTexture()
         {

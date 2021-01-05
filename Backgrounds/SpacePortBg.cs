@@ -49,11 +49,14 @@ namespace StarSailor.Backgrounds
         }
         public override bool ChooseBgStyle()
         {
+            return false;
+            /*
             try
             {
                 return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().planet == Planet.SpacePort;
             }
             catch { return false; }
+            */
         }
         public override int ChooseFarTexture()
         {

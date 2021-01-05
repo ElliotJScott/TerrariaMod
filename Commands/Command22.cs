@@ -14,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace StarSailor
 {
+    
     class Command22 : ModCommand
     {
         public override CommandType Type
@@ -136,7 +137,7 @@ namespace StarSailor
         public override void Action(CommandCaller caller, string input, string[] args)
         {
 
-            ModContent.GetInstance<WorldFixer>().UpdateNPCSpawns();
+            //ModContent.GetInstance<WorldFixer>().UpdateNPCSpawns();
         }
     }
     class CommandCoins : ModCommand
@@ -248,5 +249,7 @@ namespace StarSailor
             Main.NewText("Done!");
             */
         }
+
     }
+    
 }

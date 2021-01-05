@@ -13,16 +13,17 @@ namespace StarSailor.Sequencing
     static class SequenceBuilder
     {
         static List<SequenceQueue> sequences = new List<SequenceQueue>();
-        static readonly Vector2 spaceLocation = 16 * new Vector2(4556, 249);
+        static readonly Vector2 spaceLocation = 16 * new Vector2(1000, 1000);
         static string[] goodbyeText = { "Goodbye!", "See you again soon!", "Come again soon!"};
         public static void InitialiseSequences(Player player)
         {
             sequences.Clear();
             sequences.Add(ConstructIntroSequence(player));
         }
+        
         //If origin == destination don't do the space sequence
         //Change spawn, takeoff, teleport, inflight, teleport, landing, changemount, mobilise
-        static SequenceQueue ConstructSpaceSequence(Planet origin, Planet destination, Player player, Vector2 destLoc)
+        static SequenceQueue ConstructSpaceSequence(Dimensions.Dimensions origin, Dimensions.Dimensions destination, Player player, Vector2 destLoc)
         {
             SequenceQueue queue = new SequenceQueue(Sequence.InSpace);
             queue.Append(new ImmobiliseItem());
@@ -30,10 +31,10 @@ namespace StarSailor.Sequencing
             queue.Append(new ShipTakeOffItem(player));
             if (origin != destination)
             {
-
+                queue.Append(new ChangeDimensionItem(Dimensions.Dimensions.Travel));
                 queue.Append(new TeleportItem(spaceLocation, player));
                 queue.Append(new ShipTravelItem((origin, destination), player));
-
+                
             }
 
             queue.Append(new TeleportItem(destLoc, player));

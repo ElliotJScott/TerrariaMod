@@ -34,10 +34,11 @@ namespace StarSailor
             else return;
             int[] xPos = tag.GetList<int>("XPos").ToArray();
             int[] yPos = tag.GetList<int>("YPos").ToArray();
+            int[] dims = tag.GetList<int>("Dims").ToArray();
             if (names.Length != xPos.Length || names.Length != yPos.Length) return;
             for (int i = 0; i < names.Length; i++)
             {
-                AddLaunchPoint(new LaunchPoint(new Vector2(xPos[i], yPos[i]), names[i], mod));
+                AddLaunchPoint(new LaunchPoint(new Vector2(xPos[i], yPos[i]), names[i], mod, (Dimensions.Dimensions)dims[i]));
             }
             base.Load(tag);
         }
@@ -51,13 +52,14 @@ namespace StarSailor
                 string[] names = new string[points.Length];
                 int[] xPos = new int[points.Length];
                 int[] yPos = new int[points.Length];
-
+                int[] dims = new int[points.Length];
 
                 for (int i = 0; i < points.Length; i++)
                 {
                     names[i] = points[i].name;
                     xPos[i] = (int)points[i].position.X;
                     yPos[i] = (int)points[i].position.Y;
+                    dims[i] = (int)points[i].dimension;
                 }
 
 
@@ -65,7 +67,9 @@ namespace StarSailor
             {
                 {"Names", names.ToList()},
                 {"XPos", xPos.ToList()},
-                {"YPos", yPos.ToList()}
+                {"YPos", yPos.ToList()},
+                {"Dims", dims.ToList() }
+                    
             };
             }
             //else return base.Save();
@@ -80,10 +84,10 @@ namespace StarSailor
         {
             base.NetReceive(reader);
         }
-        public string AddLaunchPoint(int i, int j, string name, bool originFound)
+        public string AddLaunchPoint(int i, int j, string name, Dimensions.Dimensions dim, bool originFound)
         {
 
-            LaunchPoint l = new LaunchPoint(i, j, name, mod, originFound);
+            LaunchPoint l = new LaunchPoint(i, j, name, mod, originFound, dim);
             foreach (LaunchPoint r in launchPoints)
             {
                 if (r == l)
@@ -148,7 +152,7 @@ namespace StarSailor
             }
             return returns;
         }
-        public LaunchPoint getFromName(string s)
+        public LaunchPoint GetFromName(string s)
         {
             foreach (LaunchPoint l in launchPoints)
             {
@@ -311,13 +315,14 @@ namespace StarSailor
         public Vector2 position;
         public string name;
         Mod mod;
-        public LaunchPoint(Vector2 v, string n, Mod m)
+        public Dimensions.Dimensions dimension;
+        public LaunchPoint(Vector2 v, string n, Mod m, Dimensions.Dimensions dim)
         {
             position = v;
             name = n;
             mod = m;
         }
-        public LaunchPoint(int i, int j, string n, Mod m, bool originFound)
+        public LaunchPoint(int i, int j, string n, Mod m, bool originFound, Dimensions.Dimensions dim)
         {
             if (originFound)
             {
@@ -386,7 +391,7 @@ namespace StarSailor
         }
         public static bool operator ==(LaunchPoint a, LaunchPoint b)
         {
-            return a.name == b.name;
+            return a.name == b.name && a.dimension == b.dimension && a.position == b.position;
         }
         public static bool operator !=(LaunchPoint a, LaunchPoint b)
         {

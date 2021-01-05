@@ -33,6 +33,11 @@ namespace StarSailor.Dimensions
             }
             base.Load(tag);
         }
+        public float GetGravity()
+        {
+            return dimensions[(int)currentDimension].GetGravity();
+        }
+        public Color GetSunlight() => dimensions[(int)currentDimension].GetSunlight();
         public void LoadDimension(Dimensions d, TagCompound tag)
         {
             dimsLoaded = 0;

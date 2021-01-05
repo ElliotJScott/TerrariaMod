@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
+using StarSailor.Dimensions;
 using StarSailor.Mounts;
 using Terraria;
 using Terraria.Enums;
@@ -38,7 +39,7 @@ namespace StarSailor.Tiles
             int aboveCheck = above.type == Type ? 2 : 0;
             int belowCheck = below.type == Type ? 1 : 0;
             int newJ = j + aboveCheck + belowCheck;
-            LaunchPoint l = new LaunchPoint(new Vector2(i, newJ), ((StarSailorMod)mod).GenerateName(), mod);
+            LaunchPoint l = new LaunchPoint(new Vector2(i, newJ), ((StarSailorMod)mod).GenerateName(), mod, ModContent.GetInstance<DimensionManager>().currentDimension);
             string error = l.CheckValidity();
             if (error == "")
             {

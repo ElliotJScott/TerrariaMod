@@ -39,12 +39,16 @@ namespace StarSailor.Backgrounds
      
         public override bool ChooseBgStyle()
         {
+#warning this will need to be used for the ice planet cave
+            return false;
+            /*
             try
             {
                 //PlayerFixer pl = ModContent.GetInstance<PlayerFixer>();
                 return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.IceCaveTown;
             }
             catch { return false; }
+            */
         }
         public override int ChooseFarTexture()
         {

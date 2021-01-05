@@ -15,12 +15,13 @@ namespace StarSailor.Dusts
         {
             dust.velocity.Y = -0.8f;
             dust.velocity.X = 0f;
+            dust.alpha = 210;
         }
 
         public override bool MidUpdate(Dust dust)
         {
             dust.velocity.Y += 0.05f;
-
+            dust.alpha = 210;
             return false;
         }
     }

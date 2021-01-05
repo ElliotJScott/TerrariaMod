@@ -11,7 +11,8 @@ using Terraria.World.Generation;
 
 namespace StarSailor.Dimensions
 {
-    enum Dimensions
+
+    public enum Dimensions
     {
         Overworld,
         Travel,
@@ -88,6 +89,8 @@ namespace StarSailor.Dimensions
     }
     class Dimension
     {
+        float[] gravityVals = { 0.4f, 0f, 0.25f, 0f, 0.45f };
+        Color[] sunlightColors = { new Color(255, 255, 255), new Color(255, 255, 255), new Color(125, 175, 255), new Color(210, 210, 210), new Color(150, 130, 130) };
         //public BasicTileData basicTileData;
         //public ExtraTileData extraTileData;
         public TagCompound data;
@@ -130,8 +133,9 @@ namespace StarSailor.Dimensions
             chest = c;
             sign = s;
             data = GetCompressedTileData(t);
-
         }
+        public float GetGravity() => gravityVals[(int)dimension];
+        public Color GetSunlight() => sunlightColors[(int)dimension];
         public void Generate()
         {
             ModContent.GetInstance<StarSailorMod>().Logger.Info("Generating " + dimension);

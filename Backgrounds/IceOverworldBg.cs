@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StarSailor;
+using StarSailor.Dimensions;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
@@ -48,8 +49,8 @@ namespace StarSailor.Backgrounds
             try
             {
                 //PlayerFixer pl = ModContent.GetInstance<PlayerFixer>();
-                
-                return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.IceOverworld;
+
+                return !Main.gameMenu && ModContent.GetInstance<DimensionManager>().currentDimension == Dimensions.Dimensions.Ice;
             }
             catch { return false; }
         }

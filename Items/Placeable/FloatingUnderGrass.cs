@@ -26,7 +26,7 @@ namespace StarSailor.Items.Placeable
             item.useTime = 10;
             item.useStyle = ItemUseStyleID.SwingThrow;
             item.consumable = true;
-            item.createTile = ModContent.TileType<Tiles.FloatingUnderGrass>();
+            //item.createTile = ModContent.TileType<Tiles.FloatingUnderGrass>();
         }
     }
 }

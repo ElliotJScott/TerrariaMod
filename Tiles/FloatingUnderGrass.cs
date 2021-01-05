@@ -12,6 +12,7 @@ using Terraria.ModLoader;
 
 namespace StarSailor.Tiles
 {
+    /*
     class FloatingUnderGrass : ModTile
     {
 
@@ -78,7 +79,7 @@ if (!Merge(grassID, dirtID, left) && right == dirtID && top == grassID && bot ==
 if (!Merge(grassID, dirtID, right) && left == dirtID && top == grassID && bot == grassID) loc = (4, choice);
 if (!Merge(grassID, dirtID, top) && bot == dirtID && left == grassID && right == grassID) loc = (1 + choice, 0);
 if (!Merge(grassID, dirtID, bot) && top == dirtID && left == grassID && right == grassID) loc = (1 + choice, 2);
-*/
+*r/
             return base.TileFrame(i, j, ref resetFrame, ref noBreak);
         }
 
@@ -87,7 +88,7 @@ if (!Merge(grassID, dirtID, bot) && top == dirtID && left == grassID && right ==
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
             StarSailorMod sm = (StarSailorMod)mod;
-            (Biomes, Planet) loc = sm.GetBiomePlanet(new Vector2(i, j));
+            //(Biomes, Planet) loc = sm.GetBiomePlanet(new Vector2(i, j));
             Color col = sm.GetGrassColor(loc.Item1);
             //Main.NewText(col);
             //Main.NewText(col + " " + loc.Item1);
@@ -109,4 +110,5 @@ if (!Merge(grassID, dirtID, bot) && top == dirtID && left == grassID && right ==
             base.PostDraw(i, j, spriteBatch);
         }
     }
+    */
 }

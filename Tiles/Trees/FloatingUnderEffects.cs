@@ -11,9 +11,10 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace StarSailor.Tiles.Trees
-{
+{/*
     class FloatingUnderEffects : GlobalTile
     {
+        
         public override bool PreDraw(int i, int j, int type, SpriteBatch spriteBatch)
         {
             Biomes b = ((StarSailorMod)mod).GetBiomePlanet(new Vector2(i,j)).Item1;
@@ -40,4 +41,5 @@ namespace StarSailor.Tiles.Trees
             base.PostDraw(i, j, type, spriteBatch);
         }
     }
+    */
 }

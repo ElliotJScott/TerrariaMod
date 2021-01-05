@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StarSailor.Dimensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,7 +53,9 @@ namespace StarSailor.Backgrounds
         {
             try
             {
-                return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().planet == Planet.AsteroidBelt;
+                //PlayerFixer pl = ModContent.GetInstance<PlayerFixer>();
+
+                return !Main.gameMenu && ModContent.GetInstance<DimensionManager>().currentDimension == Dimensions.Dimensions.Asteroid;
             }
             catch { return false; }
         }

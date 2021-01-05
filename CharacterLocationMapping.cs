@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace StarSailor
 {
+    /*
     static class CharacterLocationMapping
     {
         public static Dictionary<string, Vector2> npcLocations = new Dictionary<string, Vector2>();
@@ -37,4 +38,5 @@ namespace StarSailor
             npcLocations["Yuri"] = new Vector2(5506, 284) * 16f;
         }
     }
+    */
 }

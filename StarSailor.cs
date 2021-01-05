@@ -99,7 +99,7 @@ namespace StarSailor
         public LaunchGuiButton exitButton;
         public LaunchGuiButton launchButton;
         public LaunchGuiButton nameButton;
-        public Dictionary<Biomes, int> biomeSunlightStrength = new Dictionary<Biomes, int>();
+        //public Dictionary<Biomes, int> biomeSunlightStrength = new Dictionary<Biomes, int>();
         public List<Vector2> rapidWaterRedraws = new List<Vector2>();
         public LaunchGuiButton[] locationButtons = new LaunchGuiButton[11];
         string oldText = "wew";
@@ -109,22 +109,23 @@ namespace StarSailor
         public MouseState newMouseState;
         public bool updateButtonsFlag = false;
         public bool inLaunchGui;
-        Dictionary<Biomes, Color> grassColorMappings = new Dictionary<Biomes, Color>();
-        public List<BiomeLocationMapping> biomeLocMappings = new List<BiomeLocationMapping>();
+        //Dictionary<Biomes, Color> grassColorMappings = new Dictionary<Biomes, Color>();
+        //public List<BiomeLocationMapping> biomeLocMappings = new List<BiomeLocationMapping>();
 
         public StarSailorMod()
         {
-            CharacterLocationMapping.Initialise();
-            PopulateSunlightStrength();
-            SetUpBiomeMappings();
-            SetUpColorMappings();
+            //CharacterLocationMapping.Initialise();
+            //PopulateSunlightStrength();
+            //SetUpBiomeMappings();
+            //SetUpColorMappings();
             currentKeyState = Keyboard.GetState();
             newMouseState = Mouse.GetState();
-            Main.tileMerge[TileID.Marble][TileID.Mud] = false;
-            Main.tileMerge[TileID.MarbleBlock][TileID.Mud] = false;
-            Main.tileMerge[TileID.Mud][TileID.Marble] = false;
-            Main.tileMerge[TileID.Mud][TileID.MarbleBlock] = false;
+            //Main.tileMerge[TileID.Marble][TileID.Mud] = false;
+            //Main.tileMerge[TileID.MarbleBlock][TileID.Mud] = false;
+            //Main.tileMerge[TileID.Mud][TileID.Marble] = false;
+            //Main.tileMerge[TileID.Mud][TileID.MarbleBlock] = false;
         }
+        /*
         void SetUpColorMappings()
         {
             grassColorMappings[Biomes.FloatingU0] = Color.PaleVioletRed;
@@ -241,6 +242,7 @@ namespace StarSailor
 
             biomeSunlightStrength.Add(Biomes.LavaOverworld, 255);
         }
+        */
         public void RemoveSpeechBubble(SpeechBubble bubble)
         {
             for (int i = 0; i < speechBubbles.Count; i++)
@@ -269,6 +271,7 @@ namespace StarSailor
         public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
         {
             int str = 255;
+            /*
             try
             {
                 Biomes b = Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome;
@@ -280,8 +283,9 @@ namespace StarSailor
                 else str = 255;
             }
             catch { }
+            */
 
-            tileColor = new Color(str, str, str);
+            tileColor = ModContent.GetInstance<DimensionManager>().GetSunlight();
             backgroundColor = new Color(str, str, str);
             base.ModifySunLightColor(ref tileColor, ref backgroundColor);
         }
@@ -486,6 +490,7 @@ namespace StarSailor
         public void UpdateFireEffect()
         {
             return;
+            /*
             if (Main.netMode != NetmodeID.Server) // This all needs to happen client-side!
             {
                 PlayerFixer pf = Main.LocalPlayer.GetModPlayer<PlayerFixer>();
@@ -500,6 +505,7 @@ namespace StarSailor
 
 
             }
+            */
         }
         public override void PostUpdateEverything()
         {
@@ -642,6 +648,7 @@ namespace StarSailor
         }
 
     }
+    /*
     public struct BiomeLocationMapping : IComparable<BiomeLocationMapping>
     {
         public int priority;
@@ -674,6 +681,6 @@ namespace StarSailor
             return other.priority - priority;
         }
     }
-
+    */
 
 }

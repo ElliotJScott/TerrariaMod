@@ -16,6 +16,7 @@ using StarSailor.Sequencing;
 using Terraria.DataStructures;
 using StarSailor.Items.Weapons;
 using Terraria.ID;
+using StarSailor.Dimensions;
 
 namespace StarSailor
 {
@@ -37,29 +38,29 @@ namespace StarSailor
 
         public int ampedCounter;
 
-        public Planet planet;
-        public Biomes biome;
+        //public Planet planet;
+        //public Biomes biome;
 
-        public Dictionary<Planet, float> gravityValues = new Dictionary<Planet, float>();
-        public Dictionary<Biomes, int> starCounts = new Dictionary<Biomes, int>();
+        //public Dictionary<Planet, float> gravityValues = new Dictionary<Planet, float>();
+        //public Dictionary<Biomes, int> starCounts = new Dictionary<Biomes, int>();
 
         public float legFrameCounter = 0;
         public float bodyFrameCounter = 0;
         public int legFrameY = 0;
         public int bodyFrameY = 0;
         public List<DrawData> drawDataBuffer = new List<DrawData>();
-        public Biomes[] overworldBiomes = { Biomes.DesertOverworld, Biomes.DesertTown };
+        //public Biomes[] overworldBiomes = { Biomes.DesertOverworld, Biomes.DesertTown };
         public string GetName() => player.name;
         public override void Initialize()
         {
 
             playerHolder = new PlayerHolder();
             //player.rotati
-            biome = Biomes.DesertOverworld;
-            planet = Planet.Desert;
+            //biome = Biomes.DesertOverworld;
+            //planet = Planet.Desert;
             
-            SetUpGravityValues();
-            SetUpStarCounts();
+            //SetUpGravityValues();
+            //SetUpStarCounts();
             //Texture2D tempTex = TextureHooks.StackTextures(20, Main.playerHairTexture[player.hair], )
             base.Initialize();
         }
@@ -123,6 +124,7 @@ namespace StarSailor
             bool b = player.BuyItem(c);
             if (!b) Main.NewText("Uh oh stinky");
         }
+        /*
         public void SetUpGravityValues()
         {
             gravityValues.Clear();
@@ -138,7 +140,7 @@ namespace StarSailor
             StarSailorMod sm = (StarSailorMod)mod;
             return sm.GetBiomePlanet(player.Center/ 16f);
         }
-
+        */
         public override void PreUpdateMovement()
         {
             #region boat stuff
@@ -153,9 +155,9 @@ namespace StarSailor
             }
             #endregion
             if (((StarSailorMod)mod).currentShop != null) player.AddBuff(BuffID.Cursed, 10);
-            (Biomes, Planet) loc = GetCurrentBiomePlanet();
-            biome = loc.Item1;
-            planet = loc.Item2;
+            //(Biomes, Planet) loc = GetCurrentBiomePlanet();
+            //biome = loc.Item1;
+            //planet = loc.Item2;
             playerHolder.Update();
             base.PreUpdateMovement();
         }
@@ -346,23 +348,19 @@ namespace StarSailor
         public override void UpdateBiomeVisuals()
         {
             //Main.numStars = Main.maxStars;
-            bool conditionInSpace = false;
-            bool conditionOverworld = overworldBiomes.Contains(biome);
-            bool conditionLava = biome == Biomes.LavaOverworld;
-            player.ManageSpecialBiomeVisuals("StarSailorMod:SkySpace", conditionInSpace);
-            player.ManageSpecialBiomeVisuals("StarSailorMod:SkyOverworld", conditionOverworld);
-            player.ManageSpecialBiomeVisuals("StarSailorMod:SkyLava", conditionLava);
+            //bool conditionInSpace = false;
+            //bool conditionOverworld = overworldBiomes.Contains(biome);
+            //bool conditionLava = biome == Biomes.LavaOverworld;
+            //player.ManageSpecialBiomeVisuals("StarSailorMod:SkySpace", conditionInSpace);
+            player.ManageSpecialBiomeVisuals("StarSailorMod:SkyOverworld", true);
+            //player.ManageSpecialBiomeVisuals("StarSailorMod:SkyLava", conditionLava);
         }
         public override void PostUpdateRunSpeeds()
         {
             //player.mapFullScreen = false;
             //Main.mapFullscreen = false;
             Main.mapEnabled = true;
-            if (gravityValues.TryGetValue(planet, out float grav))
-            {
-            }
-            else grav = 0.4f;
-            player.gravity = grav;
+            player.gravity = ModContent.GetInstance<DimensionManager>().GetGravity();
             base.PostUpdateRunSpeeds();
 
             #region gravity stuff

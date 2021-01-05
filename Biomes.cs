@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace StarSailor
 {
+    /*
     public enum Biomes
     {
         DesertOverworld,
@@ -64,4 +65,5 @@ namespace StarSailor
         Intro,
         End
     }
+    */
 }

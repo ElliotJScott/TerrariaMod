@@ -39,12 +39,15 @@ namespace StarSailor.Backgrounds
      
         public override bool ChooseBgStyle()
         {
+            return false;
+            /*
             try
             {
                 //PlayerFixer pl = ModContent.GetInstance<PlayerFixer>();
                 return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.DesertTreeCave;
             }
             catch { return false; }
+            */
         }
         public override int ChooseFarTexture()
         {

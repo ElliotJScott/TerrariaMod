@@ -15,6 +15,7 @@ namespace StarSailor.Dimensions
 {
     static class DimensionBuilder
     {
+
         public static Tile[,] GenerateIceDimension(int width, int height)
         {
             Tile[,] product = GenerateEmptyDimension(width, height);
@@ -174,6 +175,55 @@ namespace StarSailor.Dimensions
                             product = TileRunner(product, tiles[Main.rand.Next(0, tiles.Length)], x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.49f), Main.rand.Next(6, 18), Vector2.Zero);
 
                         }
+                    }
+                }
+            }
+            int coralstoneCounter = 0;
+            while (coralstoneCounter < areaScaleFactor * 1800)
+            {
+                int x = Main.rand.Next(1, maxX - 1);
+                int y = Main.rand.Next(b3 + floorHeights[30] - caveDisps[30], maxY - 1);
+                Tile tes = product[x, y];
+                if (tes != null)
+                {
+                    if (tes.type != 0)
+                    {
+                        int free = 0;
+                        for (int p = -1; p <= 1; p += 2)
+                        {
+                            if (product[x + p, y] == null || product[x + p, y].type == TileID.Dirt) free++;
+                            if (product[x, y + p] == null || product[x, y + p].type == TileID.Dirt) free++;
+                        }
+                        if (free > 0)
+                        {
+
+                            int[] walls = { WallID.IceUnsafe, ModContent.WallType<BedrockStoneWall>(), ModContent.WallType<BedrockStoneWall>() };
+                            product = TileRunner(product, TileID.Coralstone, x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.49f), Main.rand.Next(4, 8), new Vector2(0, 0), true, true, walls[Main.rand.Next(0, walls.Length)]);
+                            coralstoneCounter++;
+                            //ModContent.GetInstance<StarSailorMod>().Logger.Info("roughing number " + roughingCounter);
+                        }
+                    }
+                }
+            }
+            int coralCounter = 0;
+            while (coralCounter < areaScaleFactor * 25000)
+            {
+                int x = Main.rand.Next(1, maxX - 1);
+                int y = Main.rand.Next(b3 + floorHeights[30] - caveDisps[30], maxY - 1);
+                Tile tes = product[x, y];
+                if (tes != null && !tes.active())
+                {
+                    int free = 0;
+                    for (int p = -1; p <= 1; p += 2)
+                    {
+                        if (product[x + p, y] == null || product[x + p, y].type == TileID.Dirt || product[x + p, y].type == ModContent.TileType<GlowingCoral>()) free++;
+                        if (product[x, y + p] == null || product[x, y + p].type == TileID.Dirt || product[x, y + p].type == ModContent.TileType<GlowingCoral>()) free++;
+                    }
+                    if (free != 4)
+                    {
+                        product[x, y].type = (ushort)ModContent.TileType<GlowingCoral>();
+                        product[x, y].active(true);
+                        coralCounter++;
                     }
                 }
             }

@@ -11,6 +11,7 @@ using Terraria.ModLoader;
 
 namespace StarSailor
 {
+
     class TileFixer : GlobalTile
     {
         public override void SetDefaults()
@@ -20,9 +21,9 @@ namespace StarSailor
         }
         public override bool PreDraw(int i, int j, int type, SpriteBatch spriteBatch)
         {
-            return true;
+            return base.PreDraw(i, j, type, spriteBatch);
             float b = Lighting.Brightness(i, j);
-            if (b <= 0.05 || (type == TileID.Dirt && !Main.tile[i,j].active()))
+            if (b <= 0.05 /*|| (type == TileID.Dirt && !Main.tile[i,j].active())*/)
             {
                 Vector2 screenLoc = new Vector2(192, 192) + (16f * new Vector2(i, j)) - Main.screenPosition;
                 spriteBatch.Draw(ModContent.GetInstance<StarSailorMod>().pixel, new Rectangle((int)screenLoc.X, (int)screenLoc.Y, 16, 16), Color.Black);

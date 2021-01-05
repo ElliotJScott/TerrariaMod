@@ -16,9 +16,11 @@ using System.Reflection;
 using Terraria.GameContent.Events;
 using StarSailor.NPCs;
 using Terraria.ModLoader.IO;
+using StarSailor.Dimensions;
 
 namespace StarSailor
 {
+    
     class WorldFixer : ModWorld
     {
         public static List<string> tsk = new List<string>();
@@ -38,29 +40,6 @@ namespace StarSailor
             //tasks.Add(spawnTask);
             //tasks.Add(new PassLegacy("Insert Correct World", InsertWorld));
             base.ModifyWorldGenTasks(tasks, ref totalWeight);
-        }
-        public override TagCompound Save()
-        {
-            int spawnX = Main.spawnTileX;
-            int spawnY = Main.spawnTileY;
-            for (int i = 0; i < 21; i++)
-            {
-                for (int j = 0; j < 21; j++)
-                {
-
-                    Tile tile = Framing.GetTileSafely(i + spawnX - 25, j + spawnY - 25);
-                    tile.type = StarSailorMod.QRCode[j, i] == 1 ? TileID.ObsidianBrick : TileID.Glass;
-                    tile.active(true);
-                    tile.slope(0);
-                    /*
-                    Tile tile2 = Framing.GetTileSafely(i, j);
-                    tile2.type = teo.QRCode[j, i] == 1 ? TileID.ObsidianBrick : TileID.Glass;
-                    tile2.active(true);
-                    tile2.slope(0);
-                    */
-                }
-            }
-            return base.Save();
         }
         public void ModifyWorld(GenerationProgress progress)
         {
@@ -96,13 +75,17 @@ namespace StarSailor
         }
         public override void PreUpdate()
         {
-            Main.slimeRain = false;
-            Main.raining = false;
-            Main.UseStormEffects = false;
-            Sandstorm.Happening = false;
-            UpdateNPCSpawns();
+            if (ModContent.GetInstance<DimensionManager>().currentDimension != Dimensions.Dimensions.Overworld)
+            {
+                Main.slimeRain = false;
+                Main.raining = false;
+                Main.UseStormEffects = false;
+                Sandstorm.Happening = false;
+            }
+            //UpdateNPCSpawns();
             base.PreUpdate();
         }
+        /*
         public void UpdateNPCSpawns()
         {
             //All of this is from stack overflow I have no idea how it works
@@ -130,6 +113,7 @@ namespace StarSailor
                 
             }
         }
+        */
         public override void Initialize()
         {
             SequenceBuilder.InitialiseSequences(Main.LocalPlayer);
@@ -160,4 +144,5 @@ namespace StarSailor
         }
 
     }
+    
 }

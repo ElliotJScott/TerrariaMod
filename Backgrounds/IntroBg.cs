@@ -42,11 +42,14 @@ namespace StarSailor.Backgrounds
         }
         public override bool ChooseBgStyle()
         {
+            return false;
+                /*
             try
             {
                 return !Main.gameMenu && Main.LocalPlayer.GetModPlayer<PlayerFixer>().biome == Biomes.Intro;
             }
             catch { return false; }
+            */
         }
         public override int ChooseFarTexture()
         {
