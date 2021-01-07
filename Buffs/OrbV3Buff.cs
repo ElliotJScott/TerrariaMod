@@ -22,7 +22,7 @@ namespace StarSailor.Buffs
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            //Main.NewText("Weh");
+          
             npc.GetGlobalNPC<NPCBuffs>().distortion = Math.Max(npc.GetGlobalNPC<NPCBuffs>().distortion, 3);
         }
     }

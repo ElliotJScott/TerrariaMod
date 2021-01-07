@@ -73,10 +73,6 @@ namespace StarSailor.Backgrounds
         public void UpdateOffset()
         {
             StarSailorMod sm = (StarSailorMod)mod;
-            if (yOffset > -sm.planet0Above.Height)
-            {
-                yOffset -= 2;
-            }
         }
         public override bool PreDrawCloseBackground(SpriteBatch spriteBatch)
         {

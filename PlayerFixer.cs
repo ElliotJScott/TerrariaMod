@@ -69,7 +69,7 @@ namespace StarSailor
             Rectangle src = new Rectangle(0, 0, 40, 40);
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
-            //Main.NewText(Main.playerDrawData.Count);
+   
             //sb.Draw(Main.playerTextures);
             //sb.Draw(Main.playerTextures[0, 0], rect, src, player.skinColor);
             //sb.Draw(Main.playerTextures[0, 1], rect, src, Color.White);
@@ -190,7 +190,7 @@ namespace StarSailor
                 drawInfo.upperArmorColor = invis;
                 
             }
-            //Main.NewText(custGravity);
+          
             if (custGravity)
             {
                 drawInfo.drawPlayer.mount.SetMount(ModContent.GetInstance<SpaceControls>().Type, drawInfo.drawPlayer);

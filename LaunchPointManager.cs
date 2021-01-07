@@ -14,6 +14,8 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.UI.Chat;
+using StarSailor.Sequencing;
+using StarSailor.Dimensions;
 
 namespace StarSailor
 {
@@ -98,7 +100,7 @@ namespace StarSailor
             return l.name;
 
         }
-        public void SetDestination()
+        public LaunchPoint SetDestination()
         {
             int index = 0;
             for (int i = 0; i < ((StarSailorMod)mod).locationButtons.Length; i++)
@@ -111,6 +113,7 @@ namespace StarSailor
             }
             List<LaunchPoint> launches = GetLaunchPoints(currentLaunchPoint);
             LaunchPoint destination = launches[(((StarSailorMod)mod).rocketGuiPageNum * 10) + index];
+            return destination;
             //ModContent.GetInstance<Rocket>().destination = destination.position + new Vector2(0, -3);
         }
         public void AddLaunchPoint(LaunchPoint l)
@@ -120,15 +123,16 @@ namespace StarSailor
         public List<LaunchPoint> GetLaunchPoints()
         {
             List<LaunchPoint> returns = new List<LaunchPoint>();
-            foreach (LaunchPoint l in launchPoints)
+            for (int i = 0; i < launchPoints.Count; i++)
             {
-                switch (l.CheckValidity())
+                switch (launchPoints[i].CheckValidity())
                 {
                     case "":
-                        returns.Add(l);
+                        returns.Add(launchPoints[i]);
                         break;
                     default:
-                        launchPoints.Remove(l);
+                        launchPoints.RemoveAt(i);
+                        i--;
                         break;
                 }
             }
@@ -137,19 +141,42 @@ namespace StarSailor
         public List<LaunchPoint> GetLaunchPoints(LaunchPoint current)
         {
             List<LaunchPoint> returns = new List<LaunchPoint>();
-            foreach (LaunchPoint l in launchPoints)
+            DimensionManager dm = ModContent.GetInstance<DimensionManager>();
+
+            for (int i = 0; i < launchPoints.Count; i++)
             {
-                switch (l.CheckValidity())
+                switch (launchPoints[i].CheckValidity())
                 {
                     case "":
-                        if (l != current)
-                            returns.Add(l);
+                        if (launchPoints[i] != current)
+                            returns.Add(launchPoints[i]);
                         break;
                     default:
-                        launchPoints.Remove(l);
-                        return GetLaunchPoints(current);
+                        launchPoints.RemoveAt(i);
+                        i--;
+                        break;
+                }
+
+            }
+            foreach (Dimensions.Dimensions dim in typeof(Dimensions.Dimensions).GetEnumValues())
+            {
+                if (dm.dimensions[(int)dim].haveDiscovered && dim != dm.currentDimension)
+                {
+                    
+                    bool havePoint = false;
+                    foreach (LaunchPoint l in returns)
+                    {
+                        if (l.dimension == dim) havePoint = true;
+                        break;
+                    }
+                    if (!havePoint)
+                    {
+                        
+                        returns.Add(new LaunchPoint(dm.dimensions[(int)dim].GetDestination(), dm.dimensions[(int)dim].name, mod, dim, true));
+                    }
                 }
             }
+            
             return returns;
         }
         public LaunchPoint GetFromName(string s)
@@ -243,7 +270,9 @@ namespace StarSailor
                             case -2:
                                 ((StarSailorMod)mod).inLaunchGui = false;
                                 //ModContent.GetInstance<Rocket>().takeOffAnimate = true;
-                                ModContent.GetInstance<LaunchPointManager>().SetDestination();
+                                LaunchPoint destination = ModContent.GetInstance<LaunchPointManager>().SetDestination();
+                                SequenceQueue sq = SequenceBuilder.ConstructSpaceSequence(ModContent.GetInstance<DimensionManager>().currentDimension, destination.dimension, Main.LocalPlayer, 16 * (destination.position + new Vector2(0, -3)), destination.needPlatform);
+                                sq.Execute();
                                 break;
                             case -3:
                                 ((StarSailorMod)mod).nameButton.active = !((StarSailorMod)mod).nameButton.active;
@@ -315,20 +344,26 @@ namespace StarSailor
         public Vector2 position;
         public string name;
         Mod mod;
+        public bool needPlatform;
         public Dimensions.Dimensions dimension;
-        public LaunchPoint(Vector2 v, string n, Mod m, Dimensions.Dimensions dim)
+        public LaunchPoint(Vector2 v, string n, Mod m, Dimensions.Dimensions dim, bool np = false)
         {
             position = v;
             name = n;
             mod = m;
+            dimension = dim;
+            needPlatform = np;
         }
         public LaunchPoint(int i, int j, string n, Mod m, bool originFound, Dimensions.Dimensions dim)
         {
+
             if (originFound)
             {
                 position = new Vector2(i, j);
                 name = n;
                 mod = m;
+                dimension = dim;
+                needPlatform = false;
             }
             else
             {
@@ -343,6 +378,8 @@ namespace StarSailor
                     position = new Vector2(i, newJ);
                     name = n;
                     mod = m;
+                    dimension = dim;
+                    needPlatform = false;
                 }
                 catch
                 {
@@ -350,12 +387,13 @@ namespace StarSailor
                 }
             }
         }
+        public const int width = 5;
         public string CheckValidity()
         {
-            return "";
-            /*
+            //return "";
+            if (dimension != ModContent.GetInstance<DimensionManager>().currentDimension) return "";
             string error = "";
-            int width = 3;
+            //int width = 5;
             for (int k = -16; k <= 0; k++)
             {
                 for (int l = -width; l <= width; l++)
@@ -387,7 +425,7 @@ namespace StarSailor
                 }
             }
             return error;
-            */
+            
         }
         public static bool operator ==(LaunchPoint a, LaunchPoint b)
         {

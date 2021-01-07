@@ -116,6 +116,10 @@ namespace StarSailor.Backgrounds
             alphaDiff = 0.1f * (float)Math.Sin(2 * Math.PI * ((double)(ticker + (period / 13)) / period));
             alpha = initAlpha + alphaDiff; 
         }
+        public void DrawIfNotForbidden(SpriteBatch sb, (Vector2, int)[] forbiddenRegions)
+        {
+            if (!IsForbidden(position, forbiddenRegions)) Draw(sb);
+        }
         public void Draw(SpriteBatch sb)
         {
 

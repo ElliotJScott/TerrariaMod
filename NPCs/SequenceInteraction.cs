@@ -20,7 +20,7 @@ namespace StarSailor.NPCs
 
         public void Execute()
         {
-            Main.NewText("wewewexgdgsg");
+          
             Enabled = true;
             StarSailorMod mod = ModContent.GetInstance<StarSailorMod>();
             queue.Execute();

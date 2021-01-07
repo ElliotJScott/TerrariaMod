@@ -259,7 +259,7 @@ namespace StarSailor.GUI
                 HoverUpdate(true);
                 if (sm.newMouseState.LeftButton == ButtonState.Pressed && sm.oldMouseState.LeftButton == ButtonState.Released)
                 {
-                    Main.NewText(text);
+                    
                     sm.speechBubbles.Clear();
                     result.Execute();
                 }

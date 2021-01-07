@@ -15,7 +15,65 @@ namespace StarSailor.Dimensions
 {
     static class DimensionBuilder
     {
-
+        public static Tile[,] GetDimensionSpawn(bool asteroid = false)
+        {
+            Tile[,] output = new Tile[(2*LaunchPoint.width) + 1, asteroid?17:17 + LaunchPoint.width + 1];
+            for (int j = 0; j < 16; j++)
+            {
+                for (int i = 0; i < (2 * LaunchPoint.width) + 1; i++)
+                {
+                    if (j == 14 && i == LaunchPoint.width)
+                    {
+                        Tile t = new Tile();
+                        t.type = (ushort)ModContent.TileType<LaunchConsole>();
+                        output[i,j] = new Tile(t);
+                    }
+                    else if (j == 15 && i == LaunchPoint.width)
+                    {
+                        Tile t = new Tile();
+                        t.type = (ushort)ModContent.TileType<LaunchConsole>();
+                        t.frameX = 0;
+                        t.frameY = 18;
+                        output[i, j] = new Tile(t);
+                    }
+                    else
+                    {
+                        output[i, j] = new Tile();
+                    }
+                }
+            }
+            Tile pad = new Tile();
+            pad.type = (ushort)ModContent.TileType<LaunchPad>();
+            for (int i = 0; i < (2 * LaunchPoint.width) + 1; i++)
+            {
+                output[i, 16] = new Tile(pad);
+            }
+            Tile ast = new Tile();
+            ast.type = (ushort)ModContent.TileType<AsteroidRock>();
+            if (asteroid)
+            {
+                for (int j = 0; j <= LaunchPoint.width; j++)
+                {
+                    for (int i = -LaunchPoint.width; i <= LaunchPoint.width; i++)
+                    {
+                        if ((i * i) + (j * j) < LaunchPoint.width)
+                        {
+                            if (i == 0 && j == 0)
+                            {
+                                Tile gv = new Tile();
+                                gv.type = (ushort)ModContent.TileType<GravitySource>();
+                                output[LaunchPoint.width + i, 17 + j] = new Tile(gv);
+                            }
+                            else
+                            {
+                                output[LaunchPoint.width + i, 17 + j] = new Tile(ast);
+                            }
+                        }
+                    }
+                }
+            }
+            return output;
+        }
         public static Tile[,] GenerateIceDimension(int width, int height)
         {
             Tile[,] product = GenerateEmptyDimension(width, height);
@@ -546,6 +604,8 @@ namespace StarSailor.Dimensions
             tileIDs.Add(0);
             tileData.Add(new TileData().ToTagCompound());
             tileData.Add(new TileData(1, 0, true, 0, 0, 0, -1, -1).ToTagCompound());
+            ModContent.GetInstance<StarSailorMod>().Logger.Info("Empty dim generated | tileIDs : " + tileIDs.Count + " | tileData : " + tileData.Count + " | counterIDs " + counterIDs.Count + " | counterCounts " + counterCounts.Count);
+
             return new TagCompound
             {
                 ["tileIDs"] = tileIDs,

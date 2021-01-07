@@ -64,7 +64,7 @@ namespace StarSailor.NPCs.Enemies
             npc.spriteDirection = Math.Sign(npc.Center.X - Main.player[npc.target].Center.X);
 
             //npc.velocity = Vector2.Zero;
-            //Main.NewText(npc.target);
+            
         }
     }
 }

@@ -27,7 +27,7 @@ namespace StarSailor.Backgrounds
                     int q = tex[i].Width * (int)(scales[i] * Main.screenHeight / tex[i].Height);
                     if (q == 0) q = tex[i].Width;
                     Rectangle rect = new Rectangle(-kekw[i] + (q * j), offsets[i], q, (int)(scales[i] * Main.screenHeight));
-                    //Main.NewText("I am drawing " + rect.X +"  " + rect.Y + " " + rect.Width + " " + rect.Height);
+                   
                     sb.Draw(tex[i], rect, new Color(darkens[i] * 1, darkens[i] * 1, darkens[i] * 1));
                 }
             }

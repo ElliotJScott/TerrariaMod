@@ -27,9 +27,10 @@ namespace StarSailor.Dimensions
             {
 
                 TagCompound dimTag = tag.GetCompound((int)q + "DimData");
+                TagCompound extraDat = tag.GetCompound((int)q + "ExData");
                 if (q != currentDimension)
-                    LoadDimension(q, dimTag);
-                else dimensions[(int)q] = new Dimension(q);
+                    LoadDimension(q, dimTag, extraDat);
+                else dimensions[(int)q] = new Dimension(q, extraDat);
             }
             base.Load(tag);
         }
@@ -38,33 +39,12 @@ namespace StarSailor.Dimensions
             return dimensions[(int)currentDimension].GetGravity();
         }
         public Color GetSunlight() => dimensions[(int)currentDimension].GetSunlight();
-        public void LoadDimension(Dimensions d, TagCompound tag)
+        public void LoadDimension(Dimensions d, TagCompound tag, TagCompound extraDat)
         {
             dimsLoaded = 0;
             mod.Logger.Info("Attempting to load dimension " + d + "with data of size " + tag.Count);
-            /*
-            List<int> tileIDs = (List<int>)tag.GetList<int>("tileIDs");
-            
-            List<int> tileData = (List<int>)tag.GetList<int>("tileData");
-            List<int> counterIDs = (List<int>)tag.GetList<int>("counterIDs");
-            List<int> counterCounts = (List<int>)tag.GetList<int>("counterCounts");
-            List<Vector2> locations = (List<Vector2>)tag.GetList<Vector2>("extraLocations");
-            List<int> extraData = (List<int>)tag.GetList<int>("extraData");
-            BasicTileData basicData = new BasicTileData(counterIDs, counterCounts, tileIDs, tileData);
-            ExtraTileData extraTileData = new ExtraTileData(locations, extraData);
-            */
-            /*
-            dimensions[(int)d] = new Dimension(d);
-            if (tileIDs.Count == 0)
-            {
-                mod.Logger.Info("Detected not generated dimension " + d);
-                dimensions[(int)d].Generate();
-            }
-            else
-            {
-            */
             dimsLoaded++;
-            dimensions[(int)d] = new Dimension(d, tag);
+            dimensions[(int)d] = new Dimension(d, tag, extraDat);
                 //dimensions[(int)d].data = tag;
             //}
         }
@@ -74,20 +54,13 @@ namespace StarSailor.Dimensions
             Dimension dim = dimensions[(int)d];
             //if (d == Dimensions.Asteroid) mod.Logger.Info(dim.data);
             return dim.data;
-            /*
-            BasicTileData basicData = dim.basicTileData;
-            ExtraTileData extraData = dim.extraTileData;
-            TagCompound tag = new TagCompound
-            {
-                ["tileIDs"] = basicData.tileIDs,
-                ["tileData"] = basicData.tileData,
-                ["counterIDs"] = basicData.counterIDs,
-                ["counterCounts"] = basicData.counterCounts,
-                ["extraLocations"] = extraData.locations,
-                ["extraData"] = extraData.data,
-            };
-            return tag;
-            */
+        }
+        public TagCompound SaveExtraData(Dimensions d)
+        {
+
+            Dimension dim = dimensions[(int)d];
+            //if (d == Dimensions.Asteroid) mod.Logger.Info(dim.data);
+            return dim.GetExtraData();
         }
         public override TagCompound Save()
         {
@@ -96,11 +69,19 @@ namespace StarSailor.Dimensions
             foreach (Dimensions q in typeof(Dimensions).GetEnumValues())
             {
                 if (q != currentDimension)
+                {
                     output.Add((int)q + "DimData", SaveDimension(q));
+                }
+                output.Add((int)q + "ExData", SaveExtraData(q));
 
             }
             //mod.Logger.Info("Data to save is : " + output);
             return output;
+        }
+        public void DiscoverDimension(Dimensions d)
+        {
+            Dimension dim = dimensions[(int)d];
+            dim.Discover();
         }
         public override void Initialize()
         {
@@ -119,10 +100,9 @@ namespace StarSailor.Dimensions
         }
         public void GenerateDimensions(GenerationProgress progress)
         {
-            
             progress.Message = "Generating alternate dimensions";
             dimensions = new Dimension[6];
-            dimensions[(int)Dimensions.Overworld] = new Dimension(Dimensions.Overworld);
+            dimensions[(int)Dimensions.Overworld] = new Dimension(Dimensions.Overworld, progress);
             dimensions[(int)Dimensions.Travel] = new Dimension(Dimensions.Travel, progress);
             dimensions[(int)Dimensions.Asteroid] = new Dimension(Dimensions.Asteroid, progress);
             dimensions[(int)Dimensions.Ice] = new Dimension(Dimensions.Ice, progress);
@@ -132,22 +112,24 @@ namespace StarSailor.Dimensions
 
         public void SwitchDimension(Dimensions dim)
         {
+            mod.Logger.Info("Switching dimension from " + currentDimension + " to " + dim);
             Dimension dimo = dimensions[(int)currentDimension];
             //dimo.basicTileData = Dimension.GetCompressedBasicTileData(Main.tile);
             //dimo.extraTileData = Dimension.GetExtraTileData(Main.tile);
             dimo.data = Dimension.GetCompressedTileData(Main.tile);
             dimo.chest = Main.chest;
             dimo.sign = Main.sign;
-            Main.NewText("Backed up existing data for " + currentDimension);
+            
             Dimension nextDim = dimensions[(int)dim];
             Tile[,] tileData = Dimension.DecompressTileData(nextDim.data, Main.tile.GetLength(0), Main.tile.GetLength(1));
-            Main.NewText("Acquired new tile data for " + dim);
+         
             //Tile[,] allTileData = Dimension.LoadExtraTileData(nextDim.extraTileData, basicTileData);
             Main.tile = tileData;
             Main.chest = nextDim.chest;
             Main.sign = nextDim.sign;
             currentDimension = dim;
-            nextDim = new Dimension(currentDimension);
+            nextDim = new Dimension(currentDimension, nextDim.GetExtraData());
+            mod.Logger.Info("Done switching dimension from " + currentDimension + " to " + dim);
         }
 
         public override void NetReceive(BinaryReader reader)

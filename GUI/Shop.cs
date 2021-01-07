@@ -226,10 +226,10 @@ namespace StarSailor.GUI
             PlayerFixer pf = Main.LocalPlayer.GetModPlayer<PlayerFixer>();
             bool canPurchase = pf.CanPurchase(item.cost, item.resource);
             StarSailorMod sm = ModContent.GetInstance<StarSailorMod>();
-            //Main.NewText(intersect + " " + Main.hasFocus + " " + Main.mouseLeft + " " + Main.mouseLeftRelease + " " + canPurchase);
+            
             if (intersect && Main.hasFocus && sm.newMouseState.LeftButton == ButtonState.Pressed && sm.oldMouseState.LeftButton == ButtonState.Released && canPurchase)
             {
-                //Main.NewText("weh");
+               
                 Item.NewItem(Main.LocalPlayer.position, item.itemID);
                 if (item.resource == Resource.Money)
                     pf.ChargeCoins(item.cost);
@@ -346,7 +346,7 @@ namespace StarSailor.GUI
 
             if (intersect && Main.hasFocus && sm.newMouseState.LeftButton == ButtonState.Pressed && sm.oldMouseState.LeftButton == ButtonState.Released && canPurchase)
             {
-                //Main.NewText("weh");
+              
                 int[] ammoIDS = { ModContent.ItemType<NinemmRound>(), ModContent.ItemType<FiveFivemmRound>(), ModContent.ItemType<RocketItem>(), ModContent.ItemType<MeteorBombItem>(), ModContent.ItemType<ShotgunShell>() };
                 Item.NewItem(Main.LocalPlayer.position, ammoIDS[index], quantity);
                 pf.ChargeCoins(quantity * pricePerAmmo);

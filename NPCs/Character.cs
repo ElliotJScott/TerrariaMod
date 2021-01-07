@@ -162,7 +162,7 @@ namespace StarSailor.NPCs
             return true;
             int w = NPC.sWidth + NPC.safeRangeX * 2;
             int h = NPC.sHeight + NPC.safeRangeY * 2;
-            Main.NewText(w + " " + h);
+          
             Rectangle npcScreenRect = new Rectangle((int)center.X - w / 2, (int)center.Y - h / 2, w, h);
             foreach (Player player in Main.player)
             {

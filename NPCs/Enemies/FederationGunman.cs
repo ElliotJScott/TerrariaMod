@@ -55,7 +55,7 @@ namespace StarSailor.NPCs.Enemies
                         if (disp.Y < 0) npc.frame.Y = 0;
                         else npc.frame.Y = 4 * frameHeight;
                     }
-                    //Main.NewText(angle + " " + disp);
+                   
                 }
             }
             else if (npc.velocity.Y != 0)
@@ -102,8 +102,7 @@ namespace StarSailor.NPCs.Enemies
                     }
                 }
             }
-            //npc.velocity = Vector2.Zero;
-            //Main.NewText(npc.target);
+            
         }
 
 

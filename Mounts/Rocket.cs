@@ -80,7 +80,7 @@ namespace StarSailor.Mounts
             return false;
         }
         //public void 
-        public void DoTakeOffAnimation(Player p)
+        public bool UpdateTakeOffAnimation(Player p)
         {
             RocketData data = (RocketData)p.mount._mountSpecificData;
             data.offsetCounter++;
@@ -179,10 +179,10 @@ namespace StarSailor.Mounts
                 }
                 if (data.offsetCounter == 150)
                 {
-                    //removed
+                    return true;
                 }
             }
-           
+            return false;
         }
         public void ExecuteTakeOffAnim(Player p)
         {
@@ -197,7 +197,7 @@ namespace StarSailor.Mounts
         public void ExecuteSpaceAnim(Player p)
         {
             RocketData data = (RocketData)p.mount._mountSpecificData;
-            data.offsetBuffer = new Vector2(-data.offset.X, data.offset.Y + 90);
+            //data.offsetBuffer = new Vector2(-data.offset.X, data.offset.Y + 90);
             data.offset = new Vector2(0, initOffset + 100);
             data.mode = 0;
             p.mount._frame = 6;
@@ -213,6 +213,11 @@ namespace StarSailor.Mounts
             p.mount._frame = 4;
             data.animCounter = 0;
             data.offsetCounter = 0;
+        }
+        public void DisposeTakeOff(Player p)
+        {
+            RocketData data = (RocketData)p.mount._mountSpecificData;
+            data.offsetBuffer = new Vector2(-data.offset.X, data.offset.Y + 90);
         }
         public void ExecuteLand(Player p)
         {
@@ -243,7 +248,7 @@ namespace StarSailor.Mounts
             }
             return false;
         }
-        public void UpdateLandingAnim(Player p)
+        public bool UpdateLandingAnim(Player p)
         {
             RocketData data = (RocketData)p.mount._mountSpecificData;
             data.offsetCounter++;
@@ -332,8 +337,9 @@ namespace StarSailor.Mounts
             }
             else if (data.offsetCounter == 30 && data.mode == 3)
             {
-                //dispose
+                return true;
             }
+            return false;
         }
             
     }

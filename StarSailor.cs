@@ -58,7 +58,7 @@ namespace StarSailor
         public Texture2D pixel;
         public Texture2D box;
         public Texture2D boxInside;
-        public Texture2D planet0Above;
+        public Texture2D mainAbove, iceAbove, astAbove, jungAbove;
         public Texture2D asteroidBeltPlanet, asteroidBeltMoon;
         public Texture2D boatTex;
         public Texture2D ropeTex;
@@ -125,6 +125,7 @@ namespace StarSailor
             //Main.tileMerge[TileID.Mud][TileID.Marble] = false;
             //Main.tileMerge[TileID.Mud][TileID.MarbleBlock] = false;
         }
+        #region commented out shit
         /*
         void SetUpColorMappings()
         {
@@ -243,6 +244,7 @@ namespace StarSailor
             biomeSunlightStrength.Add(Biomes.LavaOverworld, 255);
         }
         */
+        #endregion
         public void RemoveSpeechBubble(SpeechBubble bubble)
         {
             for (int i = 0; i < speechBubbles.Count; i++)
@@ -266,6 +268,22 @@ namespace StarSailor
         {
             foreach (CustomStar s in stars) s.Update();
             foreach (CustomStar s in stars) s.Draw(sb);
+        }
+        public void DrawStars(SpriteBatch sb, int vel, params (Vector2, int)[] forbiddenRegions)
+        {
+            for (int i = 0; i < stars.Count; i++)
+            {
+                stars[i].Update();
+                stars[i].position.X -= vel;
+                if (stars[i].position.X < 20)
+                {
+                    CustomStar p = CustomStar.CreateNewStar(Main.screenHeight, currentDistribution, forbiddenRegions);
+                    p.position.X = stars[i].position.X + Main.screenWidth + 10;
+                    stars[i] = p;
+                }
+            }
+
+            foreach (CustomStar s in stars) s.DrawIfNotForbidden(sb, forbiddenRegions);
         }
 
         public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
@@ -307,7 +325,10 @@ namespace StarSailor
                 box = GetTexture("GUI/Box");
                 boxInside = GetTexture("GUI/BoxInside");
                 sun0Glow = GetTexture("Skies/Star_0Glow");
-                planet0Above = GetTexture("Skies/planet0Intro");
+                mainAbove = GetTexture("Skies/Homeworld");
+                iceAbove = GetTexture("Skies/IcePlanet");
+                astAbove = GetTexture("Skies/AsteroidBeltSpace");
+                jungAbove = GetTexture("Skies/DesertPlanet");
                 smallStar = GetTexture("Skies/Star");
                 mechGatlingGun = GetTexture("Mounts/MechGatlingGun");
                 corner = GetTexture("GUI/spBubble");
@@ -481,7 +502,7 @@ namespace StarSailor
                 string a = string.Concat(pressedKeys[k]);
                 if (a == "Back" && (flag2 | flag) && text.Length > 0)
                 {
-                    TextSnippet[] array = ChatManager.ParseMessage(text, Microsoft.Xna.Framework.Color.White).ToArray();
+                    TextSnippet[] array = ChatManager.ParseMessage(text, Color.White).ToArray();
                     text = ((!array[array.Length - 1].DeleteWhole) ? text.Substring(0, text.Length - 1) : text.Substring(0, text.Length - array[array.Length - 1].TextOriginal.Length));
                 }
             }
@@ -561,11 +582,7 @@ namespace StarSailor
 
         public override void PostDrawInterface(SpriteBatch spriteBatch)
         {
-            //if (!Main.gameMenu)
-            //    Main.spriteBatch.Draw(pixel, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black);
-            //
-            //spriteBatch.Draw(ModContent.GetInstance<StarSailorMod>().sun0Glow, new Rectangle(Main.screenWidth / 2, 25, 100, 100), Color.White * 0.5f);
-            //Main.NewText(rapidWaterRedraws.Count + " " + Main.time);
+
             DrawRapidWater(spriteBatch);
             GravDisplay.Draw(spriteBatch);
             if (currentShop != null)  currentShop.Draw(spriteBatch); 

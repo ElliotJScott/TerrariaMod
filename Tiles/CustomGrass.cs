@@ -42,7 +42,7 @@ namespace StarSailor.Tiles
                     ret.Item2 += spacing * choice;
                     break;
                 default:
-                    Main.NewText("Big mistake");
+                    
                     break;
             }
             return ret;
@@ -51,7 +51,7 @@ namespace StarSailor.Tiles
         {
             if (s.Length != mask.Length)
             {
-                Main.NewText("String error. String received " + s + " | Mask string = " + mask);
+                
                 return false;
             }
             for (int i = 0; i < s.Length; i++)
@@ -249,7 +249,7 @@ if (!Merge(grassID, dirtID, bot) && top == dirtID && left == grassID && right ==
         }
         MergeState GetMergeState(int type)
         {
-            Main.NewText("Before mergestate " + type);
+           
             if (type == Type) return MergeState.SameGrass;
             else return Main.tileMerge[Type][type] ? MergeState.Merge : MergeState.DontMerge;
         }

@@ -89,44 +89,50 @@ namespace StarSailor.Dimensions
     }
     class Dimension
     {
+        static string[] astNames = {"Thran Asteroid Belt"};
+        static string[] iceNames = { "Niflheim"};
+        static string[] jungNames = { "Halayeb" };
         float[] gravityVals = { 0.4f, 0f, 0.25f, 0f, 0.45f };
         Color[] sunlightColors = { new Color(255, 255, 255), new Color(255, 255, 255), new Color(125, 175, 255), new Color(210, 210, 210), new Color(150, 130, 130) };
         //public BasicTileData basicTileData;
         //public ExtraTileData extraTileData;
+        public bool haveDiscovered = false;
+        public string name = "";
         public TagCompound data;
         public Dimensions dimension;
         //Tile[,] tile;
         public Chest[] chest;
         public Sign[] sign;
-        public Dimension(Dimensions d, GenerationProgress progress)
+        public Dimension(Dimensions d, GenerationProgress progress) //Generation (including overworld)
         {
             dimension = d;
-            //tile = new Tile[Main.tile.GetLength(0), Main.tile.GetLength(1)];
-            //chest = new Chest[Main.maxChests];
-            //sign = new Sign[Main.sign.Length];
             Generate(progress);
         }
-        public Dimension(Dimensions d, TagCompound t)
+        public Dimension(Dimensions d, TagCompound t, TagCompound extraData) //Loading
         {
+           
             dimension = d;
             data = t;
             chest = new Chest[Main.maxChests];
             sign = new Sign[Main.maxChests];
+            LoadExtraData(extraData);
         }
-        public Dimension(Dimensions d)
+        public Dimension(Dimensions d) //Loading blank
         {
             dimension = d;
-            //ModContent.GetInstance<StarSailorMod>().Logger.Info(d + " generating");
-            /*
-            (BasicTileData, ExtraTileData) data2 = DimensionBuilder.GenerateCompressedEmptyDimension(Main.tile.GetLength(0), Main.tile.GetLength(1));
-            basicTileData = data2.Item1;
-            extraTileData = data2.Item2;
-            */
             data = DimensionBuilder.GenerateCompressedEmptyDimension(Main.tile.GetLength(0), Main.tile.GetLength(1));
             chest = new Chest[Main.maxChests];
             sign = new Sign[Main.maxChests];
         }
-        public Dimension(Dimensions d, Tile[,] t, Chest[] c, Sign[] s)
+        public Dimension(Dimensions d, TagCompound extraDat) //For current dimension
+        {
+            LoadExtraData(extraDat);
+            data = DimensionBuilder.GenerateCompressedEmptyDimension(Main.tile.GetLength(0), Main.tile.GetLength(1));
+            chest = new Chest[Main.maxChests];
+            sign = new Sign[Main.maxChests];
+            dimension = d;
+        }
+        public Dimension(Dimensions d, Tile[,] t, Chest[] c, Sign[] s) //Not used currently
         {
             ModContent.GetInstance<StarSailorMod>().Logger.Info("Creating dimension from overworld");
             dimension = d;
@@ -134,12 +140,43 @@ namespace StarSailor.Dimensions
             sign = s;
             data = GetCompressedTileData(t);
         }
+        public void Discover()
+        {
+            haveDiscovered = true;
+        }
         public float GetGravity() => gravityVals[(int)dimension];
         public Color GetSunlight() => sunlightColors[(int)dimension];
+        void LoadExtraData(TagCompound extraData)
+        {
+            haveDiscovered = extraData.GetBool("dsvd");
+            name = extraData.GetString("name");
+           
+        }
+        public TagCompound GetExtraData()
+        {
+            TagCompound res = new TagCompound();
+            res.Add("dsvd", haveDiscovered);
+            res.Add("name", name);
+            return res;
+        }
         public void Generate()
         {
             ModContent.GetInstance<StarSailorMod>().Logger.Info("Generating " + dimension);
             Generate(new GenerationProgress());
+        }
+        public Vector2 GetDestination()
+        {
+            switch (dimension)
+            {
+                case Dimensions.Asteroid:
+                    return new Vector2(Main.maxTilesX / 2, Main.maxTilesY / 2);
+                case Dimensions.Jungle:
+                    return new Vector2(150, Main.maxTilesY / 4);
+                case Dimensions.Ice:
+                    return new Vector2(2 * Main.maxTilesX / 5, Main.maxTilesY / 8);
+                default:
+                    throw new InvalidOperationException();
+            }
         }
         public void Generate(GenerationProgress progress)
         {
@@ -161,6 +198,8 @@ namespace StarSailor.Dimensions
                     data = GetCompressedTileData(tilej);
                     chest = new Chest[Main.maxChests];
                     sign = new Sign[Main.maxChests];
+                    haveDiscovered = false;
+                    name = jungNames[Main.rand.Next(0, jungNames.Length)];
                     break;
                 case Dimensions.Ice:
                     progress.Message = "Generating the Ice Dimension";
@@ -168,6 +207,8 @@ namespace StarSailor.Dimensions
                     data = GetCompressedTileData(tilei);
                     chest = new Chest[Main.maxChests];
                     sign = new Sign[Main.maxChests];
+                    haveDiscovered = false;
+                    name = iceNames[Main.rand.Next(0, iceNames.Length)];
                     break;
                 case Dimensions.Asteroid:
 
@@ -176,11 +217,25 @@ namespace StarSailor.Dimensions
                     data = GetCompressedTileData(tilea);
                     chest = new Chest[Main.maxChests];
                     sign = new Sign[Main.maxChests];
+                    haveDiscovered = false;
+                    name = astNames[Main.rand.Next(0, astNames.Length)];
                     break;
 
                 case Dimensions.Overworld:
+                    progress.Message = "Finishing up the overworld";
+                    //(BasicTileData, ExtraTileData) data2 = DimensionBuilder.GenerateCompressedEmptyDimension(Main.tile.GetLength(0), Main.tile.GetLength(1));
+                    //basicTileData = data2.Item1;
+                    //extraTileData = data2.Item2;
+                    data = DimensionBuilder.GenerateCompressedEmptyDimension(Main.tile.GetLength(0), Main.tile.GetLength(1));
+                    chest = new Chest[Main.maxChests];
+                    sign = new Sign[Main.maxChests];
+                    name = Main.worldName;
+                    haveDiscovered = true;
+                    break;
                 case Dimensions.Travel:
                 default:
+                    name = "---";
+                    haveDiscovered = false;
                     progress.Message = "Generating Empty Space";
                     //(BasicTileData, ExtraTileData) data2 = DimensionBuilder.GenerateCompressedEmptyDimension(Main.tile.GetLength(0), Main.tile.GetLength(1));
                     //basicTileData = data2.Item1;
@@ -264,7 +319,7 @@ namespace StarSailor.Dimensions
                 }
             }
             if (currentCounter.Item2 >= 1) tileList.Add(currentCounter);
-            Main.NewText("Compressed tiles into a list of length " + tileList.Count);
+       
             List<Vector2> pos = new List<Vector2>();
             List<int> data = new List<int>();
             for (int i = 0; i < tile.GetLength(0); i++)
@@ -315,7 +370,6 @@ namespace StarSailor.Dimensions
         }
         public static Tile[,] DecompressTileData(TagCompound tag, int w, int h)
         {
-            Main.NewText("Beginning Decompression!!!!!");
             List<int> tileIDs = (List<int>)tag.GetList<int>("tileIDs");
             IList<TagCompound> tileData = tag.GetList<TagCompound>("tileData");
             List<int> counterIDs = (List<int>)tag.GetList<int>("counterIDs");
@@ -334,7 +388,8 @@ namespace StarSailor.Dimensions
                 //ModContent.GetInstance<StarSailorMod>().Logger.Info("tileID : " + data.tileIDs[i] + " | tileData : " + data.tileData[i]);
                 TileData td = new TileData(tileData[i]);
                 Tile t = new Tile(Main.tile[0, 0]);
-
+                
+               
 
                 t.type = td.id;
                 t.wall = td.wall;
@@ -348,21 +403,18 @@ namespace StarSailor.Dimensions
                 dictionary.Add(tileIDs[i], t);
 
             }
-            Main.NewText("i have " + counterIDs.Count + "/" + counterCounts.Count + " tileList has " + tileList.Count);
+            
             for (int i = 0; i < counterIDs.Count; i++)
             {
                 tileList.Add((counterIDs[i], counterCounts[i]));
             }
-            Main.NewText("world size is " + w + "," + h);
-            //Main.NewText("Decompressing layer 0");
-            Main.NewText("total items to deal with : " + tileList.Count);
+
             int k = 0;
             foreach ((int, int) tc in tileList)
             {
                 k += tc.Item2;
             }
-            Main.NewText("k is " + k);
-            Main.NewText("adj k is " + (k - tileList.Count));
+            ModContent.GetInstance<StarSailorMod>().Logger.Info("Dimension decompressing | tileIDs : " + tileIDs.Count + " | tileData : " + tileData.Count + " | counterIDs " + counterIDs.Count + " | counterCounts " + counterCounts.Count);
             foreach ((int, int) tc in tileList)
             {
                 int count = tc.Item2;
@@ -376,7 +428,7 @@ namespace StarSailor.Dimensions
                     {
                         x = 0;
                         y++;
-                        //Main.NewText("Decompressing layer " + y);
+                        
                     }
                 }
             }
@@ -415,7 +467,7 @@ namespace StarSailor.Dimensions
                     if (id == -1) tile[i, j] = null;
                     else
                     {
-                        //Main.NewText(id);
+                       
                         TileData td = dictionary[id];
                         tile[i, j].type = (ushort)td.id;
                         tile[i, j].wall = (ushort)td.wall;

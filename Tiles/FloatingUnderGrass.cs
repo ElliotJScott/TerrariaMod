@@ -90,8 +90,7 @@ if (!Merge(grassID, dirtID, bot) && top == dirtID && left == grassID && right ==
             StarSailorMod sm = (StarSailorMod)mod;
             //(Biomes, Planet) loc = sm.GetBiomePlanet(new Vector2(i, j));
             Color col = sm.GetGrassColor(loc.Item1);
-            //Main.NewText(col);
-            //Main.NewText(col + " " + loc.Item1);
+           
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
 

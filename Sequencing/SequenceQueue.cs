@@ -81,11 +81,11 @@ namespace StarSailor.Sequencing
         }
         public bool RemoveStart()
         {
-            //Main.NewText("Removing item at start");
+            
             elements[0].Dispose();
             ticker = 0;
             elements.RemoveAt(0);
-            Main.NewText(elements.Count);
+          
             if (elements.Count > 0)
             {
                 elements[0].Execute();

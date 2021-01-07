@@ -13,7 +13,7 @@ namespace StarSailor.Sequencing
     static class SequenceBuilder
     {
         static List<SequenceQueue> sequences = new List<SequenceQueue>();
-        static readonly Vector2 spaceLocation = 16 * new Vector2(1000, 1000);
+        static readonly Vector2 spaceLocation = 16 * new Vector2(100, 100);
         static string[] goodbyeText = { "Goodbye!", "See you again soon!", "Come again soon!"};
         public static void InitialiseSequences(Player player)
         {
@@ -23,7 +23,7 @@ namespace StarSailor.Sequencing
         
         //If origin == destination don't do the space sequence
         //Change spawn, takeoff, teleport, inflight, teleport, landing, changemount, mobilise
-        static SequenceQueue ConstructSpaceSequence(Dimensions.Dimensions origin, Dimensions.Dimensions destination, Player player, Vector2 destLoc)
+        public static SequenceQueue ConstructSpaceSequence(Dimensions.Dimensions origin, Dimensions.Dimensions destination, Player player, Vector2 destLoc, bool addPlatform = false)
         {
             SequenceQueue queue = new SequenceQueue(Sequence.InSpace);
             queue.Append(new ImmobiliseItem());
@@ -34,10 +34,14 @@ namespace StarSailor.Sequencing
                 queue.Append(new ChangeDimensionItem(Dimensions.Dimensions.Travel));
                 queue.Append(new TeleportItem(spaceLocation, player));
                 queue.Append(new ShipTravelItem((origin, destination), player));
-                
+                queue.Append(new ChangeDimensionItem(destination));
             }
-
+            if (addPlatform)
+            {
+                queue.Append(new AddPlatformItem(destLoc/16f, destination));
+            }
             queue.Append(new TeleportItem(destLoc, player));
+
             queue.Append(new ShipLandItem(player));
             queue.Append(new ChangeMountItem(player));
             queue.Append(new MobiliseItem());
@@ -46,7 +50,7 @@ namespace StarSailor.Sequencing
         }
         public static SequenceQueue ConstructBasicShopSequence(Character src, string introText, params ShopItem[] items)
         {
-            //Main.NewText("...building a sequence...");
+       
             SequenceQueue queue = new SequenceQueue(Sequence.ShopTalk);
             queue.Append(new StopAIItem(src));
             queue.Append(new ClearAmbientTextItem());

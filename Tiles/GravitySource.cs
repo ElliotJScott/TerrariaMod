@@ -36,7 +36,7 @@ namespace StarSailor.Tiles
         public override void RandomUpdate(int i, int j)
         {
             
-            //Main.NewText(Main.LocalPlayer.GetModPlayer<PlayerFixer>().gravSources.Count);
+           
             List<BoundingTile> appList;
             if (boundingTiles.TryGetValue(new Vector2(i, j), out appList))
             {
@@ -94,7 +94,7 @@ namespace StarSailor.Tiles
                     && */!checkedLocations.Contains(positions[q])
                     && (checkTiles[q].type == ModContent.GetInstance<AsteroidRock>().Type || checkTiles[q].type == ModContent.GetInstance<LaunchPad>().Type))
                     CheckBound((int)positions[q].X, (int)positions[q].Y, home, appList, checkedLocations);
-                    //Main.NewText("Penis");
+                    
             }
             if (nextToAir && !CheckListForTile(appList, thisPos)) appList.Add(new BoundingTile(thisPos, vals));
         }

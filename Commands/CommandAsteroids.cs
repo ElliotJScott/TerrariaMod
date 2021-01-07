@@ -41,7 +41,7 @@ namespace StarSailor.Commands
                 {
                     if (Framing.GetTileSafely(i, j).type == TileID.Titanium)
                     {
-                        Main.NewText("I found some titanium");
+                    
                         List<Vector2> positions = new List<Vector2>();
                         SpreadPlacer(i, j, i, j, ModContent.TileType<AsteroidRock>(), positions);
                         Vector2 sum = Vector2.Zero;

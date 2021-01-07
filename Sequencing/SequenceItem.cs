@@ -65,7 +65,7 @@ namespace StarSailor.Sequencing
 
         public bool Execute()
         {
-            //Main.NewText("Weeeheh " + target.Name);
+            
             target.doMotion = false;
             return true;
         }
@@ -94,7 +94,7 @@ namespace StarSailor.Sequencing
 
         public bool Execute()
         {
-            //Main.NewText("Wahhahha " + target.Name);
+            
             target.doMotion = true;
             return true;
         }
@@ -258,7 +258,7 @@ namespace StarSailor.Sequencing
 
         public bool Execute()
         {
-            Main.NewText("wewewe");
+            
             ModContent.GetInstance<StarSailorMod>().inputEnabled = false;
             return true;
         }
@@ -446,7 +446,8 @@ namespace StarSailor.Sequencing
     }
     public class ShipTakeOffItem : ISequenceItem
     {
-        public int Duration => throw new NotImplementedException();
+        public int Duration => duration;
+        int duration = int.MaxValue;
         Player player;
         public ShipTakeOffItem(Player pl)
         {
@@ -459,6 +460,7 @@ namespace StarSailor.Sequencing
 
         public void Dispose()
         {
+            ModContent.GetInstance<Rocket>().DisposeTakeOff(player);
         }
 
         public bool Execute()
@@ -477,12 +479,13 @@ namespace StarSailor.Sequencing
 
         public void Update()
         {
-            throw new NotImplementedException();
+            if (ModContent.GetInstance<Rocket>().UpdateTakeOffAnimation(player)) duration = 0;
         }
     }
     public class ShipTravelItem : ISequenceItem
     {
-        public int Duration => throw new NotImplementedException();
+        public int Duration { get; private set; } = int.MaxValue;
+
         public (Dimensions.Dimensions, Dimensions.Dimensions) originDest;
         Player player;
         public ShipTravelItem(Dimensions.Dimensions or, Dimensions.Dimensions dest, Player pl)
@@ -510,13 +513,16 @@ namespace StarSailor.Sequencing
             else
             {
                 ModContent.GetInstance<Rocket>().ExecuteSpaceAnim(player);
+                ModContent.GetInstance<InSpaceBg>().SetDefaults(originDest.Item1, originDest.Item2);
                 return true;
             }
         }
 
         public void Update()
         {
-            throw new NotImplementedException();
+            ModContent.GetInstance<Rocket>().UpdateSpaceAnim(player);
+            bool f = ModContent.GetInstance<InSpaceBg>().UpdateBg();
+            if (f) Duration = 0;
         }
 
         public void Dispose()
@@ -525,7 +531,8 @@ namespace StarSailor.Sequencing
     }
     public class ShipLandItem : ISequenceItem
     {
-        public int Duration => throw new NotImplementedException();
+        public int Duration => duration;
+        int duration = int.MaxValue;
         Player player;
         public ShipLandItem(Player pl)
         {
@@ -566,7 +573,7 @@ namespace StarSailor.Sequencing
 
         public void Update()
         {
-
+            if (ModContent.GetInstance<Rocket>().UpdateLandingAnim(player)) duration = 0;
         }
     }
     public class ClearAmbientTextItem : ISequenceItem
@@ -584,7 +591,7 @@ namespace StarSailor.Sequencing
 
         public bool Execute()
         {
-            Main.NewText("weh");
+            
             ModContent.GetInstance<StarSailorMod>().speechBubbles.Clear();
             return true;
         }
@@ -622,6 +629,48 @@ namespace StarSailor.Sequencing
             //throw new NotImplementedException();
         }
     }
+    public class AddPlatformItem : ISequenceItem
+    {
+        public int Duration => 0;
+        Dimensions.Dimensions destination;
+        Vector2 position;
+
+        public AddPlatformItem(Vector2 p, Dimensions.Dimensions dim)
+        {
+            position = p;
+            destination = dim;
+        }
+        public bool Execute()
+        {
+            Main.NewText("Adding landing platform at " + position + " in " + destination);
+            Tile[,] tiles = DimensionBuilder.GetDimensionSpawn(destination == Dimensions.Dimensions.Asteroid);
+            for (int i = 0; i < tiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < tiles.GetLength(1); j++)
+                {
+                    Main.tile[(int)position.X + i - LaunchPoint.width, (int)position.Y + j - 16] = new Tile(tiles[i, j]);
+                }
+            }
+            return true;
+        }
+
+        public void Update()
+        {
+            
+        }
+
+        public object Clone()
+        {
+            return new AddPlatformItem(position, destination);
+        }
+
+        public void Dispose()
+        {
+            
+        }
+    }
+
+
     public class ShopSeqItem : ISequenceItem
     {
         public int Duration => duration;
@@ -648,7 +697,7 @@ namespace StarSailor.Sequencing
 
         public bool Execute()
         {
-            //Main.NewText("ree");
+            
             ModContent.GetInstance<StarSailorMod>().currentShop = new Shop(items);
             return true;
         }
@@ -734,7 +783,7 @@ namespace StarSailor.Sequencing
             ship.Update(player);
             if (ship.GetState(player) == 0)
             {
-                ModContent.GetInstance<IntroBg>().UpdateOffset();
+                //ModContent.GetInstance<InSpaceBg>().UpdateOffset();
             }
         }
     }

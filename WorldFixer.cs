@@ -32,7 +32,7 @@ namespace StarSailor
             {
                 
                 tsk.Add(t.Name);
-                Main.NewText(t.Name);
+            
             }
             //int SpawnIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Spawn Point"));
             //GenPass spawnTask = tasks[SpawnIndex];
