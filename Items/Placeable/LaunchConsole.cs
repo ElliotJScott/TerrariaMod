@@ -28,8 +28,12 @@ namespace StarSailor.Items.Placeable
 		public override void AddRecipes()
 		{
 			ModRecipe recipe = new ModRecipe(mod);
-			recipe.AddIngredient(ItemID.DirtBlock, 10);
-			recipe.SetResult(this);
+			recipe.AddIngredient(ItemID.Ruby, 5);
+            recipe.AddIngredient(ItemID.Emerald, 5);
+            recipe.AddIngredient(ItemID.Sapphire, 5);
+            recipe.AddIngredient(ModContent.ItemType<LaunchPad>(), 20);
+            recipe.AddTile(TileID.HeavyWorkBench);
+            recipe.SetResult(this);
 			recipe.AddRecipe();
 		}
 	}

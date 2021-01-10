@@ -150,13 +150,16 @@ namespace StarSailor.Dimensions
         {
             haveDiscovered = extraData.GetBool("dsvd");
             name = extraData.GetString("name");
-           
+            chest = AcquireChestData(extraData.GetCompound("chest"));
+            sign = AcquireSignData(extraData.GetCompound("sign"));
         }
         public TagCompound GetExtraData()
         {
             TagCompound res = new TagCompound();
             res.Add("dsvd", haveDiscovered);
             res.Add("name", name);
+            res.Add("chest", SaveChestData(chest));
+            res.Add("sign", SaveSignData(sign));
             return res;
         }
         public void Generate()
@@ -194,29 +197,29 @@ namespace StarSailor.Dimensions
                     */
                 case Dimensions.Jungle:
                     progress.Message = "Generating the Jungle Dimension";
-                    Tile[,] tilej = DimensionBuilder.GenerateJungleDimension(Main.tile.GetLength(0), Main.tile.GetLength(1));
-                    data = GetCompressedTileData(tilej);
-                    chest = new Chest[Main.maxChests];
-                    sign = new Sign[Main.maxChests];
+                    DimensionData tilej = DimensionBuilder.GenerateJungleDimension(Main.tile.GetLength(0), Main.tile.GetLength(1));
+                    data = GetCompressedTileData(tilej.tile);
+                    chest = tilej.chest;
+                    sign = tilej.sign;
                     haveDiscovered = false;
                     name = jungNames[Main.rand.Next(0, jungNames.Length)];
                     break;
                 case Dimensions.Ice:
                     progress.Message = "Generating the Ice Dimension";
-                    Tile[,] tilei = DimensionBuilder.GenerateIceDimension(Main.tile.GetLength(0), Main.tile.GetLength(1));
-                    data = GetCompressedTileData(tilei);
-                    chest = new Chest[Main.maxChests];
-                    sign = new Sign[Main.maxChests];
+                    DimensionData tilei = DimensionBuilder.GenerateIceDimension(Main.tile.GetLength(0), Main.tile.GetLength(1));
+                    data = GetCompressedTileData(tilei.tile);
+                    chest = tilei.chest;
+                    sign = tilei.sign;
                     haveDiscovered = false;
                     name = iceNames[Main.rand.Next(0, iceNames.Length)];
                     break;
                 case Dimensions.Asteroid:
 
                     progress.Message = "Generating the Asteroid Dimension";
-                    Tile[,] tilea = DimensionBuilder.GenerateAsteroidDimension(Main.tile.GetLength(0), Main.tile.GetLength(1));
-                    data = GetCompressedTileData(tilea);
-                    chest = new Chest[Main.maxChests];
-                    sign = new Sign[Main.maxChests];
+                    DimensionData tilea = DimensionBuilder.GenerateAsteroidDimension(Main.tile.GetLength(0), Main.tile.GetLength(1));
+                    data = GetCompressedTileData(tilea.tile);
+                    chest = tilea.chest;
+                    sign = tilea.sign;
                     haveDiscovered = false;
                     name = astNames[Main.rand.Next(0, astNames.Length)];
                     break;
@@ -249,7 +252,126 @@ namespace StarSailor.Dimensions
             }
 
         }
-
+        public static Sign[] AcquireSignData(TagCompound tc)
+        {
+            Sign[] output = new Sign[Main.maxChests];
+            List<TagCompound> signData = (List<TagCompound>)tc.GetList<TagCompound>("signData");
+            for (int i = 0; i < signData.Count; i++)
+            {
+                TagCompound sdat = signData[i];
+                output[i] = GetSingleSign(sdat);
+            }
+            return output;
+        }
+        static Sign GetSingleSign(TagCompound tc)
+        {
+            Sign s = new Sign();
+            if (tc.GetBool("null")) return null;
+            s.x = tc.GetInt("x");
+            s.y = tc.GetInt("y");
+            s.text = tc.GetString("text");
+            return s;
+        }
+        public static TagCompound SaveSignData(Sign[] data)
+        {
+            TagCompound output = new TagCompound();
+            List<TagCompound> signData = new List<TagCompound>();
+            foreach (Sign s in data) signData.Add(SaveSingleSign(s));
+            output.Add("signData", signData);
+            return output;
+        }
+        static TagCompound SaveSingleSign(Sign s)
+        {
+            TagCompound output = new TagCompound();
+            if (s == null) output.Add("null", true);
+            else
+            {
+                output.Add("null", false);
+                output.Add("x", s.x);
+                output.Add("y", s.y);
+                output.Add("text", s.text);
+            }
+            return output;
+        }
+        public static Chest[] AcquireChestData(TagCompound tc)
+        {
+            Chest[] output = new Chest[Main.maxChests];
+            List<TagCompound> chestData = (List<TagCompound>)tc.GetList<TagCompound>("chestData");
+            for (int i = 0; i < chestData.Count; i++)
+            {
+                TagCompound cdat = chestData[i];
+                output[i] = GetSingleChest(cdat);
+            }
+            return output;
+        }
+        static Chest GetSingleChest(TagCompound tc)
+        {
+            //frame, frame counter, name, item, x, y 
+            if (tc.GetBool("null")) return null;
+            bool bank = tc.GetBool("bank");
+            int x = tc.GetInt("x");
+            int y = tc.GetInt("y");
+            string name = tc.GetString("name");
+            TagCompound itemData = tc.GetCompound("item");
+            Chest c = new Chest(bank);
+            c.x = x;
+            c.y = y;
+            c.name = name;
+            c.item = GetChestItemData(itemData);
+            return c;
+        }
+        static Item[] GetChestItemData(TagCompound tc)
+        {
+            int len = tc.GetInt("len");
+            Item[] output = new Item[len];
+            List<TagCompound> items = (List<TagCompound>)tc.GetList<TagCompound>("item");
+            for (int i = 0; i < items.Count; i++)
+            {
+                output[i] = GetSingleItem(items[i]);
+            }
+            return output;
+        }
+        static Item GetSingleItem(TagCompound tc)
+        {
+            return Item.DESERIALIZER.Invoke(tc);
+        }
+        public static TagCompound SaveChestData(Chest[] data)
+        {
+            TagCompound output = new TagCompound();
+            List<TagCompound> chestData = new List<TagCompound>();
+            foreach (Chest c in data) chestData.Add(SaveSingleChest(c));
+            output.Add("chestData", chestData);
+            return output;
+        }
+        static TagCompound SaveSingleChest(Chest c)
+        {
+            TagCompound output = new TagCompound();
+            if (c == null) output.Add("null", true);
+            else
+            {
+                output.Add("null", false);
+                output.Add("bank", c.bankChest);
+                output.Add("x", c.x);
+                output.Add("y", c.y);
+                output.Add("name", c.name);
+                TagCompound itemData = SaveItems(c.item);
+                output.Add("item", itemData);
+            }
+            return output;
+        }
+        static TagCompound SaveItems(Item[] item)
+        {
+            TagCompound output = new TagCompound();
+            output.Add("len", item.Length);
+            List<TagCompound> itemData = new List<TagCompound>();
+            foreach (Item i in item) itemData.Add(SaveSingleItem(i));
+            output.Add("item", itemData);
+            return output;
+        }
+        static TagCompound SaveSingleItem(Item item)
+        {
+            return item.SerializeData();
+        }
         public static TagCompound GetCompressedTileData(Tile[,] tile) //Not compressed very well but ehhhh
         {
             TileData currentTile = TileData.NULLDATA;
@@ -368,6 +490,7 @@ namespace StarSailor.Dimensions
             };
             //return new BasicTileData(dictionary, tileList);
         }
+       
         public static Tile[,] DecompressTileData(TagCompound tag, int w, int h)
         {
             List<int> tileIDs = (List<int>)tag.GetList<int>("tileIDs");

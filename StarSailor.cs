@@ -403,6 +403,7 @@ namespace StarSailor
         }
         public string InputText(string oldString)
         {
+            Main.NewText(oldString);
             Main.inputTextEnter = false;
             Main.inputTextEscape = false;
             string text = oldString;
@@ -506,6 +507,7 @@ namespace StarSailor
                     text = ((!array[array.Length - 1].DeleteWhole) ? text.Substring(0, text.Length - 1) : text.Substring(0, text.Length - array[array.Length - 1].TextOriginal.Length));
                 }
             }
+            
             return text;
         }
         public void UpdateFireEffect()
@@ -634,7 +636,7 @@ namespace StarSailor
                     launchButton.Draw(spriteBatch);
                 }
                 //spriteBatch.DrawString(Main.fontMouseText, "Exit", exitTextLocation, textCol);
-                oldText = InputText(oldText);
+                //oldText = InputText(oldText);
                 //spriteBatch.End();
                 
             }

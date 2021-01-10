@@ -16,7 +16,7 @@ namespace StarSailor.Tiles
     {
         public Dictionary<Vector2, List<BoundingTile>> boundingTiles = new Dictionary<Vector2, List<BoundingTile>>();
         //public List<Vector2> boundingPositions = new List<Vector2>();
-
+        List<int> unallowedValues = new List<int>();
         bool clearBoundPos = true;
         public override void SetDefaults()
         {
@@ -92,7 +92,8 @@ namespace StarSailor.Tiles
                     nextToAir = true;
                 else if (/*Vector2.Distance(positions[q], home) > Vector2.Distance(thisPos, home)
                     && */!checkedLocations.Contains(positions[q])
-                    && (checkTiles[q].type == ModContent.GetInstance<AsteroidRock>().Type || checkTiles[q].type == ModContent.GetInstance<LaunchPad>().Type))
+                    && !unallowedValues.Contains(checkTiles[q].type)
+                    && Main.tileSolid[checkTiles[q].type])
                     CheckBound((int)positions[q].X, (int)positions[q].Y, home, appList, checkedLocations);
                     
             }

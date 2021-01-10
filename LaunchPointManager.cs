@@ -26,6 +26,8 @@ namespace StarSailor
 
         public override void Initialize()
         {
+            launchPoints = new List<LaunchPoint>();
+            currentLaunchPoint = null;
             base.Initialize();
         }
         public override void Load(TagCompound tag)
@@ -158,6 +160,7 @@ namespace StarSailor
                 }
 
             }
+            Main.NewText("midway count is " + returns.Count);
             foreach (Dimensions.Dimensions dim in typeof(Dimensions.Dimensions).GetEnumValues())
             {
                 if (dm.dimensions[(int)dim].haveDiscovered && dim != dm.currentDimension)
@@ -166,8 +169,12 @@ namespace StarSailor
                     bool havePoint = false;
                     foreach (LaunchPoint l in returns)
                     {
-                        if (l.dimension == dim) havePoint = true;
-                        break;
+                        //Main.NewText(l.dimension + " comp to " + dim);
+                        if (l.dimension == dim)
+                        {
+                            havePoint = true;
+                            break;
+                        }
                     }
                     if (!havePoint)
                     {
@@ -176,7 +183,7 @@ namespace StarSailor
                     }
                 }
             }
-            
+            Main.NewText("final count is " + returns.Count);
             return returns;
         }
         public LaunchPoint GetFromName(string s)
@@ -286,6 +293,11 @@ namespace StarSailor
                     }
                 }
                 else HoverUpdate(false);
+                if (active && fn == Function.Name)
+                {
+                    text = Main.GetInputText(text);
+                    //text = ((StarSailorMod)mod).InputText(text);
+                }
             }
         }
         public void Draw(SpriteBatch sb)

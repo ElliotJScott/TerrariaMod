@@ -29,11 +29,13 @@ namespace StarSailor.Items.Placeable
 
 		public override void AddRecipes()
 		{
-			ModRecipe recipe = new ModRecipe(mod);
-			recipe.AddIngredient(ItemID.DirtBlock, 10);
-			recipe.SetResult(this, 10);
-			recipe.AddRecipe();
-		}
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.StoneBlock, 1);
+            recipe.AddIngredient(ItemID.MeteoriteBar, 1);
+            recipe.AddTile(TileID.HeavyWorkBench);
+            recipe.SetResult(this, 2);
+            recipe.AddRecipe();
+        }
 
 	}
 }

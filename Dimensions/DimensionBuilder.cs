@@ -10,14 +10,27 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using Terraria.Utilities;
 
 namespace StarSailor.Dimensions
 {
+    public struct DimensionData
+    {
+        public Tile[,] tile;
+        public Chest[] chest;
+        public Sign[] sign;
+        public DimensionData(Tile[,] t, Chest[] c, Sign[] s)
+        {
+            tile = t;
+            chest = c;
+            sign = s;
+        }
+    }
     static class DimensionBuilder
     {
         public static Tile[,] GetDimensionSpawn(bool asteroid = false)
         {
-            Tile[,] output = new Tile[(2*LaunchPoint.width) + 1, asteroid?17:17 + LaunchPoint.width + 1];
+            Tile[,] output = new Tile[(2*LaunchPoint.width) + 1, !asteroid?17:17 + LaunchPoint.width + 1];
             for (int j = 0; j < 16; j++)
             {
                 for (int i = 0; i < (2 * LaunchPoint.width) + 1; i++)
@@ -26,6 +39,7 @@ namespace StarSailor.Dimensions
                     {
                         Tile t = new Tile();
                         t.type = (ushort)ModContent.TileType<LaunchConsole>();
+                        t.active(true);
                         output[i,j] = new Tile(t);
                     }
                     else if (j == 15 && i == LaunchPoint.width)
@@ -34,6 +48,7 @@ namespace StarSailor.Dimensions
                         t.type = (ushort)ModContent.TileType<LaunchConsole>();
                         t.frameX = 0;
                         t.frameY = 18;
+                        t.active(true);
                         output[i, j] = new Tile(t);
                     }
                     else
@@ -44,24 +59,27 @@ namespace StarSailor.Dimensions
             }
             Tile pad = new Tile();
             pad.type = (ushort)ModContent.TileType<LaunchPad>();
+            pad.active(true);
             for (int i = 0; i < (2 * LaunchPoint.width) + 1; i++)
             {
                 output[i, 16] = new Tile(pad);
             }
             Tile ast = new Tile();
             ast.type = (ushort)ModContent.TileType<AsteroidRock>();
+            ast.active(true);
             if (asteroid)
             {
                 for (int j = 0; j <= LaunchPoint.width; j++)
                 {
                     for (int i = -LaunchPoint.width; i <= LaunchPoint.width; i++)
                     {
-                        if ((i * i) + (j * j) < LaunchPoint.width)
+                        if ((i * i) + (j * j) <= LaunchPoint.width*LaunchPoint.width)
                         {
                             if (i == 0 && j == 0)
                             {
                                 Tile gv = new Tile();
                                 gv.type = (ushort)ModContent.TileType<GravitySource>();
+                                gv.active(true);
                                 output[LaunchPoint.width + i, 17 + j] = new Tile(gv);
                             }
                             else
@@ -74,7 +92,7 @@ namespace StarSailor.Dimensions
             }
             return output;
         }
-        public static Tile[,] GenerateIceDimension(int width, int height)
+        public static DimensionData GenerateIceDimension(int width, int height)
         {
             Tile[,] product = GenerateEmptyDimension(width, height);
             float scaleFactor = (Main.maxTilesX / 4200f);
@@ -132,7 +150,7 @@ namespace StarSailor.Dimensions
                         }
 
                         //product = AddCave(x, y, product, Main.rand.Next(10, 35), maxX, maxY, walls[Main.rand.Next(0, walls.Length)]);
-                        product = TileRunner(product, 0, x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.69f), Main.rand.Next(8, 40), new Vector2(0, 0), true, false, walls[Main.rand.Next(0, walls.Length)], liquid);
+                        product = TileRunner(product, 0, x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.69f), Main.rand.Next(8, 40), new Vector2(0, 0), new List<int>(), true, false, walls[Main.rand.Next(0, walls.Length)], liquid);
                         caveCounter++;
                         ModContent.GetInstance<StarSailorMod>().Logger.Info("cave number " + caveCounter);
                     }
@@ -172,7 +190,7 @@ namespace StarSailor.Dimensions
                                 int[] wallsNew = { WallID.IceUnsafe, ModContent.WallType<BedrockStoneWall>(), ModContent.WallType<BedrockStoneWall>() };
                                 walls = wallsNew;
                             }
-                            product = TileRunner(product, 0, x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.49f), Main.rand.Next(4, 12), new Vector2(0, 0), true, false, walls[Main.rand.Next(0, walls.Length)], liquid);
+                            product = TileRunner(product, 0, x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.49f), Main.rand.Next(4, 12), new Vector2(0, 0), new List<int>(), true, false, walls[Main.rand.Next(0, walls.Length)], liquid);
                             roughingCounter++;
                             //ModContent.GetInstance<StarSailorMod>().Logger.Info("roughing number " + roughingCounter);
                         }
@@ -225,12 +243,12 @@ namespace StarSailor.Dimensions
                         if (y < b3)
                         {
                             ushort[] tiles = { TileID.SnowBlock, TileID.Slush };
-                            product = TileRunner(product, tiles[Main.rand.Next(0, tiles.Length)], x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.49f), Main.rand.Next(4, 8), Vector2.Zero);
+                            product = TileRunner(product, tiles[Main.rand.Next(0, tiles.Length)], x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.49f), Main.rand.Next(4, 8), Vector2.Zero, new List<int>());
                         }
                         else
                         {
                             ushort[] tiles = { TileID.SnowBlock, TileID.Slush, (ushort)ModContent.TileType<BedrockStone>(), (ushort)ModContent.TileType<BedrockStone>() };
-                            product = TileRunner(product, tiles[Main.rand.Next(0, tiles.Length)], x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.49f), Main.rand.Next(6, 18), Vector2.Zero);
+                            product = TileRunner(product, tiles[Main.rand.Next(0, tiles.Length)], x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.49f), Main.rand.Next(6, 18), Vector2.Zero, new List<int>());
 
                         }
                     }
@@ -256,7 +274,7 @@ namespace StarSailor.Dimensions
                         {
 
                             int[] walls = { WallID.IceUnsafe, ModContent.WallType<BedrockStoneWall>(), ModContent.WallType<BedrockStoneWall>() };
-                            product = TileRunner(product, TileID.Coralstone, x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.49f), Main.rand.Next(4, 8), new Vector2(0, 0), true, true, walls[Main.rand.Next(0, walls.Length)]);
+                            product = TileRunner(product, TileID.Coralstone, x, y, maxX, maxY, Main.rand.NextFloat(0.45f, 0.49f), Main.rand.Next(4, 8), new Vector2(0, 0), new List<int>(), true, true, walls[Main.rand.Next(0, walls.Length)]);
                             coralstoneCounter++;
                             //ModContent.GetInstance<StarSailorMod>().Logger.Info("roughing number " + roughingCounter);
                         }
@@ -285,7 +303,27 @@ namespace StarSailor.Dimensions
                     }
                 }
             }
-            return product;
+            ushort[] unusedOres = GetUnusedOres();
+            int oreCounter = 0;
+            List<int> bannedTiles = new List<int>();
+            //bannedTiles.Add(ModContent.TileType<GravitySource>());
+            while (oreCounter < 2000 * scaleFactor * scaleFactor)
+            {
+                Vector2 v = new Vector2(Main.rand.Next(50, (int)max.X - 50), Main.rand.Next(50, (int)max.Y - 50));
+                if (product[(int)v.X, (int)v.Y].active())
+                {
+                    WeightedRandom<ushort> oreChoice = new WeightedRandom<ushort>();
+                    oreChoice.Add(unusedOres[0], 4);
+                    oreChoice.Add(unusedOres[1], 3);
+                    oreChoice.Add(unusedOres[2], 2);
+                    oreChoice.Add(unusedOres[3], 1);
+                    oreChoice.Add(TileID.Meteorite, 2);
+                    product = TileRunner(product, oreChoice.Get(), (int)v.X, (int)v.Y, maxX, maxY, Main.rand.NextFloat(0.4f, 0.49f), Main.rand.Next(3, 7), Vector2.Zero, bannedTiles);
+                }
+            }
+            Chest[] c = new Chest[Main.maxChests];
+            Sign[] s = new Sign[Main.maxChests];
+            return new DimensionData(product, c, s);
         }
         public static int[] GetCaveDisps(int width)
         {
@@ -297,7 +335,7 @@ namespace StarSailor.Dimensions
             return ret;
         }
         #region Jungle Stuff
-        public static Tile[,] GenerateJungleDimension(int width, int height)
+        public static DimensionData GenerateJungleDimension(int width, int height)
         {
             Tile[,] product = GenerateEmptyDimension(width, height);
             float scaleFactor = (Main.maxTilesX / 4200f);
@@ -344,11 +382,13 @@ namespace StarSailor.Dimensions
                 }
 
             }
-            return product;
+            Chest[] c = new Chest[Main.maxChests];
+            Sign[] s = new Sign[Main.maxChests];
+            return new DimensionData(product, c, s);
         }
         #endregion
         #region Asteroid Stuff
-        public static Tile[,] GenerateAsteroidDimension(int width, int height)
+        public static DimensionData GenerateAsteroidDimension(int width, int height)
         {
             Tile[,] product = GenerateEmptyDimension(width, height);
             float scaleFactor = (Main.maxTilesX / 4200f);
@@ -396,7 +436,76 @@ namespace StarSailor.Dimensions
                     product = AddSpiralLootAsteroid(product, (int)v.X, (int)v.Y);
                 }
             }
-            return product;
+            ushort[] unusedOres = GetUnusedOres();
+            int oreCounter = 0;
+            List<int> bannedTiles = new List<int>();
+            bannedTiles.Add(ModContent.TileType<GravitySource>());
+            while (oreCounter < 600 * scaleFactor * scaleFactor)
+            {
+                Vector2 v = new Vector2(Main.rand.Next(50, (int)max.X - 50), Main.rand.Next(50, (int)max.Y - 50));
+                if (product[(int)v.X, (int)v.Y].type == ModContent.TileType<AsteroidRock>())
+                {
+                    WeightedRandom<ushort> oreChoice = new WeightedRandom<ushort>();
+                    oreChoice.Add(unusedOres[0], 4);
+                    oreChoice.Add(unusedOres[1], 3);
+                    oreChoice.Add(unusedOres[2], 2);
+                    oreChoice.Add(unusedOres[3], 1);
+                    oreChoice.Add(TileID.Meteorite, 1);
+                    oreChoice.Add(TileID.Stone, 0.5);
+                    product = TileRunner(product, oreChoice.Get(), (int)v.X, (int)v.Y, maxX, maxY, Main.rand.NextFloat(0.4f, 0.49f), Main.rand.Next(3, 7), Vector2.Zero, bannedTiles);
+                }
+            }
+            Chest[] c = new Chest[Main.maxChests];
+            Sign[] s = new Sign[Main.maxChests];
+            return new DimensionData(product, c, s); 
+        }
+        static ushort[] GetUnusedOres()
+        {
+            ushort[] output = new ushort[4];
+            bool[] found = { false, false, false, false };
+            for (int i = 0; i < Main.maxTilesX; i++)
+            {
+                for (int j = 0; j < Main.maxTilesY; j++)
+                {
+                    switch (Main.tile[i, j].type)
+                    {
+                        case TileID.Copper:
+                            output[0] = TileID.Tin;
+                            found[0] = true;
+                            break;
+                        case TileID.Tin:
+                            output[0] = TileID.Copper;
+                            found[0] = true;
+                            break;
+                        case TileID.Iron:
+                            output[1] = TileID.Lead;
+                            found[1] = true;
+                            break;
+                        case TileID.Lead:
+                            output[1] = TileID.Iron;
+                            found[1] = true;
+                            break;
+                        case TileID.Silver:
+                            output[2] = TileID.Tungsten;
+                            found[2] = true;
+                            break;
+                        case TileID.Tungsten:
+                            output[2] = TileID.Silver;
+                            found[2] = true;
+                            break;
+                        case TileID.Gold:
+                            output[3] = TileID.Platinum;
+                            found[3] = true;
+                            break;
+                        case TileID.Platinum:
+                            output[3] = TileID.Gold;
+                            found[3] = true;
+                            break;
+                    }
+                    if (found[0] && found[1] && found[2] && found[3]) return output;
+                }
+            }
+            return output;
         }
         static Tile[,] AddAsteroidTemple(Tile[,] tile, int i, int j)
         {
@@ -674,10 +783,11 @@ namespace StarSailor.Dimensions
             return output;
 
         }
-        static Tile[,] TileRunner(Tile[,] tile, ushort type, int i, int j, int maxX, int maxY, float chance, int numSteps, Vector2 relPos, bool onlyReplaceTiles = true, bool active = true, int wall = -1, int liquid = -1)
+        static Tile[,] TileRunner(Tile[,] tile, ushort type, int i, int j, int maxX, int maxY, float chance, int numSteps, Vector2 relPos, List<int> bannedTiles, bool onlyReplaceTiles = true, bool active = true, int wall = -1, int liquid = -1)
         {
             if (i < 0 || i >= maxX || j < 0 || j >= maxY) return tile;
             if (onlyReplaceTiles && (tile[i, j] == null || !tile[i, j].active())) return tile;
+            if (bannedTiles.Contains(tile[i, j].type)) return tile;
             Tile t = new Tile();
             t.type = type;
             t.active(active);
@@ -691,8 +801,8 @@ namespace StarSailor.Dimensions
             if (numSteps <= 0) return tile;
             for (int p = -1; p <= 1; p += 2)
             {
-                if (Main.rand.NextFloat(0, 1) < chance && (relPos + new Vector2(p, 0)).Length() > relPos.Length()) tile = TileRunner(tile, type, i + p, j, maxX, maxY, chance, numSteps - 1, relPos, onlyReplaceTiles, active, wall, liquid);
-                if (Main.rand.NextFloat(0, 1) < chance && (relPos + new Vector2(0, p)).Length() > relPos.Length()) tile = TileRunner(tile, type, i, j + p, maxX, maxY, chance, numSteps - 1, relPos, onlyReplaceTiles, active, wall, liquid);
+                if (Main.rand.NextFloat(0, 1) < chance && (relPos + new Vector2(p, 0)).Length() > relPos.Length()) tile = TileRunner(tile, type, i + p, j, maxX, maxY, chance, numSteps - 1, relPos, bannedTiles, onlyReplaceTiles, active, wall, liquid);
+                if (Main.rand.NextFloat(0, 1) < chance && (relPos + new Vector2(0, p)).Length() > relPos.Length()) tile = TileRunner(tile, type, i, j + p, maxX, maxY, chance, numSteps - 1, relPos, bannedTiles, onlyReplaceTiles, active, wall, liquid);
             }
             return tile;
         }
